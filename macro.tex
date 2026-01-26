@@ -1,0 +1,60 @@
+\RequirePackage{mathtools,amsfonts,ifdraft,stmaryrd,microtype}
+\DeclarePairedDelimiter{\Vpair}{\|}{\|} % norm like
+\DeclarePairedDelimiter{\vpair}{|}{|} % abs like
+\DeclarePairedDelimiter{\bpair}{[}{]} % square brackets []
+\DeclarePairedDelimiter{\ppair}{(}{)} % parenthesis or round  ( )
+\DeclarePairedDelimiter{\Bpair}{\{}{\}} % braces or curly { }
+\DeclarePairedDelimiter{\jump}{\llbracket}{\rrbracket} % braces or curly { }
+\DeclarePairedDelimiter{\ip}{\langle}{\rangle}% inner product < >
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor} % floor
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil} % ceil
+%
+\newcommand\strutb{\vphantom{\bigm|}}
+%
+\newcommand\norm[2][0pt]{\Vpair*{#2}} % ||
+\newcommand\abs[2][0pt]{\vpair*{#2}} % |
+\newcommand\pp[2][0pt]{\ppair*{#2}} % (
+\newcommand\bp[2][0pt]{\bpair*{#2}} % [
+\newcommand\Bp[2][0pt]{\Bpair*{#2}} % {
+%
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand\smean{\mathbb{E}}
+\newcommand\mean[1]{\smean\bp{#1}}
+%
+\newcommand\prob{\mathbb{P}}
+%
+\newcommand\order[1]{\mathcal{O}\pp{#1}}
+%
+\newcommand\real{\mathbb{R}}
+
+\DeclareMathOperator*{\argmax}{arg\, max \,}
+\DeclareMathOperator*{\argmin}{arg\, min \,}
+\DeclareMathOperator{\prox}{prox}
+
+\newcommand{\tstep}{{\Delta t}}
+
+\renewcommand{\vec}[1]{{\mathbf{#1}}} 
+\newcommand{\Oo}{\mathcal{O}}
+\newcommand{\Nn}{\mathcal{N}}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\todolist}[1]{\textcolor{red}{(TODO: #1)}}
+\newcommand{\eqdef}{\coloneq}
+\newcommand{\Prox}{\mathrm{Prox}}
+
+\newcommand{\pa}[1]{\pp{#1}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\EE}{\mathbb{E}}
+\newcommand{\RR}{\mathbb{R}}
+
+\newcommand{\clip}{L}
+\newcommand{\clower}{K}
+\newcommand{\cinfty}{B}
+\newcommand{\ccc}{\clower}
+
+\newcommand{\deltat}{{\Delta t}}
+\newcommand{\deltaw}{{\Delta W}}
+\newcommand{\enscond}[2]{\left\{#1:\; #2\right\}}
+\newcommand{\dotp}[2]{\left<#1, #2\right>}
+\newcommand{\ens}[1]{\left\{#1\right\}}
+
+

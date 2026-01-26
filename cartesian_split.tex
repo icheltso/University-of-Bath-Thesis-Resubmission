@@ -1,0 +1,291 @@
+\documentclass{article}
+\newcommand{\dom}{\mathrm{dom}}
+\usepackage{lineno}
+\linenumbers
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2020
+
+% ready for submission
+% \usepackage{neurips_2020}
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2020}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+%     \usepackage[final]{neurips_2020}
+
+% to avoid loading the natbib package, add option nonatbib:
+%     \usepackage[nonatbib]{neurips_2020}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage[framemethod=tikz]{mdframed}
+\usepackage{verbatim}
+\usepackage{bbm}
+
+%\usepackage{mystyle}
+\usepackage{mathtools,booktabs,tabu,graphicx,hyperref,epstopdf,url,rotating}
+%\usepackage{fullpage}
+\usepackage{algorithm}
+\usepackage{cite}
+\usepackage{algorithmic}
+\usepackage{fancyref}
+\usepackage[framemethod=tikz]{mdframed}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]	
+\newtheorem{condition}{Condition}[theorem]	
+\newtheorem{proposition}{Proposition}[theorem]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}{Remark}[theorem]
+
+\newcommand{\tstep}{{\Delta t}}
+
+\renewcommand{\vec}[1]{{\mathbf{#1}}} 
+\newcommand{\Oo}{\mathcal{O}}
+\newcommand{\Nn}{\mathcal{N}}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\todolist}[1]{\textcolor{red}{(TODO: #1)}}
+\newcommand{\eqdef}{\coloneq}
+\newcommand{\Prox}{\mathrm{Prox}}
+
+\newcommand{\pa}[1]{\pp{#1}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\EE}{\mathbb{E}}
+\newcommand{\RR}{\mathbb{R}}
+
+\newcommand{\clip}{L}
+\newcommand{\clower}{K}
+\newcommand{\cinfty}{B}
+\newcommand{\ccc}{\clower}
+
+%\usepackage{graphicx}
+%\usepackage{subfigure}
+\usepackage{subcaption}
+\usepackage{geometry}
+\geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+
+\DeclareMathOperator*{\diag}{diag}
+\DeclareMathOperator*{\argmax}{arg\,max\,}
+\DeclareMathOperator*{\argmin}{arg\,min\,}
+\DeclareMathOperator*{\tr}{tr}
+
+
+\title{Cartesian Parametrisation of Hadamard Langevin and Splitting Method}
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+\author{%
+ Ivan Cheltsov
+}
+
+\newcommand{\OO}{\mathbb{O}}
+
+\newcommand{\commentout}[1]{}
+
+
+\begin{document}
+
+\maketitle
+\section{Introduction}
+In a deterministic framework, inverse problems are typically formulated as optimization problems where the goal is to find the best estimate of an unknown parameter or function based on observed data. Given a forward model $F$ that relates the unknown $x$ to the observed data $y$ through 
+\begin{equation} \label{lasso_MAP}
+y=F(x) + \eta \\
+\end{equation}
+the inverse problem seeks to recover $x$ from $y$. Since inverse problems are often ill-posed, meaning solutions may not exist, be non-unique, or be sensitive to perturbations in data, a common approach is to define a cost functional $C(x)$ that quantifies the discrepancy between the observed data and the model prediction, often incorporating regularization to handle ill-posedness. One regularization approach of interest to us is Lasso regularization, which incorporates prior knowledge about the sparsity of solution $x$ through an extra penalty term. For instance, a solution for a Lasso-regularized least squares model looks like
+\begin{equation} \label{lasso_MAP}
+\hat{x} = \argmin_{x} C(x) +\lambda R(x), \\
+\end{equation}
+with cost $C(x) = \frac{1}{2}\|F(x) - y\|^2$ and a regularization $R(x) = \|x\|_1$, weighted by a parameter $\lambda$. Other regularization techniques, such as total variation (TV) regularization, are commonly used in applications like image reconstruction and compressed sensing. Deterministic methods provide a single "best" solution but do not quantify uncertainty in the reconstruction.
+
+Bayesian methods interpret inverse problems probabilistically by treating the unknown $x$ as a random variable with a prior distribution that encodes prior beliefs about its properties. Observed data is incorporated through a likelihood function, and Bayes’ theorem is used to compute the posterior distribution:
+\begin{equation} \label{lasso_bayes}
+p(x | y) \propto p(y | x)p(x), \\
+\end{equation}
+where $p(x | y)$ is the likelihood, $p(y | x) \propto \exp(-C(x))$ and $p(x) \propto \exp(-\lambda R(x))$ is the prior. The posterior distribution $p(x | y)$ represents the updated knowledge about $x$ after observing $y$. The most straightforward way to use the posterior is to compute the maximum a posteriori estimate (MAP) $x_{MAP} = \argmax_{x} p(x | y)$, namely, the solution of (\ref{lasso_MAP}).
+
+A key advantage of the Bayesian approach is that it naturally quantifies uncertainty in the solution. Instead of producing a single estimate, it provides a distribution over possible solutions, allowing for credible intervals and uncertainty assessments.
+
+\section{Sparse Priors}
+
+\section{Setup}
+We can use Langevin sampling to produce samples from $\pi$. Write $\pi\propto\exp(-\beta\, H)$ for $H((u,v))=\frac 12 \,\lambda\, \norm{(u,v)}^2 + G(u\odot v)- \frac{1}{\beta}\,\sum_i\log u_i$. The gradient
+\[
+\nabla H((u,v))=\lambda\begin{pmatrix}
+    u\\v
+\end{pmatrix}
++\begin{pmatrix}
+    v\\ u
+\end{pmatrix}\odot \nabla G(u\odot v)
+-\begin{pmatrix}
+    1/\beta u\\ 0
+\end{pmatrix},
+\]
+where we interpret $1/u\in\real^d$ as the vector with entries $1/u_i$. Therefore, the corresponding Langevin equations are 
+\begin{equation} \label{uvproc}
+\begin{split}
+du_t&=-\lambda\,   u_t\,dt - v_t\odot \nabla G(u_t\odot v_t)\,dt
+ +\frac{1}{\beta \,u_t}\,dt+ \sqrt\frac{2}{\beta}\,dW^1_t,\\
+dv_t&=-\lambda\,  v_t\,dt -  \,u_t \odot \nabla G(u_t\odot v_t)\,dt+  \sqrt\frac{2}{\beta}\,dW^2_t,
+\label{uvproc}
+\end{split}
+\end{equation}
+
+We can reparametrize into cartesian coordinates to obtain the system
+
+\begin{equation} 
+\begin{split} 
+dy_t&=-\lambda\,   y_t\,dt - \frac{y_t}{u_t} \odot v_t\odot \nabla G(x_t)\,dt
+ +\sqrt\frac{2}{\beta}\,dW^0_t,\\
+dz_t&=-\lambda\,   z_t\,dt - \frac{z_t}{u_t} \odot v_t\odot \nabla G(x_t)\,dt
+ +\sqrt\frac{2}{\beta}\,dW^1_t,\\
+dv_t&=-\lambda\,   v_t\,dt - u_t\odot \nabla G(x_t)\,dt
+ +\sqrt\frac{2}{\beta}\,dW^2_t
+\label{yzvproc}
+\end{split}
+\end{equation}
+with $y,z,v \in \mathbb{R}^d$, $\mathbb{R}^{d}$-valued Brownian motion $W^0(t), W^1(t), W^2(t)$ and
+\[u_t = (y_t \odot y_t + z_t \odot z_t)^{1/2}, \quad x_t = u_t \odot v_t.\]
+More concisely, we can rewrite the above as 
+\begin{equation}  
+ \begin{aligned}
+ d\vec x= \Bigl[-\lambda \vec x - \nabla G_{3}(\vec x)\Bigr]\,dt +\sqrt{2/\beta}\, dW^3(t),
+  \end{aligned}\label{cyl}
+\end{equation}
+for $\vec x \in \mathbb{R}^{3d}$, $G_{3}(\vec x)= G( (y\odot y + z\odot z)^{1/2} \odot v)$ and an $\mathbb{R}^{3d}$-valued Brownian motion $W^3(t)$. 
+
+We can show, via It\^{o}'s Formula with $u_t = (y_t \odot y_t + z_t \odot z_t)^{1/2}$, that 
+
+$$
+\begin{aligned}
+  du_t&=\frac{1}{u_t}\odot(y_t\odot(-\lambda\,y_t)+z_t\odot(-\lambda\, z_t))\,dt\\&\quad
+  -\frac{1}{u_t}(y_t\odot (y_t/u_t)+z_t\odot(z_t/u_t))\odot v_t\odot \nabla G(u_t\odot v_t)\,dt \\&\quad+\sqrt\frac{2}{\beta} \frac 1{u_t} \odot\begin{pmatrix}y_t\\z_t\end{pmatrix}
+  \cdot\begin{pmatrix} dW_t^{3,y}\\ dW_t^{3,z}\end{pmatrix}
+  + \frac 12 \frac{2}{\beta} \left(\frac{-1}{u^3}\odot(y_t\odot y_t+z_t\odot z_t)+\frac{2}{u_t}\right)\,dt\\
+  &=-\lambda\,   u_t\,dt - v_t\odot \nabla G(u_t\odot v_t)\,dt
+ +\frac{1}{\beta \,u_t}\,dt+ \sqrt\frac{2}{\beta}\,dW_t,
+\end{aligned}
+$$
+hence the $(u,v)$-process (\ref{uvproc}) arises from the solution of the $(y,z,v)$-process (\ref{yzvproc}). By Proposition (include reference to paper or Proposition with proof), the process (\ref{uvproc}) also inherits properties from (\ref{yzvproc}) such as being well-posed, strong Feller, irreducible. The processes agree as long as the initial distributions agree, i.e., that the probability density function $\rho(t,\cdot)$ of $(u,v)_t$ and the probability density function $p(t,\cdot)$ of $(y,z,v)$ satisfy
+\[\rho(t,(u,v)) = p(t,(y,z,v)), \quad u = (y \odot y + z \odot z)^{1/2},\]
+if the initial density function is cylindrical, i.e.
+\[\rho(0,(u,v)) = p(0,(y,z,v)), \quad \text{ for all } u = (y \odot y + z \odot z)^{1/2}.\]
+
+\section{Numerical Method for Cartesian Parametrisation}
+We aim to numerically simulate the system (\ref{yzvproc}) and compare its performance to that of Hadamard-Langevin applied to (\ref{uvproc}). 
+\subsection{Euler-Maruyama}
+We first try the Euler-Maruyama scheme. Applying to (\ref{cyl}), we obtain the update, with stepsize $h$,
+\[X_{n+1} = X_n - h\lambda X_n \, - h\nabla G_{3}(X_n)\, + \sqrt{2h/\beta}\,R_n,\]
+for $R_n \sim N(0,I_{3d})$. However, due to the singularity $\frac{1}{u_t}$, this method may be unstable.
+
+\subsection{Splitting Methods}
+Suppose we have a system of differential equations as
+\begin{equation}  
+ \begin{aligned}
+  \frac{d\vec x}{dt} = f(\vec x), \quad  x(0) = x_0,
+  \end{aligned}\label{ivp_ode}
+\end{equation}
+and that $f$ is separable as 
+\begin{equation}  
+ \begin{aligned}
+  f = f_1 + f_2 + \hdots + f_k, \quad k \geq 2,
+  \end{aligned}\label{sep_f}
+\end{equation}
+so that each initial value problem 
+\begin{equation}  
+ \begin{aligned}
+  \frac{d\vec x}{dt} = f_i(\vec x), \quad  x(0) = x_0,
+  \end{aligned}\label{ivp_ode_small}
+\end{equation}
+is easier to solve than (\ref{ivp_ode}). The idea of splitting methods is that we take advantage of the decomposition (\ref{sep_f}) to approximate the solution to (\ref{ivp_ode}). ADD BCH STUFF, EXPLAIN WHY BENS METHOD WORKS.
+
+%ADD INTRO/DESCRIPTION OF SPLITING METHODS HERE OR IN RELEVANT SECTION IN THESIS. DISCUSS
+
+Our system can be tackled by splitting methods via dividing it into multiple parts and treating them sequentially. For example, we can divide the system (\ref{cyl}), in a similar fashion to that of the Langevin Dynamics splitting by Leimkuhler and Matthews \cite{leimkuhler_baoab}:
+\begin{equation}  
+ \begin{aligned}
+ d\vec x= \underbrace{\Bigl[-\lambda \vec x \,dt +\sqrt{2/\beta}\, dW^3(t) \Bigr]}_{O} - \underbrace{\Bigl[ \nabla G_{3}(\vec x)\Bigr]}_{B},
+  \end{aligned}\label{cyl_split}
+\end{equation}
+Part $O$ is an Orstein-Uhlenbeck system and can be solved exactly in one timestep. In a similar vein to the methods proposed by Leimkuhler et al. we propose the BOB scheme. Akin to Strang splitting scheme, we have
+\begin{equation} 
+\begin{aligned} 
+(B) \quad &\vec x_{n+1/2}&=&\quad \vec x_{n} - \frac{h}{2}\,\nabla G_{3}(\vec x_n),\\
+(O) \quad &\hat{\vec x}_{n+1/2} &=&\quad \vec x_{n+1/2}\, e^{-\lambda h} + \sqrt{\frac{1}{\beta\lambda} \left(1-e^{-2\lambda  h} \right)}\, \xi, \quad \xi \sim N(0,I_{3d}), \\
+(B) \quad &\vec x_{n+1}&=&\quad \hat{\vec x}_{n+1/2} - \frac{h}{2}\,\nabla G_{3}(\hat{\vec x}_{n+1/2}),
+\label{bob_split}
+\end{aligned}
+\end{equation}
+Also try the sequential (BO) scheme, akin to Lie-Trotter for ODEs, should perform worse than BOB due to asymmetry creating $\mathcal{O}(h)$ terms in BCH expansion:
+\begin{equation} 
+\begin{aligned} 
+(B) \quad &\vec x_{n+1/2}&=& \quad \vec x_{n} - h\,\nabla G_{3}(\vec x_n)\\
+(O) \quad &\vec x_{n+1} &=& \quad \vec x_{n+1/2}\, e^{-\lambda h} + \sqrt{\frac{1}{\beta\lambda} \left(1-e^{-2\lambda  h} \right)}\, \xi, \quad \xi \sim N(0,I_{3d}),
+\label{seq_split}
+\end{aligned}
+\end{equation}
+
+We compare performance to the Euler-Maruyama scheme:
+\begin{equation} 
+\begin{split} 
+\vec x_{n+1}&=\vec x_{n} - h \,\lambda \vec x_{n} - h\,\nabla G_{3}(\vec x_n) +\sqrt{2/\beta} \, R_n\, \quad R_n \sim N(0,I_{3d})
+\label{euler}
+\end{split}
+\end{equation}
+Additionally, by taking the limit of the friction coefficient $\gamma \to \infty$ in the BAOAB scheme for underdamped langevin dynamics, we can derive a new pseudo-Euler-Maruyama scheme, that has $\mathcal{O}(h^2)$ convergence for overdamped langevin dynamics \cite{leimkuhler_baoab}:
+As found in BAOAB paper:
+\begin{equation} 
+\begin{split} 
+\vec x_{n+1}&=\vec x_{n} - h \,\lambda \vec x_{n} - h\,\nabla G_{3}(\vec x_n) +\sqrt{2h/\beta} \, (R_n\, + R_{n+1}) \quad R_n, R_{n+1} \sim N(0,I_{3d})
+\label{pseudo-euler}
+\end{split}
+\end{equation}
+Above doesn't approximate invariant measure that well. From trial and error, found that
+\begin{equation}
+\begin{aligned}
+\vec x_{n+1}&=\vec x_{n} - h \,\lambda \vec x_{n} - h\,\nabla G_{3}(\vec x_n) +\sqrt{h/2\beta} \, (R_n\, + R_{n+1}) \quad R_n, R_{n+1} \sim N(0,I_{3d})
+\end{aligned}
+\end{equation}
+works pretty well and demonstrates $\mathcal{O}(h^2)$ convergence in test cases, as predicted by Leimkuhler.
+
+
+\section{Numerics - 1D Toy Problem}
+We simulate a toy problem. We use $G(x) = (Ax-y)^2$, with $A \in \mathbb{R}$, $y = Ax_0$, for $x_0 = -2$, $\lambda = 0.6 \times |Ay| = $. We simulate 10,000 particles, each for 10,000 iterations. We present our results below.
+
+
+
+
+
+
+\begin{thebibliography}{99}
+\bibitem{riskml}
+Abadie, A. \& Kasy, M. Choosing among regularized estimators in empirical economics. {\em The Review of Economics and Statistics} (2019) 101 (5): 743–762.
+
+\bibitem{leimkuhler_baoab}
+ B. Leimkuhler \& C. Matthews. Rational construction of stochastic numerical methods for molecular sampling. {\em Applied Mathematics Research eXpress}, 2013(1):3456, 2013.
+\end{thebibliography}
+
+\end{document}

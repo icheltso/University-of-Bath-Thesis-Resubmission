@@ -1,0 +1,444 @@
+\documentclass{article}
+\newcommand{\dom}{\mathrm{dom}}
+\usepackage{lineno}
+\linenumbers
+
+\input{macro}
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2020
+
+% ready for submission
+% \usepackage{neurips_2020}
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2020}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+%     \usepackage[final]{neurips_2020}
+
+% to avoid loading the natbib package, add option nonatbib:
+%     \usepackage[nonatbib]{neurips_2020}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage[framemethod=tikz]{mdframed}
+\usepackage{verbatim}
+\usepackage{bbm}
+\usepackage{tikz}
+\usepackage{pgfplots}
+
+%\usepackage{mystyle}
+\usepackage{mathtools,booktabs,tabu,graphicx,hyperref,epstopdf,url,rotating}
+%\usepackage{fullpage}
+\usepackage{algorithm}
+\usepackage{cite}
+\usepackage{algorithmic}
+\usepackage{fancyref}
+\usepackage[framemethod=tikz]{mdframed}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]	
+\newtheorem{condition}{Condition}[theorem]	
+\newtheorem{proposition}{Proposition}[theorem]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}{Remark}[theorem]
+
+
+
+\renewcommand{\vec}[1]{{\mathbf{#1}}} 
+
+
+%\usepackage{graphicx}
+%\usepackage{subfigure}
+\usepackage{subcaption}
+\usepackage{geometry}
+\geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+
+\DeclareMathOperator*{\diag}{diag}
+%\DeclareMathOperator*{\argmax}{arg\,max\,}
+%\DeclareMathOperator*{\argmin}{arg\,min\,}
+\DeclareMathOperator*{\tr}{tr}
+
+
+\title{Cartesian Parametrisation of Hadamard Langevin and Splitting Method}
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+\author{%
+ Ivan Cheltsov
+}
+
+\newcommand{\OO}{\mathbb{O}}
+
+\newcommand{\commentout}[1]{}
+
+
+\begin{document}
+
+\maketitle
+\subsection{Introduction}
+In a deterministic framework, inverse problems are typically formulated as optimization problems where the goal is to find the best estimate of an unknown parameter or function based on observed data. Given a forward model $F$ that relates the unknown $x$ to the observed data $y$ through
+\begin{equation} \label{x_opt}
+y = F(x) + \eta,
+\end{equation}
+where $\eta$ represents measurement noise, the inverse problem seeks to recover $x$ from $y$. Since inverse problems are often ill-posed, meaning solutions may not exist, be non-unique, or be sensitive to perturbations in data, a common approach is to define a cost functional $C(x,y)$ that quantifies the discrepancy between the observed data and the model prediction. Regularization techniques are frequently employed to impose additional constraints that ensure stability and well-posedness of the solution. Common choices include $L_2$-regularization (Tikhonov regularization), total variation (TV) regularization, and sparsity-promoting methods, which are widely used in fields such as signal processing, medical imaging, and machine learning.
+
+Bayesian methods interpret inverse problems probabilistically by treating the unknown $x$ as a random variable with a prior distribution that encodes prior beliefs about its properties. Observed data is incorporated through a likelihood function, and Bayes’ theorem is used to compute the posterior distribution:
+\begin{equation}
+p(x | y) \propto p(y | x) p(x),
+\end{equation}
+where $p(y | x) \propto \exp(-C(x,y))$ and $p(x)$ represents prior knowledge about the solution. The posterior distribution $p(x | y)$ represents the updated knowledge about $x$ after observing $y$. The most straightforward way to use the posterior is to compute the maximum a posteriori estimate (MAP)
+\begin{equation} \label{x_map}
+x_{\text{MAP}} = \argmax_{x} p(x | y),
+\end{equation}
+which corresponds to a regularized optimization problem. A key advantage of the Bayesian approach is that it naturally quantifies uncertainty in the solution. Instead of producing a single estimate, it provides a distribution over possible solutions, allowing for credible intervals and uncertainty assessments.
+
+\subsection{Sparse Priors}
+In many inverse problems, the solution is expected to be sparse, meaning that only a small number of components are nonzero or significantly contribute to the signal. Sparse solutions arise naturally in applications such as compressed sensing, medical imaging, and machine learning, where high-dimensional data often have an underlying low-dimensional structure. Incorporating sparsity into inverse problems can improve both the accuracy and interpretability of the solution. A widely used approach for enforcing sparsity is Lasso regularization, which introduces an $L_1$-norm penalty on $x$. The Lasso-regularized least squares problem is formulated as
+\begin{equation} \label{xlasso}
+\hat{x} = \argmin_{x} C(x,y) + \lambda R(x),
+\end{equation}
+where the the regularization term is the $L_1$-norm, $R(x) = \|x\|_1$. The parameter $\lambda$ controls the strength of the sparsity prior, balancing data fidelity and regularization. From a Bayesian perspective, Lasso regularization corresponds to a Laplace prior on $x$, $p(x) \propto \exp(-\lambda |x|_1)$,
+The MAP estimate under this prior coincides with the solution of the Lasso-regularized problem.
+
+\subsection{Hadamard Product Trick}
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[xmin=-4, xmax=4, ymin=-1,ymax=6, samples=100]
+            \addplot[red, ultra thick, samples=250] {abs(x)};
+            \addplot[blue] {(1/2)*(x*x/0.25 + 0.25)};
+            \addplot[blue] {(1/2)*(x*x/0.5 + 0.5)};
+            \addplot[blue] {(1/2)*(x*x/1 + 1)};
+            \addplot[blue] {(1/2)*(x*x/2 + 2)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{The function $|x|$, as the infimum of a family of smooth, convex quadratic functions of form $\frac{1}{2}\left(x^2t + \frac{1}{t} \right)$ (for various $t$).}
+    \label{fig:my_label}
+\end{figure}
+
+As was shown by \cite{poon}, (\ref{xlasso}) can be reformulated into a smooth problem. To be more precise, we present the important results of \cite{poon}:
+\begin{theorem}[Quadratic Variational Form, \cite{poon}] \label{qvf_thm}
+Let $R:\mathbb{R}^n \xrightarrow[]{} \mathbb{R}.$ Then the following are equivalent:
+\begin{itemize}
+    \item $R(\beta) = \phi(\beta \circ \beta)$, where $\phi$ is proper, concave and upper semi-continuous, with domain $R^d_+.$
+    \item There exists a convex function $\psi$ for which $R(\beta) = \inf_{z \in \mathbb{R}^n_+} \frac{1}{2} \sum_{i=1}^n z_i \beta_i^2 + \psi(z).$
+\end{itemize}
+Furthermore, $\psi(z) = (-\phi)^* (-z/2)$ is defined via the convex conjugate $(-\phi)^*$ of $(-\phi)$. When $R$ is a norm, we have that, for $\psi(\eta) = \frac{1}{2} h(\frac{1}{\eta}),$
+\[h(\eta) = \max_{R^*(\omega) \leq 1} \sum_i \omega_i \eta_i,\]
+where $R^*$ is the dual norm of $R$.
+\end{theorem}
+In our case, for $R(\beta) = \|\beta\|_1$, we have that 
+\[\phi(x) = \sum_i x^{\frac{1}{2}}\]
+is a proper, concave and continuous function on $R^n_+$. By the above Theorem,
+\begin{align*}
+    \psi(z) &= (-\phi)^*(-z/2) \\
+            &= \sup_{t \in \mathbb{R}^n} \left\{ \left\langle -\frac{z}{2},t \right\rangle - (-\phi)(t) \, \middle| \, t\in\mathbb{R}^n\right\} \\
+            &= \sup_{t \in \mathbb{R}^n} \left\{ \left\langle -\frac{z}{2},t \right\rangle + \sum_i t^{\frac{1}{2}} \, \middle| \, t\in\mathbb{R}^n\right\}
+\end{align*}
+Using first-order optimality conditions, we can solve the above to get
+\[\psi(z) = \frac{1}{2} \sum_i \frac{1}{z_i}.\]
+Hence, by the equivalence result,
+\begin{equation} \label{quad_form_l1}
+    \|\beta\|_1 = \inf_{z \in \mathbb{R}^n_+} \frac{1}{2} \sum_{i=1}^n  \left( z_i \beta_i^2 + \frac{1}{z_i} \right).
+\end{equation}
+By change of variables $v_i = \frac{1}{\sqrt{z_i}}$, $u_i = \beta_i\sqrt{z_i}$, we finally obtain the equivalent formulation
+\begin{equation} \label{uv_form_l1}
+    \|\beta\|_1 = \inf_{\beta = u \circ v \in \mathbb{R}^n_+} \frac{1}{2} \sum_{i=1}^n  \left( u_i^2 + v_i^2 \right) = \inf_{\beta = u \circ v \in \mathbb{R}^n_+} \frac{1}{2} \left( \|u\|_2^2 + \|v\|_2^2 \right).
+\end{equation}
+As a result, the formulation (\ref{xlasso}) is equivalent to 
+\begin{equation} \label{inprob_poon}
+    \hat{u},\hat{v} = \underset{u,v \in \mathbb{R}^{n}} \argmin{C(u \odot v, \,y) + \frac \lambda 2 \left( \|u\|^2_2 + \lambda \|v\|^2_2 \right)}. 
+\end{equation}
+The Hadamard product parametrization trades non-smoothness and convexity for smoothness and non-convexity. 
+EXPAND ON BACKGROUND OF OVERPARAMETRIZED FORMULATIONS. MAYBE MOVE ENTIRETY OF THIS SECTION TO INTRO/BACKGROUND
+\subsection{Main Problem}
+We consider the problem of sampling from
+\begin{equation}
+\rho(x)=
+\frac 1 Z\exp\bigl(-\beta\bigl(\lambda \|x\|_1 + G(x)\bigr)\bigr),\qquad x\in \mathbb{R}^d,\label{target}
+\end{equation}
+for normalisation constant $Z$, inverse temperature $\beta > 0$ and data term $G(x) = C(x,y)$. We place the following assumptions on $G$:
+\begin{assumption}[data term $G$]\label{reg1} Assume that (i) $G$ is bounded below, that (ii) $G\colon \real^d\to \real$ is continuously differentiable, that  (iii) $x^\top\nabla G(x)$ is bounded below (so $x^\top\nabla G(x) \geq -\clower$ for some $\clower$), and that (iv)  $\|\nabla G(x)\|_\infty$ is bounded uniformly for $x\in \real^d$ (so $\cinfty := \sup_x\|\nabla G(x)\|_\infty < \infty$).
+\end{assumption}
+
+The data term $G$ is bounded below so that $\rho$ is a probability measure for some normalisation constant $Z>0$. Note that (iii) holds if $G$ is a convex function. Important examples that satisfy (i), (ii) and (iii) include the quadratic loss $G(x) = \norm{ A x - y}^2$ for an $m\times d$ matrix $A$ and $y\in \real^m$; the logistic loss $G(x)=\sum_{i=1}^m \log( 1+ \exp(-y_i A_i^\top x) )$ for $A_i\in\real^d$; and smooth approximations of the unit loss,  such as $G(x) = \sum_i \sigma(y_i A_i^\top x)$ for $\sigma(x)=\arctan(x)$ or $\sigma(x)=1/(1+\exp(x))$.
+Note that  $G(x) = \sum_i \sigma(y_i A_i^\top x)$  satisfies condition (iv) for any function $\sigma$ with bounded derivatives, which includes the logistic loss and smooth versions of the unit.  The least-squares loss $G(x)=\norm{Ax-y}^2$ does not satisfy condition (iv) on the boundedness of $\nabla G$ and one might consider instead the Huber loss. However, in our numerical computations, the method behaves well with the quadratic loss so assumption (iv) is likely a limitation of our theoretical analysis rather than the method itself.
+\subsection{Previous Approaches}
+\subsubsection{Unadjusted Langevin algorithms (ULA)}
+Consider a target distribution with a smooth potential $H: \mathbb{R}^d \xrightarrow[]{} \mathbb{R}$:
+\begin{equation} \label{smoothdist}
+    \rho(x) \propto \exp{-\beta H(x)}
+\end{equation}
+A classic approach to sampling from \ref{smoothdist} is via Langevin Dynamics:
+\begin{equation}
+    x_{n+1} = x_n - \Delta t\nabla H(x_n) + \sqrt{2\Delta t/\beta} \xi^n,
+\end{equation}
+with random variable $\xi^n \sim N(0,\Id_d)$, stepsize $\Delta t >0$. This can be interpreted as the discretization $x_n = X_{n \Delta t}$ of the SDE
+\begin{equation} \label{over_lang}
+    dXt = -\nabla H(x_n) dt + \sqrt{2/\beta} \, dW_t.
+\end{equation}
+Classic convergence results, such as those by Leli{\`e}vre and Stoltz, as well by Meyn and Tweedie \cite{Meyn2012-oq} are discussed earlier in the thesis. Geometric ergodicity of the continuous time SDE (\ref{over_lang}) can also be obtained via Log-Sobolev inequalities under certain convexity and smoothness assumptions.
+
+\subsubsection{Smoothing-based Algorithms}
+In the case where $H(x) = G(x) + R(x)$ contains a non-smooth term $R$, a canonical approach is to replace $R$ by a smooth approximation defined by the Moreau--Yosida envelope $R_\gamma$ \cite{pereyra2016proximal}:
+$$
+R_\gamma(x)\eqdef \min_{z\in \mathcal X} \Bigl(R(z) + \frac{1}{2\gamma}\norm{x-z}^2\Bigr),\qquad x\in \mathcal X.
+$$
+The function $R_\gamma$ is then $1/\gamma$-smooth and converges pointwise to $R$ as $\gamma \to 0$. 
+Moreover, its gradient is
+$$
+\nabla R_\gamma(x) = \frac{1}{\gamma}\bigl( x - \mathrm{Prox}_{\gamma R}(x)\bigr),
+$$
+where the proximal operator is defined as
+\begin{align*}
+    \mathrm{Prox}_{\gamma R}(x) \eqdef \argmin_{z\in \mathcal X} \Bigl(\gamma\, R(x) + \frac12 \norm{x-z}^2\Bigr),\qquad x\in \mathcal X.
+\end{align*}
+One can then directly apply ULA to $H_\gamma\eqdef G + R_\gamma$, leading to the Moreau--Yosida regularized Unadjusted Langevin Algorithm (MYULA) \cite{durmus2018efficient}. Convergence to the stationary distribution requires one to take $\gamma \to 0$ \cite{durmus2018efficient}. Under suitable conditions, such as convexity of $G$ and Lipschitz smoothness, convergence results like geometric ergodicity of the stationary distribution   $\rho_\gamma \propto \exp(-\beta H_\gamma)$ have been established, as well as the convergence of $\rho_\gamma$ to $\rho$ as $\gamma \to 0$.
+\subsubsection{The Gibbs Sampler}
+INTRODUCE GIBBS SAMPLING IN THEORY SECTIONS USING EITHER \cite{gelman2013bayesian} or \cite{robert2004monte}.
+
+The Bayesian lasso model is a special case where one has $\ell_1$ priors and quadratic data term $G$; that is
+$$
+\rho(x) \propto \exp\pa{ \beta \pa{-\lambda \norm{x}_1 - G(x)} },
+$$
+where $G(x) = \frac12\norm{Ax-y}^2$
+for some matrix $A\in \real^{m\times d}$ and data vector $y\in \real^m$. 
+Although the proximal-based Langevin algorithms are now the `go-to' sampling methods for this problem,  an interesting approach that  pre-dates  proximal-type methods (and introduces no additional smoothing) is the following Gibbs sampler based on a hierarchical model \cite{park2008bayesian}, which can be seen as the equivalent of the $\eta$-trick for sampling.
+
+% The Gibbs sampler is a popular Markov Chain Monte Carlo (MCMC) method used to sample from the posterior distribution of model parameters in Bayesian inference.
+
+% The Bayesian Lasso model is specific to quadratic data fidelity terms, with
+% $$
+% \pi(x) \propto \exp\pa{ \beta \pa{-\lambda \norm{x}_1 - f(x)} }
+% $$
+% where $f$ is a quadratic function $f(x) = \frac12 \norm{Ax- b}^2$.
+
+A key observation is
+ the fact that the prior can be rewritten (see \cite{west1987scale} and \cite{gneiting1997normal}) as a Gaussian mixture:
+\begin{equation}\label{eq:laplace}
+   \exp\pa{-a\abs{z}} = \frac{a}{ \sqrt{2\pi}}\int_0^\infty \frac{1}{\sqrt{\eta}} \exp\pa{ -\frac{z^2}{2 \eta} - \frac{a^2 \eta}{2}} d\eta, \qquad a\in \real_+,z\in\real.
+\end{equation}
+\subsubsection{Hadamard-Langevin Dynamics}
+The biggest drawback of proximal methods, such as MYULA, is that convergence to the target distribution is only guaranteed in the limit $\gamma \xrightarrow[]{} 0$. Additionally, statistical quantities such as modes are not preserved under smoothing. On the other hand, the Gibbs sampler approximates the target distribution exactly when working with quadratic cost functionals, but involves computing matrix inverses, making it unsuitable for high-dimensional problems. We thus introduce a sampling method based on the $u,v$-reparameterization we introduced earlier. Unlike in the case with smoothing-based methods we no longer need to consider the approximation error. More precisely, by taking the distribution (\ref{target}), the reparametrization and change of variables as seen in (\ref{quad_form_l1}-\ref{uv_form_l1}), we obtain the following probability distribution:
+\begin{align}
+\pi(u,v)=\frac{1}{Z_\pi} \prod_{i=1}^d  u_i\, \exp\pp{-\beta\, \pp{\frac12\lambda \|(u,v)\|^2+G(u\odot v)} },\label{pi}
+\end{align}
+over $(u,v)\in \mathcal X= \real_+^d\times \mathbb {R}^d$ for normalisation constant $Z_\pi$ and $\norm{(u,v)}^2=\norm{u}^2+\norm{v}^2$. The Hadamard  product $x=u\odot v$ has the same distribution $\rho$ defined in \ref{target}. This is formalized in the following statement.
+
+
+
+
+
+\begin{theorem}\label{thm:overparam}If $(u,v)\sim \pi$ as defined in \ref{pi}, then $x=u \odot v\sim\rho$ as defined in \ref{target}. In particular, for any smooth $\phi:\mathbb{R}^d \xrightarrow[]{} \mathbb{R}$,
+    \[\int_{\mathcal X} \phi(u \odot v) \pi(u,v)\,du\,dv = \int_{\mathbb{R}^
+    d} \phi(x) \,\rho(x)\,dx.\]
+    Furthermore, if we denote by $Z_\pi$ and $Z$ the normalization factors of $\pi$ and $\rho$, respectively, then
+    \[\frac{1}{Z} = \frac{1}{Z_\pi} \left(\sqrt{\frac{\pi}{2\beta \lambda}}\right)^d.\]
+\end{theorem}
+
+\subsection{Continuous Dynamics}
+\subsubsection{Formulation and Cartesian Reparametrization}
+We can use Langevin sampling to produce samples from $\pi$. Write $\pi\propto\exp(-\beta\, H)$ for $H((u,v))=\frac 12 \,\lambda\, \|(u,v)\|^2 + G(u\odot v)- \frac{1}{\beta}\,\sum_i\log u_i$. The gradient
+\[
+\nabla H((u,v))=\lambda\begin{pmatrix}
+    u\\v
+\end{pmatrix}
++\begin{pmatrix}
+    v\\ u
+\end{pmatrix}\odot \nabla G(u\odot v)
+-\begin{pmatrix}
+    1/\beta u\\ 0
+\end{pmatrix},
+\]
+where we interpret $1/u\in\real^d$ as the vector with entries $1/u_i$. Therefore, the corresponding Langevin equations are 
+\begin{equation} \label{uvproc}
+\begin{split}
+du_t&=-\lambda\,   u_t\,dt - v_t\odot \nabla G(u_t\odot v_t)\,dt
+ +\frac{1}{\beta \,u_t}\,dt+ \sqrt\frac{2}{\beta}\,dW^1_t,\\
+dv_t&=-\lambda\,  v_t\,dt -  \,u_t \odot \nabla G(u_t\odot v_t)\,dt+  \sqrt\frac{2}{\beta}\,dW^2_t,
+\label{uvproc}
+\end{split}
+\end{equation}
+
+We can reparametrize into cartesian coordinates to obtain the system
+
+\begin{equation} 
+\begin{split} 
+dy_t&=-\lambda\,   y_t\,dt - \frac{y_t}{u_t} \odot v_t\odot \nabla G(x_t)\,dt
+ +\sqrt\frac{2}{\beta}\,dW^0_t,\\
+dz_t&=-\lambda\,   z_t\,dt - \frac{z_t}{u_t} \odot v_t\odot \nabla G(x_t)\,dt
+ +\sqrt\frac{2}{\beta}\,dW^1_t,\\
+dv_t&=-\lambda\,   v_t\,dt - u_t\odot \nabla G(x_t)\,dt
+ +\sqrt\frac{2}{\beta}\,dW^2_t
+\label{yzvproc}
+\end{split}
+\end{equation}
+with $y,z,v \in \mathbb{R}^d$, $\mathbb{R}^{d}$-valued Brownian motion $W^0(t), W^1(t), W^2(t)$ and
+\[u_t = (y_t \odot y_t + z_t \odot z_t)^{1/2}, \quad x_t = u_t \odot v_t.\]
+More concisely, we can rewrite the above as 
+\begin{equation}  
+ \begin{aligned}
+ d\vec x= \Bigl[-\lambda \vec x - \nabla G_{3}(\vec x)\Bigr]\,dt +\sqrt{2/\beta}\, dW^3(t),
+  \end{aligned}\label{cyl}
+\end{equation}
+for $\vec x \in \mathbb{R}^{3d}$, $G_{3}(\vec x)= G( (y\odot y + z\odot z)^{1/2} \odot v)$ and an $\mathbb{R}^{3d}$-valued Brownian motion $W^3(t)$. 
+
+We can show, via It\^{o}'s Formula with $u_t = (y_t \odot y_t + z_t \odot z_t)^{1/2}$, that 
+
+$$
+\begin{aligned}
+  du_t&=\frac{1}{u_t}\odot(y_t\odot(-\lambda\,y_t)+z_t\odot(-\lambda\, z_t))\,dt\\&\quad
+  -\frac{1}{u_t}(y_t\odot (y_t/u_t)+z_t\odot(z_t/u_t))\odot v_t\odot \nabla G(u_t\odot v_t)\,dt \\&\quad+\sqrt\frac{2}{\beta} \frac 1{u_t} \odot\begin{pmatrix}y_t\\z_t\end{pmatrix}
+  \cdot\begin{pmatrix} dW_t^{3,y}\\ dW_t^{3,z}\end{pmatrix}
+  + \frac 12 \frac{2}{\beta} \left(\frac{-1}{u^3}\odot(y_t\odot y_t+z_t\odot z_t)+\frac{2}{u_t}\right)\,dt\\
+  &=-\lambda\,   u_t\,dt - v_t\odot \nabla G(u_t\odot v_t)\,dt
+ +\frac{1}{\beta \,u_t}\,dt+ \sqrt\frac{2}{\beta}\,dW_t,
+\end{aligned}
+$$
+hence the $(u,v)$-process (\ref{uvproc}) arises from the solution of the $(y,z,v)$-process (\ref{yzvproc}). By Proposition (include reference to paper or Proposition with proof), the process (\ref{uvproc}) also inherits properties from (\ref{yzvproc}) such as being well-posed, strong Feller, irreducible. The processes agree as long as the initial distributions agree, i.e., that the probability density function $\rho(t,\cdot)$ of $(u,v)_t$ and the probability density function $p(t,\cdot)$ of $(y,z,v)$ satisfy
+\[\rho(t,(u,v)) = p(t,(y,z,v)), \quad u = (y \odot y + z \odot z)^{1/2},\]
+if the initial density function is cylindrical, i.e.
+\[\rho(0,(u,v)) = p(0,(y,z,v)), \quad \text{ for all } u = (y \odot y + z \odot z)^{1/2}.\]
+
+\subsubsection{Analysis}
+
+\subsection{Discretization}
+\subsubsection{Numerical Methods for $u,v$-Parametrization}
+\subsubsection{Numerical Methods for Cartesian Parametrisation}
+We aim to numerically simulate the system (\ref{yzvproc}) and compare its performance to that of Hadamard-Langevin applied to (\ref{uvproc}). 
+\subsection{Euler-Maruyama}
+We first try the Euler-Maruyama scheme. Applying to (\ref{cyl}), we obtain the update, with stepsize $h$,
+\[X_{n+1} = X_n - h\lambda X_n \, - h\nabla G_{3}(X_n)\, + \sqrt{2h/\beta}\,R_n,\]
+for $R_n \sim N(0,I_{3d})$. However, due to the singularity $\frac{1}{u_t}$, this method may be unstable.
+
+\subsection{Splitting Methods}
+Suppose we have a system of differential equations as
+\begin{equation}  
+ \begin{aligned}
+  \frac{d\vec x}{dt} = f(\vec x), \quad  x(0) = x_0,
+  \end{aligned}\label{ivp_ode}
+\end{equation}
+and that $f$ is separable as 
+\begin{equation}  
+ \begin{aligned}
+  f = f_1 + f_2 + \hdots + f_k, \quad k \geq 2,
+  \end{aligned}\label{sep_f}
+\end{equation}
+so that each initial value problem 
+\begin{equation}  
+ \begin{aligned}
+  \frac{d\vec x}{dt} = f_i(\vec x), \quad  x(0) = x_0,
+  \end{aligned}\label{ivp_ode_small}
+\end{equation}
+is easier to solve than (\ref{ivp_ode}). The idea of splitting methods is that we take advantage of the decomposition (\ref{sep_f}) to approximate the solution to (\ref{ivp_ode}). ADD BCH STUFF, EXPLAIN WHY BENS METHOD WORKS.
+
+%ADD INTRO/DESCRIPTION OF SPLITING METHODS HERE OR IN RELEVANT SECTION IN THESIS. DISCUSS
+
+Our system can be tackled by splitting methods via dividing it into multiple parts and treating them sequentially. For example, we can divide the system (\ref{cyl}), in a similar fashion to that of the Langevin Dynamics splitting by Leimkuhler and Matthews \cite{leimkuhler_baoab}:
+\begin{equation}  
+ \begin{aligned}
+ d\vec x= \underbrace{\Bigl[-\lambda \vec x \,dt +\sqrt{2/\beta}\, dW^3(t) \Bigr]}_{O} - \underbrace{\Bigl[ \nabla G_{3}(\vec x)\Bigr]}_{B},
+  \end{aligned}\label{cyl_split}
+\end{equation}
+Part $O$ is an Orstein-Uhlenbeck system and can be solved exactly in one timestep. In a similar vein to the methods proposed by Leimkuhler et al. we propose the BOB scheme. Akin to Strang splitting scheme, we have
+\begin{equation} 
+\begin{aligned} 
+(B) \quad &\vec x_{n+1/2}&=&\quad \vec x_{n} - \frac{h}{2}\,\nabla G_{3}(\vec x_n),\\
+(O) \quad &\hat{\vec x}_{n+1/2} &=&\quad \vec x_{n+1/2}\, e^{-\lambda h} + \sqrt{\frac{1}{\beta\lambda} \left(1-e^{-2\lambda  h} \right)}\, \xi, \quad \xi \sim N(0,I_{3d}), \\
+(B) \quad &\vec x_{n+1}&=&\quad \hat{\vec x}_{n+1/2} - \frac{h}{2}\,\nabla G_{3}(\hat{\vec x}_{n+1/2}),
+\label{bob_split}
+\end{aligned}
+\end{equation}
+Also try the sequential (BO) scheme, akin to Lie-Trotter for ODEs, should perform worse than BOB due to asymmetry creating $\mathcal{O}(h)$ terms in BCH expansion:
+\begin{equation} 
+\begin{aligned} 
+(B) \quad &\vec x_{n+1/2}&=& \quad \vec x_{n} - h\,\nabla G_{3}(\vec x_n)\\
+(O) \quad &\vec x_{n+1} &=& \quad \vec x_{n+1/2}\, e^{-\lambda h} + \sqrt{\frac{1}{\beta\lambda} \left(1-e^{-2\lambda  h} \right)}\, \xi, \quad \xi \sim N(0,I_{3d}),
+\label{seq_split}
+\end{aligned}
+\end{equation}
+
+We compare performance to the Euler-Maruyama scheme:
+\begin{equation} 
+\begin{split} 
+\vec x_{n+1}&=\vec x_{n} - h \,\lambda \vec x_{n} - h\,\nabla G_{3}(\vec x_n) +\sqrt{2/\beta} \, R_n\, \quad R_n \sim N(0,I_{3d})
+\label{euler}
+\end{split}
+\end{equation}
+Additionally, by taking the limit of the friction coefficient $\gamma \to \infty$ in the BAOAB scheme for underdamped langevin dynamics, we can derive a new pseudo-Euler-Maruyama scheme, that has $\mathcal{O}(h^2)$ convergence for overdamped langevin dynamics \cite{leimkuhler_baoab}:
+As found in BAOAB paper:
+\begin{equation} 
+\begin{split} 
+\vec x_{n+1}&=\vec x_{n} - h \,\lambda \vec x_{n} - h\,\nabla G_{3}(\vec x_n) +\sqrt{2h/\beta} \, (R_n\, + R_{n+1}) \quad R_n, R_{n+1} \sim N(0,I_{3d})
+\label{pseudo-euler}
+\end{split}
+\end{equation}
+Above doesn't approximate invariant measure that well. From trial and error, found that
+\begin{equation}
+\begin{aligned}
+\vec x_{n+1}&=\vec x_{n} - h \,\lambda \vec x_{n} - h\,\nabla G_{3}(\vec x_n) +\sqrt{h/2\beta} \, (R_n\, + R_{n+1}) \quad R_n, R_{n+1} \sim N(0,I_{3d})
+\end{aligned}
+\end{equation}
+works pretty well and demonstrates $\mathcal{O}(h^2)$ convergence in test cases, as predicted by Leimkuhler.
+
+
+\section{Numerics - 1D Toy Problem}
+We simulate a toy problem. We use $G(x) = (Ax-y)^2$, with $A \in \mathbb{R}$, $y = Ax_0$, for $x_0 = -2$, $\lambda = 0.6 \times |Ay| = $. We simulate 10,000 particles, each for 10,000 iterations. We present our results below.
+
+
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\appendix 
+\section{Proofs}
+\begin{proof}[Change of variable for Theorem \ref{thm:overparam}]
+We begin by expanding the left-hand side
+    \begin{align*}
+    \int_X \phi(u \odot v) \,\pi(u,v)\,\mathrm{d}u\,dv &= \frac{1}{Z_\pi}  \int_{\mathbb{R}^d} \int_{(0,\infty)^d} \phi(u \odot v) \\
+    &\quad\times\prod_{i=1}^d u_{i} \exp{ \left(-\beta \left(\lambda (\|u\|_2^2 + \|v\|_2^2)/2 + G(u \odot v) \right) \right)}\, \mathrm{d}u \,\mathrm{d}v.
+    \end{align*}
+    Consider the change of variables $x = u \odot v$ and $t = u \odot u/2$. Then $v \odot v = \frac{x \odot x}{2t}$ and $J = (\partial(z,t) / \partial(u,v))$ is a $2d \times 2d$ block-matrix, where
+    $$\operatorname{det}J 
+    = 
+    \operatorname{det}\begin{pmatrix}
+     \nabla_u x(u,v) && \nabla_v x(u,v) \\
+     \nabla_u t(u,v) && \nabla_v t(u,v)
+    \end{pmatrix} =\operatorname{det}\begin{pmatrix}
+     \diag(v) && \diag(u) \\
+     \diag(u) && 0
+    \end{pmatrix} = \prod_{i=1}^d u_i^2.$$ 
+    Thus, $\mathrm{d}u\,\mathrm{d}v = \frac{1}{|\mathrm{det}J|} \mathrm{d}
+    x\,\mathrm{d}t = \frac{1}{\prod_{i=1}^d u_i^2} \mathrm{d}x\,\mathrm{d}t$ and so, 
+    \begin{align*}   
+    &\int \phi(u\odot v)\, \pi(u,v)\,\mathrm{d}u\,dv \\
+       & = \frac{1}{(\sqrt{2})^d Z_\pi} \int_{\mathbb{R}^d} \phi(x) \exp{\left( -\beta G(x) \right)} \prod_{i=1}^d \left( \int_{0}^\infty t_i^{-\frac{1}{2}}\exp{ \left(-\beta \lambda \left(t_i + \frac{x_i^2}{4t_i} \right) \right)} \mathrm{d}t_i \right) \mathrm{d}x\\
+       &= \frac{1}{Z_\pi} \left(\sqrt{\frac{\pi}{2\beta \lambda}}\right)^d \int_{\real^d} \phi(x) \exp{\left(-\beta \left(\lambda \|x\|_1 + G(x) \right) \right)}\mathrm{d}x
+    \end{align*}
+    where the last line follows from \eqref{eq:laplace}.
+\end{proof}
+\end{document}

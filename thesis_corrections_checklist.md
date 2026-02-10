@@ -3,19 +3,22 @@
 This checklist consolidates **all required corrections** from the external examiner report and the internal examiner corrections form. Each item is written to be *tickable* and actionable.
 
 ---
+🟢 - Finished
+🟡 - In progress
+
 
 ## General / Global Revisions
-- [ ] Create a **glossary** of notation used throughout the dissertation.
-- [ ] Rewrite **Chapter 4** for clarity and coherence (see detailed comments below).
+- [🟡] Create a **glossary** of notation used throughout the dissertation.
+- [ ] Rewrite **Chapter 4** (Background on stochastics) for clarity and coherence (see detailed comments below).
 - [ ] Add a **final conclusions chapter** summarising contributions and future research directions.
 
 ---
 
 ## Chapter 1
-- [ ] p.12, Eq. (1.1): Make RHS notation consistent (e.g. remove reference to $u_i$).
-- [ ] p.19, l.2–3: Add missing punctuation.
-- [ ] p.20, l.2: Replace `prox?` with `prox_{\omega g}`.
-- [ ] p.21, l.10: Avoid shorthand symbols (→, ↑); spell out prose equivalents throughout.
+- [🟢] p.12, Eq. (1.1): Make RHS notation consistent (e.g. remove reference to $u_i$).
+- [🟡] p.19, l.2–3: Add missing punctuation.
+- [🟡] p.20, l.2: Replace `prox?` with `prox_{\omega g}`.
+- [🟢] p.21, l.10: Avoid shorthand symbols (→, ↑); spell out prose equivalents throughout.
 - [ ] p.22, l.-9: Correct phrasing: "As such, the related…".
 - [ ] p.24, l.-3: Define **dual norm**.
 - [ ] p.25, l.-8: Introduce Hadamard product notation (also include in glossary).

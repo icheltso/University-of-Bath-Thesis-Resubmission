@@ -406,12 +406,11 @@ Consider the LASSO optimization problem
 where $C$ is smooth and convex. In the next sections we discuss approaches that were utilized to to tackle this kind of problem.
 
 \subsection{Proximal-based methods}
-We define the \textit{proximal operator}. Let $\phi : \mathbb{R}^n \xrightarrow[]{} \mathbb{R} \cup \{+
-\infty\}$. Then $\mathrm{prox}_\phi: \mathbb{R}^n \xrightarrow[]{} \mathbb{R}^n$ is defined as
+We define the \textit{proximal operator}. Let $\phi : \mathbb{R}^n \xrightarrow[]{} \mathbb{R} \cup \{+\infty\}$ be given. Then $\mathrm{prox}_\phi: \mathbb{R}^n \xrightarrow[]{} \mathbb{R}^n$ is defined as
 \begin{equation} \label{proximal}
     \mathrm{prox}_{\phi}(x) =\underset{z} \argmin \phi(z) + \frac{1}{2}\|z-x\|_2^2.
 \end{equation}
-A way to interpret this is that one wishes to find the minimum of $\phi$, without straying too far from $x$\cite{proxalgs}. This mapping is well-defined \cite{fawzi2022lectures}. Furthermore, if we set $\mathcal{D}$ as some closed, convex set and choose $\phi$ as the indicator
+A way to interpret this is that one wishes to find the minimum of $\phi$, without straying too far from $x$ \cite{proxalgs}. This mapping is well-defined \cite{fawzi2022lectures}. Furthermore, if we set $\mathcal{D}$ as some closed, convex set and choose $\phi$ as the indicator
 \[\phi(x) = \begin{cases}
   0 \quad x \in \mathcal{D} \\
   +\infty \quad x \notin \mathcal{D}
@@ -422,15 +421,15 @@ then $\mathrm{prox}_\phi$ reduces to the projection of $x$ onto $\mathcal{D}$. A
 \end{equation}
 where $f$ is smooth and convex and $g$ is nonsmooth convex. Analogously to the case when $g$ is differentiable, we can tackle this with subgradient methods. However, these are generally slower than gradient-based methods for smooth problems. Hence, we introduce the Proximal Gradient Descent method, also known as the Iterative Soft Thresholding Algorithm (or ISTA) \cite{daubechies2004iterative}. The update step for this algorithm reads
 \begin{equation} \label{ISTA_step}
-    x_{k+1} = \mathrm{prox}_{\gamma g}(x_k - \gamma \nabla f)
+    x_{k+1} = \mathrm{prox}_{\gamma g}(x_k - \gamma \nabla f(x_k))
 \end{equation}
 for some step-size $\gamma$. To derive this, consider the quadratic approximation to $f(x)$ at $x_k$, with $\nabla^2 f \approx \frac{1}{\gamma}\mathrm{Id}$:
 \[f_{app}(x) \approx f(x_k) + \nabla f(x_k)^\top (x-x_k) + \frac{1}{2\gamma} \|x-x_k\|_2^2.\]
-Note, that $f_{app}(x)$ is differentiable with respect to $x$, and by the first-order optimality condition, we can find the solution to 
+Note that $f_{app}(x)$ is differentiable with respect to $x$, and by the first-order optimality condition, we can find the solution to 
 \[\argmin_{x \in \mathbb{R}^n} f_{app}(x)\]
 explicitly. This is
 \[x = x_k - \frac{1}{\gamma} \nabla f(x_k),\]
-i.e. the gradient descent step. Hence it is natural to consider
+which is the gradient descent step. Hence it is natural to consider
 \begin{align*}
     x_{k+1} &= \argmin_{x \in \mathbb{R}^n} f_{app}(x) + g(x,\lambda) \\
     &= \argmin_{x \in \mathbb{R}^n} \frac{1}{2 \gamma} \|x - (x_k - \gamma \nabla f(x_k))\|_2^2 + g(x,\lambda) \\
@@ -496,7 +495,7 @@ We say that \(g\) is
     \item \emph{proper} if \(g(x) > -\infty\) for all \(x \in \mathbb{R}^n\) and \(g \not\equiv +\infty\);
     \item \emph{lower semicontinuous} if
     \[
-        \liminf_{y \to x} g(y) \;\geq\; g(x), \quad \forall x \in \mathbb{R}^n,
+        \liminf_{y \to x} g(y) \;\geq\; g(x), \quad \text{ for all } x \in \mathbb{R}^n,
     \]
     or, alternatively, if the epigraph set
     $$
@@ -506,7 +505,7 @@ We say that \(g\) is
     \item \emph{convex} if
     \[
         g(\theta x + (1-\theta) y) \;\leq\; \theta g(x) + (1-\theta) g(y),
-        \quad \forall x,y \in \mathbb{R}^n,\; \theta \in [0,1].
+        \quad \text{ for all } x,y \in \mathbb{R}^n,\; \theta \in [0,1].
     \]
 \end{itemize}
 \end{definition}
@@ -562,7 +561,7 @@ Due to this result, proximal gradient descent is also known as \textit{forward-b
 \end{comment}
 
 
-The ISTA algorithm is stable and offers a cheap per-iteration cost, for regularizers such as $\ell_1$. However it also has a relatively slow $\mathcal{O}(1/k)$ convergence rate. As such, related algorithm, FISTA (or Fast ISTA), was developed, where the proximal (or shrinkage) operator is applied not to the current iterate $x_k$, but to a linear combination of the current and previous iterates, $x_k$ and $x_{k-1}$. This algorithm was shown to have an improved $\mathcal{O}(1/k^2)$ convergence rate \cite{beck2009fista}.
+The ISTA algorithm is stable and offers a cheap per-iteration cost, for regularizers such as $\ell_1$. However it also has a relatively slow $\mathcal{O}(1/k)$ convergence rate. As such, the related algorithm, FISTA (or Fast ISTA), was developed, where the proximal (or shrinkage) operator is applied not to the current iterate $x_k$, but to a linear combination of the current and previous iterates, $x_k$ and $x_{k-1}$. This algorithm was shown to have an improved $\mathcal{O}(1/k^2)$ convergence rate \cite{beck2009fista}.
 
 \paragraph{Proximal splitting methods.} 
 Beyond ISTA and its accelerated variant FISTA, a large family of first-order methods can be understood through the lens of proximal splitting. These methods exploit the structure of problems of the form
@@ -940,7 +939,7 @@ In Algorithm \ref{alg:hoag}, assume that the update
 is replaced by gradient descent with approximate gradient:
 \[\lambda_{k+1} = \lambda_k - \frac{1}{L}p_k.\]
 Assume also, that $\lambda_k \in \mathcal{D}$ for all $k>0$. If the sequence $\epsilon_k$ obeys
-\[\sum_{i=1}^\infty \epsilon_i < \infty, \quad \epsilon_k > 0 \quad \forall k \geq 0,\]
+\[\sum_{i=1}^\infty \epsilon_i < \infty, \quad \epsilon_k > 0 \quad \text{ for all } k \geq 0,\]
 \begin{comment}
     then the sequence $\lambda_k \xrightarrow[]{} \lambda^* \in \mathcal{D}.$ Furthermore, if $\lambda^*$ is in the interior of $\mathcal{D}$, then
 \[\nabla L(\lambda^*) = 0.\]
@@ -1180,7 +1179,7 @@ Since this integral is difficult to compute exactly or even approximate, especia
 \section{Markov Chain Monte Carlo}
 Markov Chain Monte Carlo (or MCMC) are a family of algorithms that construct a Markov chain whose stationary distribution is the posterior $p(\theta \mid \mathcal{D})$. A Markov chain is defined by a transition probability $P(\theta' | \theta)$, which describes the probability of moving from the current state $\theta$ to a new state $\theta'$, designed in a way so that the resulting Markov chain converges to $p(\theta \mid \mathcal{D})$ in distribution. Formally, we require that the target distribution is the invariant distribution \cite{andrieu2003introduction}:
 \begin{equation*}
-    p(\theta' \mid \mathcal{D}) = \sum_{\theta} P(\theta' | \theta)p(\theta \mid \mathcal{D}), \quad \forall \theta \in \mathbb{R}^d.
+    p(\theta' \mid \mathcal{D}) = \sum_{\theta} P(\theta' | \theta)p(\theta \mid \mathcal{D}), \quad \text{ for all } \theta \in \mathbb{R}^d.
 \end{equation*}
 For guaranteed convergence to an invariant distribution $p(x)$ from any starting point (ergodicity) we require two conditions:
 \begin{itemize}
@@ -1389,7 +1388,7 @@ Furthermore, the It\^{o} Integral is a martingale, so that
 \end{equation}
 and
 \begin{equation} \label{ito_martin}
-\mathbb{E}\left[\int_0^t f(\ell) d B(\ell) \mid \mathcal{F}_s\right]=\int_0^s f(\ell) d B(\ell) \quad \forall t \geqslant s,
+\mathbb{E}\left[\int_0^t f(\ell) d B(\ell) \mid \mathcal{F}_s\right]=\int_0^s f(\ell) d B(\ell) \quad \text{ for all } t \geqslant s,
 \end{equation}
 where $\mathcal{F}_s$ denotes the filtration generated by $B(s)$. In stochastic calculus differentiation is redefined via It\^{o}'s lemma:
 \begin{equation} \label{ito_lem}
@@ -1577,7 +1576,7 @@ By the Poincar\'{e} inequality, we then have:
 \end{equation}
 Applying Gronwall's inequality, we obtain:
 \begin{equation}
-\left \| \mathrm{e}^{t \mathcal{L}} \varphi \right\|_{L_0^2(\nu)} \leqslant \mathrm{e}^{-2 R t / \beta} \| \varphi \|_{L_0^2(\nu)}, \quad \forall \varphi \in L_0^2(\nu).
+\left \| \mathrm{e}^{t \mathcal{L}} \varphi \right\|_{L_0^2(\nu)} \leqslant \mathrm{e}^{-2 R t / \beta} \| \varphi \|_{L_0^2(\nu)}, \quad \text{ for all } \varphi \in L_0^2(\nu).
 \end{equation}
 Thus,
 \begin{equation}
@@ -1607,7 +1606,7 @@ A key question is under what conditions a measure satisfies a Poincar\'e inequal
 \begin{theorem}[\texorpdfstring{\cite[Corollary 1.6]{Bakry2008}}{}]
 Consider $V \in C^2(\mathbb{R}^d)$. If there exist $a \in (0,1)$, $c>0$, and $R \geq 0$ such that
 \begin{equation}
-a\beta |\nabla V(q)|^2 - \Delta V(q) \geq c, \quad \forall q \in \mathbb{R}^d \text{ such that } |q| \geq R,
+a\beta |\nabla V(q)|^2 - \Delta V(q) \geq c, \quad \text{ for all } q \in \mathbb{R}^d \text{ such that } |q| \geq R,
 \end{equation}
 then $\nu$ satisfies a Poincar\'e inequality.
 \end{theorem}
@@ -1697,10 +1696,10 @@ and Gronwall’s lemma gives exponential decay. Conversely, if entropy decays ex
     \[
     \frac{d}{dt} \mathcal{H}(\psi(t,\cdot) | \nu) = -\frac{1}{\beta} \mathcal{I}(\psi(t,\cdot) | \nu).\]Finally, using Gronwall's inequality, we obtain the inequality (\ref{gen_adj_div}). For the reverse direction, assume that, for all initial conditions $\psi_0$ with finite entropy with respect to $\nu$, we have:
     \[
-    \mathcal{H}(\psi(t) | \nu) \leq \mathcal{H}(\psi_0 | \nu) \exp(-2\beta^{-1}Rt), \quad \forall t \geq 0,
+    \mathcal{H}(\psi(t) | \nu) \leq \mathcal{H}(\psi_0 | \nu) \exp(-2\beta^{-1}Rt), \quad \text{ for all } t \geq 0,
     \]
     and so
-    \[\frac{\mathcal{H}(\psi(t) | \nu) - \mathcal{H}(\psi_0 | \nu)}{t} \leq \mathcal{H}(\psi_0 | \nu) \frac{\exp(-2\beta^{-1}Rt) - 1}{t}, \quad \forall t \geq 0.\]
+    \[\frac{\mathcal{H}(\psi(t) | \nu) - \mathcal{H}(\psi_0 | \nu)}{t} \leq \mathcal{H}(\psi_0 | \nu) \frac{\exp(-2\beta^{-1}Rt) - 1}{t}, \quad \text{ for all } t \geq 0.\]
     Taking the limit $t \xrightarrow[]{} 0$, and using the fact that
     \[\frac{d}{dt}(\mathcal{H}(\psi(t,\cdot)|\nu)) = -\frac{1}{\beta} \mathcal{I}(\psi(t,\cdot)|\nu)),\]
     we get LSI(R).
@@ -1918,7 +1917,7 @@ To establish exponential convergence in a weighted $L^\infty$ space, we impose t
 \begin{assumption}[Lyapunov Condition] \label{ass:lyapunov}
 There exists a function $\mathcal{K} : \chi \to [1, +\infty)$ and a constant $\alpha \in (0,1)$ such that
 \[
-(P\mathcal{K})(x) \leq \alpha \mathcal{K}(x) + R, \quad \forall x \in \chi.
+(P\mathcal{K})(x) \leq \alpha \mathcal{K}(x) + R, \quad \text{ for all } x \in \chi.
 \]
 \end{assumption}
 
@@ -1975,7 +1974,7 @@ with $\alpha = e^{-a t_0} \in (0,1)$, $R = \frac{b}{a}$, thereby confirming the 
 \]
 Assuming the potential $V$ satisfies the asymptotic growth condition:
 \[
-q \cdot \nabla V(q) \geq A |q|^2 - B, \quad \forall q \in \mathcal{D},
+q \cdot \nabla V(q) \geq A |q|^2 - B, \quad \text{ for all } q \in \mathcal{D},
 \]
 it follows that:
 \[
@@ -2208,7 +2207,7 @@ $$\theta_{\mathrm{corr}, \varphi} \simeq N_{\mathrm{corr}, \Delta t, \varphi} \D
     \begin{assumption}[Lyapunov Condition] \label{lyapass}
 There exists a function $\mathcal{K}: \chi \to [1,+\infty)$ and a constant $\alpha \in (0,1)$ such that
 \[
-(P\mathcal{K})(x) \leq \alpha \mathcal{K}(x) + R, \quad \forall x \in \chi,
+(P\mathcal{K})(x) \leq \alpha \mathcal{K}(x) + R, \quad \text{ for all } x \in \chi,
 \]
 for some $R > 0$.
 \end{assumption}
@@ -2299,10 +2298,10 @@ for test functions $\varphi$ in a suitable space $\mathcal{S}$. The operators $\
 We work in a class of smooth test functions with controlled growth.
 \begin{definition}[Space of Smooth Functions]
 Let $(\mathcal{K}_n)_{n \in \mathbb{N}}$ be a sequence of weight functions $\mathcal{K}_n : \mathcal{X} \to [1, +\infty)$, such that
-\[\mathcal{K}_n \leq \mathcal{K}_{n+1}, \forall n \geq 0.\]
+\[\mathcal{K}_n \leq \mathcal{K}_{n+1}, \text{ for all } n \geq 0.\]
 Define:
 \[
-\mathcal{S} = \left\{ \varphi \in C^\infty(\mathcal{X}) \,\middle|\, \forall k \in \mathbb{N}^d, \exists m \in \mathbb{N} \text{ such that } \partial^k \varphi \in L^\infty_{\mathcal{K}_m}(\mathcal{X}) \right\},
+\mathcal{S} = \left\{ \varphi \in C^\infty(\mathcal{X}) \,\middle|\, \text{ for all } k \in \mathbb{N}^d, \text{ there exists } m \in \mathbb{N} \text{ such that } \partial^k \varphi \in L^\infty_{\mathcal{K}_m}(\mathcal{X}) \right\},
 \]
 where $L^\infty_{\mathcal{K}_m}$ denotes the space of functions satisfying $\|\partial^k \varphi / \mathcal{K}_m\|_{L^\infty} < \infty$.
 
@@ -2865,7 +2864,7 @@ that $e^{\mathcal L \,t }\phi$ converges to $\mathbb{E}[\phi]=\int \phi(x)\,d\pi
 If the data term $G$ is uniformly bounded, then one could invoke standard theories, such as the Bakry-Emery criterion, introduced in the background sections. This, however, is a strong assumption.
 
 Consider two measures $\pi_1,\pi_2$ such that $\pi_1$ is absolutely continuous with respect to $\pi_2$ and denote the Radon--Nikodym derivative by $d\pi_1/d\pi_2$. Recall, from section \ref{subsec:entropy_fisher} the definition of the entropy of $\pi_1$ with respect to $\pi_2$ (also called the Kullback--Leibler or KL divergence) as $\mathcal H(\pi_1\mid \pi_2)=\mathbb{E}_{\pi_1}(\log(d\pi_1/d\pi_2))$ and the Fisher information $\mathcal I(\pi_1\mid \pi_2)=\mathbb{E}_{\pi_1}\bp{\norm{\nabla \log(d\pi_1/d\pi_2)}^2}$. We say $\pi_2$ satisfies a log-Sobolev inequality LSI$(R)$ if, for a constant $R>0$,
-\[\mathcal{H}(\pi_1\mid \pi_2)\le\frac{1}{2\,R} \mathcal{I}(\pi_1\mid \pi_2),\qquad \forall \pi_1\ll \pi_2. 
+\[\mathcal{H}(\pi_1\mid \pi_2)\le\frac{1}{2\,R} \mathcal{I}(\pi_1\mid \pi_2),\qquad \text{ for all } \pi_1\ll \pi_2. 
 \]
 The theory of log Sobolev inequalities (e.g., \cite{Lelievre2016-hx}) gives the following geometric convergence of $\rho(t,\cdot)$ to the invariant measure $\pi$. 
 \begin{theorem} \label{thm_bndd_G} Assume that $G$ is bounded.
@@ -3236,7 +3235,7 @@ Finally, we verify  that Assumptions \ref{ass:ball_R} and \ref{ass:2} hold under
 %     \item $B \eqdef \sup_{x} \norm{\nabla G(x)}<\infty$, 
 %     \item $x^\top \nabla G(x) \geq -C_0$.
 % \end{itemize}
-Let \ref{reg3} hold with  $\nabla G$ being $L$-Lipschitz. Additionally, recall from Assumption \ref{reg1}, that $$\cinfty=\sup_{x} \norm{\nabla G(x)}_\infty<\infty,\qquad x^\top \nabla G(x) \ge -\ccc, \quad \forall x\in \mathcal X.$$ 
+Let \ref{reg3} hold with  $\nabla G$ being $L$-Lipschitz. Additionally, recall from Assumption \ref{reg1}, that $$\cinfty=\sup_{x} \norm{\nabla G(x)}_\infty<\infty,\qquad x^\top \nabla G(x) \ge -\ccc, \quad \text{ for all } x\in \mathcal X.$$ 
 Then, Assumption \ref{ass:ball_R} holds for any $R>0$ with $C_R \lesssim R^2 \clip + \cinfty$, and Assumption \ref{ass:2} holds for any $p>2$.
 %$A \lesssim  5^{p/2}  } T^{\frac{p}{2}} \exp\pa{T^{p-1}  B^{p/2}}$$ for any $p>2$.
 It follows from Proposition \ref{prop:error_discrete} that 
@@ -4148,7 +4147,7 @@ If we choose
 \end{equation}
 then there exists a constant $C > 0$, independent of $K$, such that
 \begin{equation}
-\min_{k \le K} \mathbb{E}\|\nabla \mathcal{L}(\lambda_k)\|^2 \le \frac{C \, \ln K}{K}, \quad \forall K \ge 1.
+\min_{k \le K} \mathbb{E}\|\nabla \mathcal{L}(\lambda_k)\|^2 \le \frac{C \, \ln K}{K}, \quad \text{ for all } K \ge 1.
 \end{equation}
 In particular, this implies
 \[
@@ -4557,7 +4556,7 @@ where in line \ref{lamline}, we use the fact, that $\lambda_{k}-\lambda_{k+1} = 
 \begin{equation} \label{lip_cauchy}
     L(\lambda_{k+1}) \leq L(\lambda_k) + \|\nabla L(\lambda_k) -p_k\|\|\lambda_k - \lambda_{k+1}\| -\frac{1}{2L}\|p_k\|^2.
 \end{equation}
-Now, by Theorem \ref{thm_appgrad_hoag}, $\|\nabla L(\lambda_k) -p_k\| = \mathcal{O}(\epsilon_k)$. As $\mathcal{D}$ is compact, it is bounded (by Heine-Borel). So there exists some radius $R$, such that $\|\lambda\| \leq R$ for all $\lambda \in \mathcal{D}$. Thus, we have that $\exists M>0$, such that
+Now, by Theorem \ref{thm_appgrad_hoag}, $\|\nabla L(\lambda_k) -p_k\| = \mathcal{O}(\epsilon_k)$. As $\mathcal{D}$ is compact, it is bounded (by Heine-Borel). So there exists some radius $R$, such that $\|\lambda\| \leq R$ for all $\lambda \in \mathcal{D}$. Thus, we have that there exists an $M>0$, such that
 \[\|\nabla L(\lambda_k) -p_k\|\|\lambda_k - \lambda_{k+1}\| < 2R(C \epsilon_k) = M\epsilon_k.\]
 Applying this to (\ref{lip_cauchy}), we get
 \begin{equation} \label{lip_cauchy_2}

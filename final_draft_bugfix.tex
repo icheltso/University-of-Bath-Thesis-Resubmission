@@ -258,6 +258,8 @@ With $\lambda = 0$ we obtain the solution of the original problem as $x^* = (A^T
 \end{comment}
 
 \part{Theoretical Background}
+\chapter*{Glossary}
+
 \chapter{Background on (Sparse) Optimization} \label{chp:sparse_background}
 \section{Introduction}
 %We are often faced with
@@ -273,9 +275,9 @@ are solved with the intent of constraining the solution $x^*$ of $\min_x f$ to f
 \end{comment}
 Regularization is a widely used technique across fields such as economics, tomography, statistics, and machine learning to simplify or impose structure on the solution to a problem. In econometrics, for instance, we may aim to model a phenomenon using many parameters. This can lead to multicollinearity or overfitting, where interdependence between parameters makes the model unnecessarily complex. Regularization addresses this by penalizing complexity, often reducing the number of active parameters and thereby identifying the most influential ones~\cite{riskml}.
 
-In machine learning, regularization typically augments the minimization of a loss function with a penalty term. Suppose we aim to learn a predictor $x(u)$ from samples $u_i$ and labels $y_i$, minimizing a loss $L$. Then regularization takes the form
+In machine learning, regularization typically augments the minimization of a loss function with a penalty term. Suppose we aim to learn a predictor $x$ from samples with labels $y_i$, minimizing a loss $L$. Then regularization takes the form
 \begin{equation} \label{reg_ml}
-    x^* = \argmin_x \sum_{i=1}^n L(x(u_i), y_i) + \lambda R(x),
+    x^* = \argmin_x \sum_{i=1}^n L(x, y_i) + \lambda R(x),
 \end{equation}
 where $R(x)$ is a regularization function that penalizes complexity, and $\lambda > 0$ controls the strength of this penalty.
 

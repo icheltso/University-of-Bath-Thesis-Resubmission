@@ -689,9 +689,9 @@ By change of variables $v_i = \frac{1}{\sqrt{z_i}}$, $u_i = \beta_i\sqrt{z_i}$, 
 \end{equation}
 As a result, the formulation (\ref{xlasso}) is equivalent to 
 \begin{equation} \label{inprob_poon}
-    \hat{u},\hat{v} = \underset{u,v \in \mathbb{R}^{n}} \argmin{C(u \odot v, \,y) + \frac \lambda 2 \left( \|u\|^2_2 + \lambda \|v\|^2_2 \right)}. 
+    \hat{u},\hat{v} = \underset{u,v \in \mathbb{R}^{n}} \argmin{C(u \odot v, \,y) + \frac \lambda 2 \left( \|u\|^2_2 + \lambda \|v\|^2_2 \right)},
 \end{equation}
-The Hadamard product parametrization trades non-smoothness and convexity for smoothness and non-convexity. The formulation (\ref{inprob_poon}) can be tackled via first-order methods such as SGD, as well as variance reduction methods such as SVRG and SAGA \cite{defazio2014saga, johnson2013accelerating}, adaptive gradient methods, such as ADAM or ADAGRAD \cite{kingma2014adam, gupta2014training}, or via second-order methods such as (L-)BFGS \cite{liu1989limited}.
+where $\odot$ denotes the Hadamard (or elementwise) product. The Hadamard product parametrization trades non-smoothness and convexity for smoothness and non-convexity. The formulation (\ref{inprob_poon}) can be tackled via first-order methods such as SGD, as well as variance reduction methods such as SVRG and SAGA \cite{defazio2014saga, johnson2013accelerating}, adaptive gradient methods, such as ADAM or ADAGRAD \cite{kingma2014adam, gupta2014training}, or via second-order methods such as (L-)BFGS \cite{liu1989limited}.
 
 The quadratic variational reparametrization will be the central point of the work presented in Part \ref{part:Langevin}.
 \begin{comment}

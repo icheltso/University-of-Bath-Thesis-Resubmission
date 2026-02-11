@@ -704,12 +704,24 @@ There exist
 
 
 \chapter{Background on Hyperparameter Optimization}
-For a set of hyper-parameters $\lambda \in \mathcal{D} \subset \mathbb{R}^r$, consider the optimization problem:
+For a set of hyperparameters $\lambda \in \mathcal{D} \subset \mathbb{R}^r$, 
+consider the optimization problem
 \begin{equation} \label{regular}
-    \min _{x \in \mathbb{R}^n} F(x,\lambda) \triangleq f(x) + g(x,\lambda),
+    \min_{x \in \mathbb{R}^n} F(x,\lambda) \triangleq f(x) + g(x,\lambda),
 \end{equation}
-where $f: \mathbb{R}^n \xrightarrow[]{} \mathbb{R}$ is some smooth function. Both for the case, when $g: \mathbb{R}^n \times \mathcal{D} \xrightarrow[]{} \mathbb{R}$ is smooth and non-smooth, various algorithms have been developed to tackle (\ref{regular}). However, the choice of the hyperparameter $\lambda$ remains an open question. One approach, that we will be exploring below, is that of \textit{hyperparameter optimization}. We are interested in solving bilevel problems of the form
+where $f : \mathbb{R}^n \to \mathbb{R}$ is smooth, and 
+$g : \mathbb{R}^n \times \mathcal{D} \to \mathbb{R}$ may be smooth or nonsmooth. 
+Various algorithms have been developed to solve problems of the form 
+\eqref{regular}.
 
+Recall from Eq.~\eqref{orig_lin} that we consider underdetermined linear 
+inverse problems of the form $Ax=b$, with $m<N$. In practice, such problems 
+are addressed via regularized formulations, where the parameter $\lambda$ 
+controls the trade-off between data fidelity and structural priors. 
+Choosing an appropriate value of $\lambda$ is therefore a nontrivial task, 
+which motivates the bilevel framework studied in this chapter.
+
+We are thus interested in solving problems of the form
 \begin{align} 
 %&\min _{\lambda \in \mathcal{D} \subset \mathbb{R}^r} L\left(\lambda \right) \triangleq C(\hat{x}(\lambda), \lambda) \label{bilev1}\\
 &\min _{\lambda \in \mathcal{D} \subset \mathbb{R}^r} C(\hat{x}(\lambda), \lambda) \label{bilev1}\\

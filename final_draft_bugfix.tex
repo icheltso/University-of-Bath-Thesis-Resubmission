@@ -257,8 +257,25 @@ With $\lambda = 0$ we obtain the solution of the original problem as $x^* = (A^T
 \section{Practical Problems/Motivations}
 \end{comment}
 
-\part{Theoretical Background}
 \chapter*{Glossary}
+\addcontentsline{toc}{chapter}{Glossary}
+\begin{definition}[Dual norm]
+Let $(\mathbb{R}^d, \|\cdot\|)$ be a normed vector space. 
+The dual norm $\|\cdot\|_*$ is defined by
+\[
+\|y\|_* := \sup_{\|x\| \le 1} \langle x, y \rangle.
+\]
+\end{definition}
+\begin{example}
+The dual of the $\ell^1$ norm is the $\ell^\infty$ norm, 
+and the $\ell^2$ norm is self-dual.
+\end{example}
+
+
+
+\part{Theoretical Background}
+
+
 
 \chapter{Background on (Sparse) Optimization} \label{chp:sparse_background}
 \section{Introduction}

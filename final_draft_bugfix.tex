@@ -879,8 +879,6 @@ where $\theta$ denote network parameters, $\mathcal{L}_T$ and $\mathcal{L}_V$ ar
     \caption{Image deconvolution by regularization; Left: Arbitrary $\lambda$; Centre: Optimal $\lambda$ w.r.t. SNR; Right: Regularization path: SNR vs $\lambda$.}\label{fig:deblurry_tiger}
 \end{figure}
 
-\subsection{Existing Approaches}
-
 \section{Hyperparameter Optimization with Smooth Inner Problem}
 \label{section-hoag}
 Recall the bi-level problem
@@ -892,7 +890,8 @@ We consider the case where both $C$ and $F$ are smooth.
 \subsection{Existing Approaches}
 Several notable approaches have been proposed to tackle bilevel optimization problems, particularly in settings where the lower-level problem must be solved numerically and exact hypergradients are unavailable. One classical approach is the HOAG algorithm proposed in~\cite{pedregosa2016hyperparameter}. HOAG computes hypergradients using the implicit function theorem, where the required inverse Hessian-vector product is approximated using conjugate gradients. It assumes that the error in this approximation is summable and uses a fixed step size for updating the upper-level parameters. While this approach can provide theoretical convergence guarantees, it may require unnecessarily tight tolerances on the inner solver, resulting in high computational cost. Stochastic bilevel optimization methods, such as those analyzed in~\cite{ghadimi2018approximation, hong2020twotimescale, ji2021bilevel}, have also gained popularity, especially in machine learning applications. These methods typically perform a fixed number of updates to the lower-level problem and update the upper-level variable using noisy or mini-batch hypergradients. While they scale well to large datasets, they often rely on specific assumptions such as stochastic smoothness or convexity, do not dynamically control accuracy or step size, and the larger number of hyperparameters in the form of batch sizes for the various stochastic subroutines can be difficult to tune. Another line of work explores fully first-order reformulations of bilevel problems as single-level constrained optimization problems via the introduction of a value-function constraint~\cite{ye2022bome}. These approaches avoid second-order information altogether but introduce penalty terms that require careful tuning. Moreover, the accuracy of lower-level approximations remains fixed, which can lead to inefficiencies in practice. Derivative-free methods such as DFO-LS~\cite{ehrhardt2021inexact} have also been adapted to bilevel learning. For example, DFO-LS applies trust-region derivative-free methods to optimize hyperparameters by solving the lower-level problem to a fixed tolerance and using the residual to guide the upper-level update. While promising in settings such as TV denoising, this method becomes less practical in high-dimensional settings due to poor scalability. Unlike prior methods (such as HOAG) that rely on static settings for gradient accuracy or step size, the MAID algorithm~\cite{salehi2024adaptively} dynamically adjusts both quantities based on computable error bounds and descent conditions. This adaptivity enables convergence with reduced computational effort and improves robustness to hyperparameter initialization, while demonstrating improved performance in tasks, such as logistic regression and TV denoising to that of HOAG or DFO-LS. A common flaw of algorithms for bilevel optimization is that they struggle in settings where the inner problem is ill-conditioned. We investigate this issue in Chapter \ref{chp: stoc_cond}. Another distinct line of work approaches hyperparameter learning from a statistical perspective, rather than as a bilevel optimization problem. For instance, Tan et al.~\cite{tan2024unsupervised} propose an unsupervised method for training convex neural regularizers by maximum marginal likelihood estimation. This approach estimates the parameters of the prior directly from noisy measurements, bypassing the need for ground-truth data or cross-validation. The framework scales to high-dimensional convex neural architectures, supported by convergence guarantees. This positions maximum likelihood--based approaches as a complementary alternative to classical bilevel hyperparameter optimization.
 
-In the next section we will investigate the HOAG algorithm by Pedregosa, wherein we conduct gradient descent using an approximate hypergradient.
+In the next section we will investigate the HOAG algorithm by Pedregosa, wherein we conduct gradient descent using an approximate hypergradient. Recall that $F : \mathbb{R}^n \times \mathcal{D} \to \mathbb{R}$ is defined in \eqref{inprob} as the inner objective, and $C : \mathbb{R}^n \times \mathcal{D} \to \mathbb{R}$ is the outer objective defined in \eqref{bilev1}.
+
 
 \begin{comment}
     \begin{mdframed}[hidealllines=true,backgroundcolor=yellow!20]
@@ -904,12 +903,28 @@ In the next section we will investigate the HOAG algorithm by Pedregosa, wherein
 
 
 \subsection{Assumptions}
+\begin{comment}
+    \begin{itemize}
+    \item We assume that the first derivatives of $C$ and the second derivatives of $F$ are (globally) Lipschitz continuous.
+    \item We assume that the hyperparameter domain $\mathcal{D}$ is a convex non-empty and compact subset in $\mathbb{R}^r$.
+    \item We assume that the Hessian $\nabla_{xx}^2 F$ is invertible at $(x(\lambda),\lambda)$ for all $\lambda \in \mathcal{D}$.
+\end{itemize}
+\end{comment}
 We will use a set of assumptions:
 \begin{itemize}
-    \item We assume that the first derivatives of $C$ and the second derivatives of $F$ are (globally) Lipschitz continuous.
-    \item We assume that the Hessian $\nabla_{xx}^2 F$ is invertible at $(x(\lambda),\lambda)$ for all $\lambda \in \mathcal{D}$.
-    \item We assume that the hyperparameter domain $\mathcal{D}$ is a convex non-empty and compact subset in $\mathbb{R}^r$.
+    \item The functions $C$ and $F$ are twice continuously differentiable. 
+    Moreover, the gradients $\nabla C(x,\lambda)$ and the Hessian 
+    $\nabla_{xx}^2 F(x,\lambda)$ are globally Lipschitz continuous 
+    with respect to $(x,\lambda)$ on 
+    $\mathbb{R}^n \times \mathcal{D}$.
+
+    \item The hyperparameter domain $\mathcal{D}$ is a non-empty, convex, 
+    and compact subset of $\mathbb{R}^r$.
+
+    \item For each $\lambda \in \mathcal{D}$, the Hessian 
+    $\nabla_{xx}^2 F(x(\lambda),\lambda)$ is invertible.
 \end{itemize}
+
 
 %Mention here the chain rule that gives rise to all the below methods
 %\subsection*{Algorithms}
@@ -918,8 +933,7 @@ All of the algorithms presented in this section rely on two preliminary results.
 \begin{equation} \label{opt_cond_smooth}
     \nabla_x F(\hat{x}(\lambda),\lambda) = 0.
 \end{equation}
-%% y is param, x is hyperparam
-We can take the derivative of both sides. By chain rule, and implicit function theorem, we get
+Denote $\nabla x(\lambda) = \frac{dx(\lambda)}{d\lambda}$. Differentiating the first-order optimality condition with respect to $\lambda$, and using the chain rule, we obtain
 \begin{equation} \label{ift_opt}
     \nabla^2_{x\lambda} F(\hat{x}(\lambda),\lambda) + \nabla^2_{xx} F(\hat{x}(\lambda),\lambda) \nabla \hat{x}(\lambda) = 0,
 \end{equation}
@@ -979,7 +993,7 @@ We can summarize the algorithm in four steps as follows:
 %\end{algorithm}
 %To elaborate, here we have that
 %\[\bar{\nabla} f(\bar{x},\bar{y}) = \nabla_x f(\bar{x},\bar{y}) - \nabla^2_{yx} g(\bar{x},\bar{y})^\top \left[ \nabla^2_{yy} g(\bar{x},\bar{y}) \right]^{-\top} \nabla_y f(\bar{x},\bar{y}).\]
-Here we have to solve the inner problem to a high enough accuracy, so that the gradient approximation $p_k$ is close enough to $\nabla L$. Otherwise we might have divergence in the outer problem. Hence we have the complexity-accuracy trade-off between solving the inner problem and solving the outer problem. To be more precise, we present Pedregosa's main results about the convergence of HOAG.
+Here, the error sequence $(\varepsilon_k)_{k \ge 0}$ must be summable, otherwise we might have divergence in the outer problem. Hence we have the complexity-accuracy trade-off between solving the inner problem and solving the outer problem. To be more precise, we present Pedregosa's main results about the convergence of HOAG.
 
 \begin{theorem}[Bounded Gradient Error] \label{thm_appgrad_hoag}
 In Algorithm \ref{alg:hoag}, for sufficiently large $k$, the gradient error is bounded as
@@ -1007,8 +1021,15 @@ then $\lim_{k \xrightarrow[]{} \infty} \nabla L(\lambda_k) = 0.$
 \end{theorem}
 
 \section{On the Hessian}
-%As mentioned previously, the complexity of computing and inverting the Hessian is costly. 
-In the HOAG algorithm, every single gradient is computed directly. While this is feasible for first-order gradients, the complexity of second-order gradient calculations is $\mathcal{O}(n^3)$ (or $\mathcal{O}(mn^2)$). Furthermore, inverting the Hessian $\nabla^2_{yy} g$ has complexity $\mathcal{O}(n^3)$. In order to tackle this, a few approaches have been proposed. One is to use a quasi Newton (SR1) approximation to the Hessian.
+
+In the HOAG algorithm, the computation of the hypergradient requires
+solving the linear system
+\[
+\nabla^2_{xx} F(x_k,\lambda_k) q_k
+= \nabla_x C(x_k,\lambda_k),
+\]
+which involves second-order information of the inner objective. Rather than explicitly forming or inverting the Hessian, this system is typically solved using an iterative method such as conjugate gradients. Although CG avoids forming the full Hessian, each iteration requires Hessian--vector products. In many inverse problems, such products have cost comparable to evaluating a gradient, often $\mathcal{O}(mn)$ when $A \in \mathbb{R}^{m \times n}$. Consequently, the overall cost of solving the linear system depends on the number of CG iterations, which in turn depends on the conditioning of $\nabla^2_{xx} F$. When the Hessian is ill-conditioned, the number of required iterations may become large, increasing the computational burden of each hyperparameter update. This motivates the use of alternative strategies that approximate second-order information more efficiently. One such approach is to employ quasi-Newton approximations, such as the symmetric rank-one (SR1) update, which construct an approximation of the Hessian (or its inverse) using only first-order information.
+
 \subsection{SR1 Update}
 \label{section:sr1}
 In optimization, one way of finding the minimum of a smooth, twice differentiable function $f: \mathbb{R}^n \xrightarrow[]{} \mathbb{R}$, is to use Newton's method \cite{nocedal2006numerical}. Recall a step of this iterative method. At a point $x_k + t$, for some small step $t \in \mathbb{R}^n$, consider the quadratic approximation of $f$:
@@ -1093,7 +1114,7 @@ The crux of this approach is that we can use (\ref{neumann}) to obtain a subrout
 \end{equation}
 it can be shown, that
 \[\mathbb{E}[H_{xx}] = \frac{1}{L_F} \sum_{i=0}^{b-1}\left[I-\frac{1}{L_F} \nabla^2_{xx} F(x,\lambda)\right]^i.\]
-As a result, the Hessian Inverse Subroutine provides a biased estimate of $[\nabla_{xx}^2 F]^{-1}$, wherein the bias can be reduced by increasing the number of Hessian samples. However, Ghadimi did not provide any results on the variance of their approximation. Hence, a drawback of Ghadimi's neumann inversion subroutine, is that the variance of the resulting approximation forces us to use a diminishing stepsize in the outer loop to ensure convergence, and even in this case it is not guaranteed. As a result, a variant of (\ref{HIA}) was used by Ji, Yang \& Liang to develop the StocBio algorithm \cite{ji2021bilevel}. In short, StocBio is a double-loop algorithm. In the inner loop it finds a solution $x_k$ to the inner problem (\ref{inner_hoag_neu}) using stochastic gradient descent. We then construct, setting $\prod_{j=Q+1}^Q(\cdot) = I$,
+As a result, the Hessian Inverse Subroutine provides a biased estimate of $[\nabla_{xx}^2 F]^{-1}$, wherein the bias can be reduced by increasing the number of Hessian samples. However, Ghadimi did not provide any results on the variance of their approximation. Hence, a drawback of Ghadimi's Neumann Inversion Subroutine, is that the variance of the resulting approximation forces us to use a diminishing stepsize in the outer loop to ensure convergence, and even in this case it is not guaranteed. As a result, a variant of (\ref{HIA}) was used by Ji, Yang \& Liang to develop the StocBio algorithm \cite{ji2021bilevel}. In short, StocBio is a double-loop algorithm. In the inner loop it finds a solution $x_k$ to the inner problem (\ref{inner_hoag_neu}) using stochastic gradient descent. We then construct, setting $\prod_{j=Q+1}^Q(\cdot) = I$,
 \begin{equation} \label{HIA_StocBio}
     v_Q= \eta \sum_{q=-1}^{Q-1} \prod_{j=Q-q}^Q\left(I- \eta \nabla_y^2 \tilde{F}\left(x_k, \lambda_k ; \mathcal{B}_j\right)\right) \nabla_x \tilde{C}(x_k,\lambda_k,\mathcal{S}_C),
 \end{equation}
@@ -1161,16 +1182,37 @@ Furthermore, assuming $\lambda > 0$, we can explicitly write the gradient in clo
 \end{equation*}
 where $u = \argmin_{\tilde{u}} G(u,v). $ Now $\partial_u G(u,v) = 0$ and
 \[\partial_{uu} G(u,v) = \frac{1}{\lambda} \mathrm{diag}(v)A^TA\mathrm{diag}(v) + \mathrm{Id}\]
-has all positive eigenvalues $|\lambda_i|^2 + 1$, where $\lambda_i$ denotes the eigenvalue of $A\mathrm{diag}(v)$. Hence $\partial_{uu} G(u,v)$ is invertible. Thus, by implicit function theorem, we have that $u$ is a function of $v$ and
+has all positive eigenvalues $|\lambda_i|^2 + 1$, where $\lambda_i$ denotes the eigenvalue of $A\mathrm{diag}(v)$. Hence $\partial_{uu} G(u,v)$ is invertible. By the implicit function theorem, $u$ can be locally expressed as a 
+function of $v$. Differentiating with respect to $v$, we obtain
 \begin{equation}\label{eq: fvphess}
-    \nabla^2 f_{vp} = \partial_{vv} G(u,v) + \partial_{uv}G(u,v) \partial_v u = \partial_{vv} G(u,v) + \partial_{uv}G(u,v) [\partial_{uu}G(u,v)]^{-1}\partial_{vu}G(u,v),
+    \nabla^2 f_{vp}
+    = \partial_{vv} G(u,v)
+    + \partial_{uv}G(u,v)\,\partial_v u.
 \end{equation}
-and so the Hessian $\nabla^2 f_{vp}$ is the Schur complement of 
-$\nabla^2 G = 
+Using the relation
+\[
+\partial_v u
+= [\partial_{uu}G(u,v)]^{-1}\partial_{vu}G(u,v),
+\]
+we obtain
+\[
+\nabla^2 f_{vp}
+=
+\partial_{vv} G(u,v)
++
+\partial_{uv}G(u,v)
+[\partial_{uu}G(u,v)]^{-1}
+\partial_{vu}G(u,v).
+\]
+Thus, the Hessian $\nabla^2 f_{vp}$ coincides with the Schur complement 
+of $\nabla^2 G$, namely
+\[
+\nabla^2 G =
 \begin{pmatrix} 
 \partial_{vv} G(u,v) & \partial_{uv} G(u,v) \\
-\partial_{uv} G(u,v) & \partial_{uu} G(u,v)
-\end{pmatrix}$
+\partial_{vu} G(u,v) & \partial_{uu} G(u,v)
+\end{pmatrix},
+\]
 and as such, is better conditioned. Going by the result of Theorem 3\cite{poon}, even though the problem is non-convex, all of the saddle points of $f$ are either global minima or strict saddle points. This enables us to implement the variable projection formulation within a HOAG setting as:
 \begin{align} 
 &\min _{\lambda \in \mathcal{D} \subset \mathbb{R}^r} L\left(\lambda \right) \triangleq \|A_{test} \left(\hat{u}(\lambda) \odot \hat{v}(\lambda) \right) - b_{test}\|_2^2 \label{outprob_vp_poon}\\
@@ -4062,7 +4104,7 @@ Of note here is that, for small $\mu$, the above is bounded as $\mathcal{O}(1/\m
 
 \begin{algorithm}[]
 \caption{Stochastic HOAG}
-\label{alg:hoag}
+\label{alg:stoc_hoag}
 \DontPrintSemicolon
 \KwIn{Outer stepsize $\nu_k$, Neumann length $Q_k$, parameter $\eta$, smoothness $\mu$}
 \For{$k = 1, 2, \dots$}{
@@ -4086,7 +4128,7 @@ Of note here is that, for small $\mu$, the above is bounded as $\mathcal{O}(1/\m
 
 \section{Main Results}
 \subsection{The Neumann Series} \label{neumann_series}
-Before we proceed with the convergence analysis of Algorithm \ref{alg:hoag}, let us introduce the Neumann series used for inverting the Hessian, alongside some useful results related to it. As per HOAG, we can obtain the exact hypergradient of the outer problem as
+Before we proceed with the convergence analysis of Algorithm \ref{alg:stoc_hoag}, let us introduce the Neumann series used for inverting the Hessian, alongside some useful results related to it. As per HOAG, we can obtain the exact hypergradient of the outer problem as
 \begin{equation} \label{exact_hyper}
     \nabla\mathcal{L}(\lambda_k) = \nabla_\lambda {C}(\hat{x}(\lambda_k),\lambda_k) - \nabla_{x \lambda}^2 {F}(\hat{x}(\lambda_k),\lambda_k)^\top \left[\nabla_{xx} {F}(\hat{x}(\lambda_k),\lambda_k) \right]^{-1} \nabla_x {C}(\hat{x}(\lambda_k),\lambda_k).
 \end{equation}
@@ -4179,12 +4221,12 @@ Additionally, we introduce two new assumptions.
     The sequence of iterates $\left\{\lambda_k\right\}$ is contained in an open set over which $\mathcal{L}$ is bounded below by a scalar $\mathcal{L}_{\text {inf }}$.
 \end{assumption}
 
-We now provide a convergence proof for Algorithm \ref{alg:hoag}.
+We now provide a convergence proof for Algorithm \ref{alg:stoc_hoag}.
 \begin{comment}
 \begin{theorem}[Global Convergence] \label{hoag_thm_glcv}
 
 Suppose Assumptions \ref{conv_ass}, \ref{smo_ass}, \ref{pls_ass}, \ref{nablaFxl_bnd} and \ref{inf_ass} hold.
-In Algorithm \ref{alg:hoag}, assume that the outer stepsize is chosen as $\nu_k = \frac{1}{2L_\mathcal{L}}$. Suppose $\eta$ is chosen, such that $\eta \mu <1.$Let $\zeta > 0 $ be some small positive number. Choose $Q_k = \frac{r}{2}\log{k^{1+\zeta}}$, where $r > \frac{1}{-\log(1-\eta\mu)}$. Assume also, that $\lambda_k \in \mathcal{D}$ for all $k>0$.
+In Algorithm \ref{alg:stoc_hoag}, assume that the outer stepsize is chosen as $\nu_k = \frac{1}{2L_\mathcal{L}}$. Suppose $\eta$ is chosen, such that $\eta \mu <1.$Let $\zeta > 0 $ be some small positive number. Choose $Q_k = \frac{r}{2}\log{k^{1+\zeta}}$, where $r > \frac{1}{-\log(1-\eta\mu)}$. Assume also, that $\lambda_k \in \mathcal{D}$ for all $k>0$.
 If we choose
 \begin{equation}\label{params_conv}
     T_k = \mathcal{O}(k^{1+\zeta}), B_k = |\mathcal{S}_{\nabla_x C,k}| = |\mathcal{S}_{\nabla_{x\lambda} F,k}| = |\mathcal{S}_{\nabla_\lambda C,k}| =\mathcal{O}(k^{1 +\zeta}),
@@ -4198,7 +4240,7 @@ then we have
 \begin{theorem}[Global Convergence] \label{hoag_thm_glcv}
 
 Suppose Assumptions \ref{conv_ass}, \ref{smo_ass}, \ref{pls_ass}, \ref{nablaFxl_bnd} and \ref{inf_ass} hold.
-In Algorithm \ref{alg:hoag}, assume that the outer stepsize is chosen as $\nu_k = \frac{1}{2L_\mathcal{L}}$. Suppose $\eta$ is chosen such that $\eta \mu < 1$. Let $\zeta > 0$ be some small positive number. Choose $Q_k = \frac{r}{2}\log{k^{1+\zeta}}$, where $r > \frac{1}{-\log(1-\eta\mu)}$. Assume also that $\lambda_k \in \mathcal{D}$ for all $k>0$.
+In Algorithm \ref{alg:stoc_hoag}, assume that the outer stepsize is chosen as $\nu_k = \frac{1}{2L_\mathcal{L}}$. Suppose $\eta$ is chosen such that $\eta \mu < 1$. Let $\zeta > 0$ be some small positive number. Choose $Q_k = \frac{r}{2}\log{k^{1+\zeta}}$, where $r > \frac{1}{-\log(1-\eta\mu)}$. Assume also that $\lambda_k \in \mathcal{D}$ for all $k>0$.
 If we choose
 \begin{equation}\label{params_conv}
     T_k = \mathcal{O}(k^{1+\zeta}), \quad 
@@ -4324,7 +4366,7 @@ as claimed.
 Substituting for $\alpha = \lambda_k, \beta = \lambda_{k+1} = \lambda_k - \nu_k\widehat{\nabla}\mathcal{L}(\lambda_k)$,
 
 \[\mathcal{L}(\lambda_{k+1}) \leq \mathcal{L}(\lambda_k) + \nabla \mathcal{L}(\lambda_k)^\top \left(-\nu_k\widehat{\nabla}\mathcal{L}(\lambda_k)\right) + \frac{L_{\mathcal{L}}}{2}\left\|-\nu_k\widehat{\nabla}\mathcal{L}(\lambda_k)\right\|^2,\]
-where $\widehat{\nabla} \mathcal{L}(\lambda_k)$ is the approximate hypergradient of $\mathcal{L}$, evaluated at $\lambda_k$, as defined in step 3 of Algorithm \ref{alg:hoag}. Taking expectation, conditioning on $\lambda_k$,
+where $\widehat{\nabla} \mathcal{L}(\lambda_k)$ is the approximate hypergradient of $\mathcal{L}$, evaluated at $\lambda_k$, as defined in step 3 of Algorithm \ref{alg:stoc_hoag}. Taking expectation, conditioning on $\lambda_k$,
 
 \begin{align*}
 \mathbb{E}_{\lambda_k}\left[\mathcal{L}(\lambda_{k+1})\right] &\leq \mathcal{L}(\lambda_k) -\nu_k \nabla \mathcal{L}(\lambda_k)^\top \mathbb{E}_{\lambda_k}\left[\widehat{\nabla}\mathcal{L}(\lambda_k)\right] + \frac{L_{\mathcal{L}}\nu_k^2 }{2}\mathbb{E}_{\lambda_k}\left[\left\|\widehat{\nabla}\mathcal{L}(\lambda_k)\right\|^2\right] \\

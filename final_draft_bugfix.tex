@@ -449,7 +449,7 @@ A way to interpret this is that one wishes to find the minimum of $\phi$, withou
 \end{cases},\]
 then $\mathrm{prox}_\phi$ reduces to the projection of $x$ onto $\mathcal{D}$. As such, the proximal mapping is a generalization of the projection operator. Suppose now that we have an optimization problem of the form
 \begin{equation}
-    \argmin_{x \in \mathbb{R}^n} {F(x, \lambda) \triangleq f(x) + g(x)},
+    \argmin_{x \in \mathbb{R}^n} {F(x, \lambda) \triangleq f(x) + g(x,\lambda)},
 \end{equation}
 where $f$ is smooth and convex and $g$ is nonsmooth convex. Analogously to the case when $g$ is differentiable, we can tackle this with subgradient methods. However, these are generally slower than gradient-based methods for smooth problems. Hence, we introduce the Proximal Gradient Descent method, also known as the Iterative Soft Thresholding Algorithm (or ISTA) \cite{daubechies2004iterative}. The update step for this algorithm reads
 \begin{equation} \label{ISTA_step}

@@ -718,22 +718,34 @@ Recall from Eq.~\eqref{orig_lin} that we consider underdetermined linear
 inverse problems of the form $Ax=b$, with $m<N$. In practice, such problems 
 are addressed via regularized formulations, where the parameter $\lambda$ 
 controls the trade-off between data fidelity and structural priors. 
-Choosing an appropriate value of $\lambda$ is therefore a nontrivial task, 
-which motivates the bilevel framework studied in this chapter.
+Choosing an appropriate value of $\lambda$ — for example, one that 
+optimizes predictive performance or reconstruction accuracy — is 
+generally problem-dependent and computationally nontrivial. 
+This motivates the bilevel optimization framework studied in this chapter.
+
 
 We are thus interested in solving problems of the form
 \begin{align} 
-%&\min _{\lambda \in \mathcal{D} \subset \mathbb{R}^r} L\left(\lambda \right) \triangleq C(\hat{x}(\lambda), \lambda) \label{bilev1}\\
-&\min _{\lambda \in \mathcal{D} \subset \mathbb{R}^r} C(\hat{x}(\lambda), \lambda) \label{bilev1}\\
-&\text { s.t. } \hat{x}(\lambda) =\underset{x \in \mathbb{R}^{n}} \argmin {F(x, \lambda)} \label{inprob},
+&\min_{\lambda \in \mathcal{D} \subset \mathbb{R}^r} 
+C(\hat{x}(\lambda), \lambda) \label{bilev1}\\
+&\text{s.t. } 
+\hat{x}(\lambda) = \argmin_{x \in \mathbb{R}^{n}} F(x, \lambda), 
+\label{inprob}
 \end{align}
-where $C$ is some criterion for the optimal $\lambda$ for the inner problem solution. This could be something like cross-validation loss, i.e. if we split a sample matrix $A$ into $A_{train}$ and $A_{test}$, then
-\[C(\hat{x}(\lambda),\lambda) = \|A_{test} \hat{x}(\lambda) - b_{test}\|_2^2.\]
-% \begin{align} 
-%&\min _{\lambda \in \mathbb{R}^r} L\left(x ; y^{*}(x)\right) \label{bilev1}\\
-%&\text { s.t. } y^{*}(x)=\underset{y \in \mathbb{R}^{m}} \argmin {g(x, y)} \label{inprob}
-%\end{align}
-One way to look at this is to consider the above as a single-level problem with constraints the optimality conditions of the inner problem. However, depending on the inner problem, the number of constraints may be large and the feasible set may be non-convex. %Cite here
+where \eqref{bilev1} is referred to as the \emph{outer problem}, and 
+\eqref{inprob} as the \emph{inner problem}. 
+The function $C$ serves as a selection criterion for the hyperparameter 
+$\lambda$, evaluated at the solution of the inner problem.
+
+For example, $C$ may be chosen as a cross-validation loss: if a data matrix 
+$A$ is split into $A_{\mathrm{train}}$ and $A_{\mathrm{test}}$, then
+\[
+C(\hat{x}(\lambda), \lambda)
+= \|A_{\mathrm{test}} \hat{x}(\lambda) - b_{\mathrm{test}}\|_2^2.
+\]
+
+
+An alternative viewpoint is to reformulate the bilevel problem as a single-level constrained optimization problem, where the constraints are given by the first-order optimality conditions of the inner problem. However, depending on the inner problem, the number of constraints may be large and the feasible set may be non-convex. %Cite here
 This brings us to the other approach - solving (\ref{bilev1}) directly with iterative algorithms. We began this report with motivations for studying sparse-regularized problems. However, ultimately, our goal is to investigate bilevel problems of the form (\ref{bilev1}). Below, we provide extensions of the previous sections with regards to this formulation.
 \subsection{Hyperparameter Selection in Inverse Problems}
 \begin{figure}[htp]

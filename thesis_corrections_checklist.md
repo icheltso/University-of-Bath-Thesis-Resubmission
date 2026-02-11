@@ -19,10 +19,10 @@ This checklist consolidates **all required corrections** from the external exami
 - [🟡] p.19, l.2–3: Add missing punctuation.
 - [🟡] p.20, l.2: Replace `prox?` with `prox_{\omega g}`.
 - [🟢] p.21, l.10: Avoid shorthand symbols (→, ↑); spell out prose equivalents throughout.
-- [ ] p.22, l.-9: Correct phrasing: "As such, the related…".
-- [ ] p.24, l.-3: Define **dual norm**.
-- [ ] p.25, l.-8: Introduce Hadamard product notation (also include in glossary).
-- [ ] p.19: Eq. (1.17) should depend on $\lambda$.
+- [🟢] p.22, l.-9: Correct phrasing: "As such, the related…".
+- [🟢] p.24, l.-3: Define **dual norm**.
+- [🟢] p.25, l.-8: Introduce Hadamard product notation (also include in glossary).
+- [🟢] p.19: Eq. (1.17) should depend on $\lambda$.
 
 ---
 

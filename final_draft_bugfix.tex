@@ -805,78 +805,65 @@ where $\theta$ denote network parameters, $\mathcal{L}_T$ and $\mathcal{L}_V$ ar
 
 \begin{figure}[htp]
     \centering
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\linewidth]{IMG/tiger_big/tiger_l1_gen.jpg}
-        %\caption{Contact angle with various pseudo dosages}
-        \label{fig:tiger_l1_gen}
-    \end{subfigure}
-\hfil 
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\linewidth]{IMG/tiger_big/tiger_l1_opt.jpg}
+    % First row
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[width=\linewidth]{IMG/tiger_big/tiger_l1_opt.png}
         %\caption{Contact angle with various pseudo dosages}
         \label{fig:tiger_l1_opt}
     \end{subfigure}
-\hfil
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\linewidth]{IMG/tiger_big/reg_path_l1.jpg}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[width=\linewidth]{IMG/tiger_big/reg_path_l1.png}
         %\caption{Contact angle with various pseudo dosages}
         \label{fig:tiger_l1_path}
     \end{subfigure}
 
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\linewidth]{IMG/tiger_big/tiger_l2_gen.jpg}
-        %\caption{Contact angle with various pseudo dosages}
-        \label{fig:tiger_l2_gen}
-    \end{subfigure}
-\hfil 
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\linewidth]{IMG/tiger_big/tiger_l2_opt.jpg}
+    %\vskip\baselineskip % adds vertical space between rows
+
+    % Second row
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[width=\linewidth]{IMG/tiger_big/tiger_l2_opt.png}
         %\caption{Contact angle with various pseudo dosages}
         \label{fig:tiger_l2_opt}
     \end{subfigure}
-\hfil
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\linewidth]{IMG/tiger_big/reg_path_l2.jpg}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[width=\linewidth]{IMG/tiger_big/reg_path_l2.png}
         %\caption{Contact angle with various pseudo dosages}
         \label{fig:tiger_l2_path}
     \end{subfigure}
-    
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\linewidth]{IMG/tiger_big/tiger_sob_gen.jpg}
-        %\caption{Contact angle with various pseudo dosages}
-        \label{fig:tiger_sob_gen}
-    \end{subfigure}
-\hfil 
-    \begin{subfigure}[b]{0.31\textwidth}
-        \includegraphics[width=\linewidth]{IMG/tiger_big/tiger_sob_opt.jpg}
+
+    %\vskip\baselineskip % adds vertical space between rows
+
+    % Third row
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[width=\linewidth]{IMG/tiger_big/tiger_sob_opt.png}
         %\caption{Contact angle with various pseudo dosages}
         \label{fig:tiger_sob_opt}
     \end{subfigure}
-\hfil
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\linewidth]{IMG/tiger_big/reg_path_sob.jpg}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[width=\linewidth]{IMG/tiger_big/reg_path_sob.png}
         %\caption{Contact angle with various pseudo dosages}
         \label{fig:tiger_sob_path}
     \end{subfigure}
 
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\linewidth]{IMG/tiger_big/tiger_tv_gen.jpg}
+    %\vskip\baselineskip % adds vertical space between rows
+
+    % Fourth row
+    %\begin{subfigure}[b]{0.4\textwidth}
+    %    \includegraphics[width=\linewidth]{IMG/tiger_big/tiger_tv_opt.png}
+    %    %\caption{Contact angle with various pseudo dosages}
+    %    \label{fig:tiger_tv_opt}
+    %\end{subfigure}
+    %\hfill
+    %\begin{subfigure}[b]{0.4\textwidth}
+    %    \includegraphics[width=\linewidth]{IMG/tiger_big/reg_path_tv.png}
         %\caption{Contact angle with various pseudo dosages}
-        \label{fig:tiger_tv_gen}
-    \end{subfigure}
-\hfil 
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\linewidth]{IMG/tiger_big/tiger_tv_opt.jpg}
-        %\caption{Contact angle with various pseudo dosages}
-        \label{fig:tiger_tv_opt}
-    \end{subfigure}
-\hfil
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\linewidth]{IMG/tiger_big/reg_path_tv.jpg}
-        %\caption{Contact angle with various pseudo dosages}
-        \label{fig:tiger_tv_path}
-    \end{subfigure}
-    \caption{Image deconvolution by regularization; Left: Arbitrary $\lambda$; Centre: Optimal $\lambda$ w.r.t. SNR; Right: Regularization path: SNR vs $\lambda$.}\label{fig:deblurry_tiger}
+    %    \label{fig:tiger_tv_path}
+    %\end{subfigure}
+
+    \caption{Image deconvolution by regularization; Left: Optimal $\lambda$ w.r.t. SNR;  Right: Regularization path: SNR vs $\lambda$.}\label{fig:deblurry_tiger}
 \end{figure}
 
 \section{Hyperparameter Optimization with Smooth Inner Problem}

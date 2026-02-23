@@ -774,7 +774,7 @@ Recall the imaging problem (\ref{lasso_gen}):
 \begin{equation*}
     x^* = \argmin_x  \|Ax-b\|_2^2 + \lambda\|Dx\|_1.
 \end{equation*}
-Before we solve this problem, we need to consider the hyperparameter $\lambda > 0$, the weight of the regularization term. Note that as $\lambda \xrightarrow[]{} 0$, $x^*$ approaches the solution of the non-regularized least squares problem, while as $\lambda \xrightarrow[]{} \infty$, the regularizer starts to dominate the solution. This trade-off is illustrated in Figure~\ref{fig:deblurry_tiger}. For small values of $\lambda$, the reconstruction is dominated by the data fidelity term and may overfit noise, whereas for large $\lambda$, the regularization term dominates, leading to overly sparse or oversmoothed 
+Before we solve this problem, we need to consider the hyperparameter $\lambda > 0$, the weight of the regularization term. Note that as $\lambda \xrightarrow[]{} 0$, $x^*$ approaches the solution of the non-regularized least squares problem, while as $\lambda \xrightarrow[]{} \infty$, the regularizer starts to dominate the solution. This trade-off is illustrated in Figure~\ref{fig:deblurry_tiger      }. For small values of $\lambda$, the reconstruction is dominated by the data fidelity term and may overfit noise, whereas for large $\lambda$, the regularization term dominates, leading to overly sparse or oversmoothed 
 solutions. The right panel shows the corresponding regularization path, highlighting the dependence of the reconstruction quality (measured by SNR) on $\lambda$.
 
 We are interested in finding the optimal value of the hyperparameter, that is, a balance between sparsity of the solution, and its visual accuracy. To formalize this, we solve the bi-level problem
@@ -863,7 +863,7 @@ where $\theta$ denote network parameters, $\mathcal{L}_T$ and $\mathcal{L}_V$ ar
     %    \label{fig:tiger_tv_path}
     %\end{subfigure}
 
-    \caption{Image deconvolution by regularization; Left: Optimal $\lambda$ w.r.t. SNR;  Right: Regularization path: SNR vs $\lambda$.}\label{fig:deblurry_tiger}
+    \caption{Image deconvolution by regularization; Reference original and blurred images found in Figure \ref{fig:blurry_tiger}. Left: Optimal $\lambda$ w.r.t. SNR;  Right: Regularization path: SNR vs $\lambda$.}\label{fig:deblurry_tiger}
 \end{figure}
 
 \section{Hyperparameter Optimization with Smooth Inner Problem}
@@ -1264,31 +1264,101 @@ Bayes' theorem provides a framework for statistical inference, enabling us to in
 p(\mathcal{D}) = \int p(\mathcal{D} \mid \theta) p(\theta) d\theta.
 \end{equation}
 Since this integral is difficult to compute exactly or even approximate, especially in high-dimensional problems, Bayesian sampling methods are employed to approximate the posterior distribution.
+
+
 \section{Markov Chain Monte Carlo}
-Markov Chain Monte Carlo (or MCMC) are a family of algorithms that construct a Markov chain whose stationary distribution is the posterior $p(\theta \mid \mathcal{D})$. A Markov chain is defined by a transition probability $P(\theta' | \theta)$, which describes the probability of moving from the current state $\theta$ to a new state $\theta'$, designed in a way so that the resulting Markov chain converges to $p(\theta \mid \mathcal{D})$ in distribution. Formally, we require that the target distribution is the invariant distribution \cite{andrieu2003introduction}:
-\begin{equation*}
-    p(\theta' \mid \mathcal{D}) = \sum_{\theta} P(\theta' | \theta)p(\theta \mid \mathcal{D}), \quad \text{ for all } \theta \in \mathbb{R}^d.
-\end{equation*}
-For guaranteed convergence to an invariant distribution $p(x)$ from any starting point (ergodicity) we require two conditions:
-\begin{itemize}
-    \item \textit{Irreducibility} - For any state there is a positive probability of reaching any other state, i.e. that we can reach any state in a finite number of steps (the transition graph is connected).
-    \item \textit{Aperiodicity} - that there are no infinite cycles in the chain.
-\end{itemize}
-A sufficient condition for the ergodicity of a distribution $p(\theta' \mid \mathcal{D})$ is the detailed balance condition:
-\begin{equation} \label{detailed_balance}
-p\left(\theta^{(i)} \mid \mathcal{D}\right) P\left(\theta^{(i-1)} \mid \theta^{(i)}\right)=p\left(\theta^{(i-1)}\mid \mathcal{D}\right) P\left(\theta^{(i)} \mid \theta^{(i-1)}\right)
+
+Markov Chain Monte Carlo (MCMC) methods are a class of algorithms designed to sample 
+from a probability distribution when direct sampling is infeasible. In Bayesian inference, 
+the objective is to generate samples from the posterior distribution 
+$\pi(\theta) = p(\theta \mid D)$, which is often known only up to a normalization constant.
+
+MCMC constructs a Markov chain $\{\theta^{(k)}\}_{k \ge 0}$ with transition kernel 
+$P(\theta' \mid \theta)$ such that the target distribution $\pi$ is invariant. 
+A probability measure $\pi$ is said to be invariant for the chain if
+
+\begin{equation} \label{eq:invariance_ker}
+    \pi(\theta') 
+= \int P(\theta' \mid \theta)\,\pi(\theta)\,d\theta.
 \end{equation}
 
-MCMC methods are essential in Bayesian statistics as they enable inference in complex models where direct sampling is infeasible. Common MCMC methods include the Metropolis-Hastings algorithm and Gibbs sampling.%Common MCMC methods include:
-%\begin{itemize}
-%\item \textbf{Metropolis-Hastings Algorithm}: Proposes a new state $\theta'$ from a proposal distribution $q(\theta' \mid \theta^{(t)})$ and accepts it with probability:
-%\begin{equation}
-%A(\theta^{(t)}, \theta') = \min\left( 1, \frac{p(\theta') p(\mathcal{D} \mid \theta') q(\theta^{(t)} \mid \theta')}{p(\theta^{(t)}) p(\mathcal{D} \mid \theta^{(t)}) q(\theta' \mid \theta^{(t)})} \right).
-%\end{equation}
+If, in addition, the chain is ergodic, then for any initial condition $\theta^{(0)}$,
 
-%\end{itemize}
+\[
+\theta^{(k)} \xrightarrow[k\to\infty]{\mathcal{D}} \pi.
+\]
 
-\section{The Gibbs Sampler}
+Ergodicity typically requires:
+\begin{itemize}
+    \item \textbf{Irreducibility:} every region of the state space can be reached with positive probability;
+    \item \textbf{Aperiodicity:} the chain does not evolve in deterministic cycles.
+\end{itemize}
+
+Under these conditions, the chain converges to the invariant distribution from any starting point.
+
+\subsection*{Detailed Balance and Reversibility}
+
+A common way to ensure that a distribution $\pi$ is invariant is to impose the 
+\emph{detailed balance condition} \cite{pavliotis_book}:
+
+\begin{equation}
+\pi(\theta)\,P(\theta' \mid \theta)
+=
+\pi(\theta')\,P(\theta \mid \theta').
+\label{eq:detailed_balance}
+\end{equation}
+
+This condition states that, at equilibrium, the probability flow from $\theta$ to 
+$\theta'$ equals the reverse flow. A Markov chain satisfying 
+\eqref{eq:detailed_balance} is said to be \emph{reversible} with respect to $\pi$.
+
+The detailed balance condition has several important consequences:
+
+\begin{enumerate}
+    \item \textbf{Invariance.} Integrating both sides of 
+    \eqref{eq:detailed_balance} over $\theta$ shows that $\pi$ satisfies the invariance equation (\ref{eq:invariance_ker}). 
+    Thus detailed balance provides a constructive way to design Markov chains with a prescribed stationary distribution.
+    
+    \item \textbf{Symmetry of the Markov operator.} 
+    The associated Markov operator is self-adjoint in $L^2(\pi)$, which simplifies 
+    the analysis of convergence via spectral methods.
+    
+    \item \textbf{Algorithmic construction.}
+    Many classical MCMC algorithms, including Metropolis--Hastings and Gibbs sampling, 
+    are designed to satisfy detailed balance. When detailed balance, irreducibility, 
+    and aperiodicity hold, ergodic convergence to $\pi$ follows.
+\end{enumerate}
+
+Although detailed balance is not strictly necessary for invariance, it is widely used 
+because of its mathematical simplicity and robustness.
+
+\subsection{The Metropolis--Hastings Algorithm}
+
+A general strategy for constructing a Markov chain with invariant distribution $\pi$ 
+is the Metropolis--Hastings algorithm \cite{hastings1970}.
+
+Let $q(\theta' \mid \theta)$ be a proposal density. 
+Given the current state $\theta^{(k)}$, a candidate $\theta'$ is generated from $q(\theta' \mid \theta^{(k)})$. 
+The proposed move is accepted with probability
+
+\begin{equation}
+\alpha(\theta^{(k)}, \theta')
+=
+\min\!\left(
+1,
+\frac{\pi(\theta')\,q(\theta^{(k)} \mid \theta')}
+{\pi(\theta^{(k)})\,q(\theta' \mid \theta^{(k)})}
+\right).
+\label{eq:mh_accept}
+\end{equation}
+
+If the proposal is accepted, we set $\theta^{(k+1)} = \theta'$. 
+Otherwise, we retain the current state: $\theta^{(k+1)} = \theta^{(k)}$.
+
+The resulting transition kernel satisfies the detailed balance condition
+with respect to $\pi$, and therefore $\pi$ is invariant for the Markov chain.
+
+\subsection{The Gibbs Sampler}
 Let $p(x_1, x_2, \dots, x_d)$ be a joint distribution with full conditionals
 \[
 p(x_i \mid x_{-i}) \quad \text{where } x_{-i} = (x_1, \dots, x_{i-1}, x_{i+1}, \dots, x_d).
@@ -1339,6 +1409,106 @@ Gibbs sampling is particularly useful when the full conditionals are easy to sam
 \end{enumerate}
 Gibbs sampling is efficient when conditional distributions are easy to sample from.
 \end{comment}
+
+
+\section{Langevin-Based MCMC}
+
+While classical MCMC methods, such as Gibbs sampling and Metropolis--Hastings, rely on transition kernels constructed to satisfy 
+detailed balance, it is often advantageous to exploit gradient information of the target density. 
+This leads to Langevin-based methods, which combine stochastic differential equations 
+with MCMC corrections.
+
+Let the target distribution be
+
+\[
+\pi(x) \propto e^{-U(x)}, 
+\quad x \in \mathbb{R}^d,
+\]
+
+where $U : \mathbb{R}^d \to \mathbb{R}$ is a differentiable potential.
+
+\subsection*{Overdamped Langevin Diffusion}
+
+Consider the stochastic differential equation
+
+\begin{equation}
+dX_t = -\nabla U(X_t)\,dt + \sqrt{2}\,dW_t.
+\label{eq:langevin_sde}
+\end{equation}
+
+Under suitable regularity and growth conditions on $U$, this diffusion is ergodic 
+with invariant distribution $\pi$ \cite{pavliotis_book}. Its infinitesimal generator
+
+\[
+\mathcal{L} f = -\nabla U \cdot \nabla f + \Delta f
+\]
+
+is symmetric in $L^2(\pi)$, meaning that the diffusion is reversible with respect to $\pi$.
+
+Since exact simulation of \eqref{eq:langevin_sde} is generally not possible, 
+we discretize it in time.
+
+\subsection*{Unadjusted Langevin Algorithm (ULA)}
+
+Applying the Euler--Maruyama scheme with timestep $h > 0$ yields
+
+\begin{equation}
+X_{k+1}
+=
+X_k
+-
+h \nabla U(X_k)
++
+\sqrt{2h}\,\xi_k,
+\quad
+\xi_k \sim \mathcal{N}(0,I).
+\label{eq:ula}
+\end{equation}
+
+This defines the \emph{Unadjusted Langevin Algorithm} (ULA). 
+Each step consists of a gradient descent move combined with Gaussian noise.
+
+ULA is computationally inexpensive, requiring one gradient evaluation per iteration. 
+However, it does not exactly preserve $\pi$ at the discrete level. Instead, 
+it admits an invariant distribution $\pi_h$ satisfying $\pi_h \to \pi$ as $h \to 0$ \cite{wibisono}. 
+Thus ULA introduces a discretization bias.
+
+\subsection*{Metropolis-Adjusted Langevin Algorithm (MALA)}
+
+To remove the discretization bias, one can apply a Metropolis--Hastings correction 
+to the ULA proposal.
+
+Given the proposal
+
+\[
+Y = X_k - h\nabla U(X_k) + \sqrt{2h}\,\xi,
+\]
+
+the move is accepted with probability
+
+\begin{equation}
+\alpha(X_k,Y)
+=
+\min\!\left(
+1,
+\frac{\pi(Y)\,q(Y,X_k)}
+{\pi(X_k)\,q(X_k,Y)}
+\right),
+\label{eq:mala_accept}
+\end{equation}
+
+where $q(x,y)$ denotes the Gaussian proposal density induced by \eqref{eq:ula}.
+
+This defines the \emph{Metropolis-Adjusted Langevin Algorithm} (MALA). 
+By construction, MALA satisfies detailed balance and therefore preserves 
+$\pi$ exactly. 
+
+Langevin-based methods are particularly effective in moderate to high dimensions, 
+as gradient information guides exploration of the state space. 
+
+In Part~II, we develop Hadamard--Langevin dynamics, 
+which modify the potential structure through reparameterization 
+to accommodate sparse priors.
 
 
 

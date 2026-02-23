@@ -32,7 +32,7 @@ This checklist consolidates **all required corrections** from the external exami
 - [🟢] p.26, l.11–12: Explicitly state outer vs inner problem (Eqs. (2.2) and (2.3)).
 - [🟢] p.26, l.-3: Fix phrasing: "constraints given by the optimality…".
 - [🟢] p.27, l.-9: Fix * notation.
-- [🟡] p.27, l.-7: Expand explanation of Figure 2.2; fix truncated plot.
+- [🟢] p.27, l.-7: Expand explanation of Figure 2.2; fix truncated plot.
 - [🟢] p.27, l.-12: Clarify definition of function $\ell$.
 - [🟢] p.29, l.-10: Remove duplicated word "both".
 - [🟢] p.32, l.1–7: Reorder assumptions; define $C$ and $F$; clarify Lipschitz properties.
@@ -46,8 +46,8 @@ This checklist consolidates **all required corrections** from the external exami
 ---
 
 ## Chapter 3
-- [ ] Explain the **significance of detailed balance** for ergodic Markov chains.
-- [ ] Add discussion of **ULA and MALA**.
+- [🟢] Explain the **significance of detailed balance** for ergodic Markov chains.
+- [🟢] Add discussion of **ULA and MALA**.
 
 ---
 

@@ -1526,7 +1526,7 @@ Stochastic processes play a fundamental role in modeling uncertainty. They provi
 Brownian motion is a continuous-time stochastic process with independent and normally distributed increments. It serves as a fundamental building block in probability theory and has extensive applications in physics, finance, and engineering.
 
 \begin{definition}[Brownian Motion on a Filtered Probability Space]
-Let $(\Omega, \mathcal{F}, \{\mathcal{F}_t\}_{t \geq 0}, \mathbb{P})$ be a filtered probability space satisfying the usual conditions (completeness and right-continuity). A stochastic process $\{W_t\}_{t \geq 0}$ is called a \emph{standard Brownian motion} (or \emph{Wiener process}) with respect to this filtration if:
+Let $(\Omega, \mathcal{F}, \{\mathcal{F}_t\}_{t \geq 0}, \mathbb{P})$ be a filtered probability space satisfying the usual conditions (completeness and right-continuity). A stochastic process $(W_t)_{t \geq 0}$ is called a \emph{standard Brownian motion} (or \emph{Wiener process}) with respect to this filtration if:
 
 \begin{enumerate}
     \item $W_0 = 0$, $\mathbb{P}$-almost surely.
@@ -1537,9 +1537,9 @@ Let $(\Omega, \mathcal{F}, \{\mathcal{F}_t\}_{t \geq 0}, \mathbb{P})$ be a filte
 \end{enumerate}
 \end{definition}
 
-Brownian motion is a martingale, meaning that its expected future value given past observations remains equal to its current value:
+Brownian motion is a $(\mathcal{F}_t)_{t \geq 0}$-martingale, meaning that its expected future value given past observations remains equal to its current value:
 \begin{equation}
-    \mathbb{E}[B_t \mid \mathcal{F}_s] = B_s, \quad \text{for } s \leq t.
+    \mathbb{E}[W_t \mid \mathcal{F}_s] = W_s, \quad \text{for } s \leq t.
 \end{equation}
 This property is crucial in stochastic integration and financial mathematics.
 
@@ -1560,18 +1560,18 @@ In the context of stochastic processes, we often define a new probability measur
 where $(M_t)_{t \geq 0}$ is a positive martingale like the exponential martingale discussed above. This is the key object in Girsanov’s theorem, allowing us to shift the drift of Brownian motion.
 
 \begin{definition}[Exponential Martingale]
-Let $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t \geq 0}, \mathbb{P})$ be a filtered probability space and let $(B_t)_{t \geq 0}$ be a standard Brownian motion adapted to $(\mathcal{F}_t)$. Suppose $X = (X_t)_{t \geq 0}$ is an $(\mathcal{F}_t)$-adapted process such that
+Let $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t \geq 0}, \mathbb{P})$ be a filtered probability space and let $(W_t)_{t \geq 0}$ be a standard Brownian motion adapted to $(\mathcal{F}_t)$. Suppose $X = (X_t)_{t \geq 0}$ is an $(\mathcal{F}_t)$-adapted process such that
 \[
 \mathbb{E} \left[ \exp\left( \frac{1}{2} \int_0^T X_s^2 \, ds \right) \right] < \infty.
 \]
 Then the process
 \[
-M_t := \exp\left( \int_0^t X_s \, dB_s - \frac{1}{2} \int_0^t X_s^2 \, ds \right)
+M_t := \exp\left( \int_0^t X_s \, dW_s - \frac{1}{2} \int_0^t X_s^2 \, ds \right)
 \]
 is called an \emph{exponential martingale}.
 
 \medskip
-Under appropriate conditions, $M_t$ is a true martingale, and plays the role of a Radon--Nikodym derivative for a change of measure that modifies the drift of $B_t$.
+Under appropriate conditions, $M_t$ is a true martingale, and plays the role of a Radon--Nikodym derivative for a change of measure that modifies the drift of $W_t$.
 \end{definition}
 
 \begin{proposition}[Novikov’s Condition] \label{nov_cond}
@@ -1581,7 +1581,7 @@ Let $X = (X_t)_{t \geq 0}$ be an $(\mathcal{F}_t)$-adapted process. If
 \]
 then the exponential process
 \[
-M_t := \exp\left( \int_0^t X_s \, dB_s - \frac{1}{2} \int_0^t X_s^2 \, ds \right)
+M_t := \exp\left( \int_0^t X_s \, dW_s - \frac{1}{2} \int_0^t X_s^2 \, ds \right)
 \]
 is a true martingale on $[0,T]$.
 \end{proposition}
@@ -1594,11 +1594,11 @@ Let $$X=\left\{X_t=\left(X_t^{(1)}, \ldots, X_t^{(d)}\right), \mathcal{F}_t ; 0 
 $$
 P\left[\int_0^T\left(X_t^{(i)}\right)^2 d t<\infty\right]=1 ; \quad 1 \leq i \leq d, \quad 0 \leq T<\infty.
 $$
-Assume that $Z(X)$ defined by 
+Assume that the process $Z(X)$ defined by 
 $$
 Z_t(X) \triangleq \exp \left[\sum_{i=1}^d \int_0^t X_s^{(i)} d W_s^{(i)}-\frac{1}{2} \int_0^t\left\|X_s\right\|^2 d s\right]
 $$
-is a martingale (satisfied by \cite[Corollary 5.13 of Novikov Condition]{Karatzas1991-xr}). Define a process $\tilde{W}=\left\{\tilde{W}_t=\left(\tilde{W}_t^{(1)}, \ldots\right.\right.$, $\left.\left.\tilde{W}_t^{(d)}\right), \tilde{\mathcal{F}}_t ; 0 \leq t<\infty\right\}$ by
+is a martingale. This property is ensured under Novikov’s condition (see \cite[Corollary 5.13 of Novikov Condition]{Karatzas1991-xr}). Define a process $\tilde{W}=\left\{\tilde{W}_t=\left(\tilde{W}_t^{(1)}, \ldots\right.\right.$, $\left.\left.\tilde{W}_t^{(d)}\right), \tilde{\mathcal{F}}_t ; 0 \leq t<\infty\right\}$ by
 
 $$
 \tilde{W}_t^{(i)} \triangleq W_t^{(i)}-\int_0^t X_s^{(i)} d s ; \quad 1 \leq i \leq d, \quad 0 \leq t<\infty
@@ -1626,35 +1626,35 @@ Stochastic Differential Equations (SDEs) extend ordinary differential equations 
 
 A general SDE is expressed as:
 \begin{equation} \label{sde_eqn_diff}
-    dX_t = \mu(X_t, t) dt + \sigma(X_t, t) dB_t, \quad X(0) = x,
+    dX_t = \mu(X_t, t) dt + \sigma(X_t, t) dW_t, \quad X(0) = x,
 \end{equation}
-for $X \in \mathbb{R}^d$, $t \in [0,T]$, where $\mu(X_t, t): \mathbb{R}^d \times [0,1] \xrightarrow[]{} \mathbb{R}^d$ and $\sigma(X_t, t): \mathbb{R}^d \times [0,1] \xrightarrow[]{} \mathbb{R}^{d \times n}$ are measurable functions that represent the drift and diffusion terms and $B_t$ is a vector of $n$ independent Brownian motions. (\ref{sde_eqn_diff}) is the differential form of the stochastic integral equation
+for $X \in \mathbb{R}^d$, $t \in [0,T]$, where $\mu(X_t, t): \mathbb{R}^d \times [0,1] \xrightarrow[]{} \mathbb{R}^d$ and $\sigma(X_t, t): \mathbb{R}^d \times [0,1] \xrightarrow[]{} \mathbb{R}^{d \times n}$ are measurable functions that represent the drift and diffusion terms and $W_t$ is a vector of $n$ independent Brownian motions. (\ref{sde_eqn_diff}) is the differential form of the stochastic integral equation
 \begin{equation} \label{sde_eqn_int}
-    X_t = x + \int_0^t \mu(X_s, s) ds + \int_0^t\sigma(X_s, s) dB(s).
+    X_t = x + \int_0^t \mu(X_s, s) ds + \int_0^t\sigma(X_s, s) dW(s).
 \end{equation}
-It\^{o} calculus provides the framework for analyzing stochastic integrals and differential equations. The It\^{o} integral of a process $f(t)$ with respect to Brownian motion $B_t$ is defined as:
+It\^{o} calculus provides the framework for analyzing stochastic integrals and differential equations. The It\^{o} integral of a process $f(t)$ with respect to Brownian motion $W_t$ is defined as the limit in $L_2(\Omega)$ of stochastic Riemann sums:
 \begin{equation} \label{ito_int}
-    \int_0^t f(s) dB_s = \lim_{K \xrightarrow[]{} \infty} \sum_{k=0}^{K-1} f(t_k) (B(t_{k+1}) - B(t_k)),
+    \int_0^t f(s) dW_s = \lim_{K \xrightarrow[]{} \infty} \sum_{k=0}^{K-1} f(t_k) (W(t_{k+1}) - W(t_k)),
 \end{equation}
-where $f$ is an adapted process with respect to the filtration $\{\mathcal{F}_t\}$, generated by the Brownian motion $B_t$. Assuming $f$ is square-integrable, the It\^{o} Integral satisfies the It\^{o} isometry \cite{pavliotis_book}:
+where $f$ is an adapted process with respect to the filtration $\{\mathcal{F}_t\}$, generated by the Brownian motion $W_t$. Assuming $f$ is square-integrable, the It\^{o} Integral satisfies the It\^{o} isometry \cite{pavliotis_book}:
 \begin{equation} \label{ito_isometry}
-    \mathbb{E} \left[ \int_0^T f(t) dB(t)\right]^2 = \int_0^T \mathbb{E}|f(t)|^2 dt.
+    \mathbb{E} \left[ \int_0^T f(t) dW(t)\right]^2 = \int_0^T \mathbb{E}|f(t)|^2 dt.
 \end{equation}
 Furthermore, the It\^{o} Integral is a martingale, so that 
 \begin{equation} \label{ito_martin_mean}
-    \mathbb{E} \int_0^t f(s) d B(s)=0
+    \mathbb{E} \int_0^t f(s) d W(s)=0
 \end{equation}
 and
 \begin{equation} \label{ito_martin}
-\mathbb{E}\left[\int_0^t f(\ell) d B(\ell) \mid \mathcal{F}_s\right]=\int_0^s f(\ell) d B(\ell) \quad \text{ for all } t \geqslant s,
+\mathbb{E}\left[\int_0^t f(\ell) d W(\ell) \mid \mathcal{F}_s\right]=\int_0^s f(\ell) d W(\ell) \quad \text{ for all } t \geqslant s,
 \end{equation}
-where $\mathcal{F}_s$ denotes the filtration generated by $B(s)$. In stochastic calculus differentiation is redefined via It\^{o}'s lemma:
+where $\mathcal{F}_s$ denotes the filtration generated by $W(s)$. In stochastic calculus differentiation is redefined via It\^{o}'s lemma:
 \begin{equation} \label{ito_lem}
     dF(X_t) = \frac{\partial F}{\partial x} dX_t + \frac{1}{2} \frac{\partial^2 F}{\partial x^2} (dX_t)^2.
 \end{equation}
 With regards to SDE \ref{sde_eqn_diff}, we can expand the above to obtain a more explicit form. For twice differentiable $F$,
 \begin{equation} \label{ito_lem_exp}
-    dF(X_t) = \left\{(\nabla_x F)^T \mu_t(X_t) + \frac{1}{2} [\sigma_t(X_t)\sigma_t(X_t)^T (H_x F) ] \right\} \,dt + (\nabla_x F)^T \sigma_t(X_t) dB_t,
+    dF(X_t) = \left\{(\nabla_x F)^T \mu_t(X_t) + \frac{1}{2} [\sigma_t(X_t)\sigma_t(X_t)^T (H_x F) ] \right\} \,dt + (\nabla_x F)^T \sigma_t(X_t) dW_t,
 \end{equation}
 where $\nabla_x F$ and $H_x F$ are the Jacobian and Hessians of $F$ \cite{pavliotis_book}.
 
@@ -1662,22 +1662,22 @@ where $\nabla_x F$ and $H_x F$ are the Jacobian and Hessians of $F$ \cite{pavlio
 \begin{itemize}
     \item \textbf{Geometric Brownian Motion}: Used to model stock prices in finance.
     \begin{equation}
-        dS_t = \mu S_t dt + \sigma S_t dB_t.
+        dS_t = \mu S_t dt + \sigma S_t dW_t.
     \end{equation}
     \item \textbf{Ornstein-Uhlenbeck Process}: Models mean-reverting behavior in physics and finance.
     \begin{equation}
-        dX_t = \theta (\mu - X_t) dt + \sigma dB_t.
+        dX_t = \theta (\mu - X_t) dt + \sigma dW_t.
     \end{equation}
 \end{itemize}
 
 \section{Generators and Kolmogorov Equations}
 Consider the SDE
 \begin{equation} \label{aut_sde}
-    dX_t = \mu(X_t) dt + \sigma(X_t) dB_t, \quad X(0) = x.
+    dX_t = \mu(X_t) dt + \sigma(X_t) dW_t, \quad X(0) = x.
 \end{equation}
 Recall, that, given a sufficiently smooth test function $F: \mathbb{R}^d \xrightarrow[]{} \mathbb{R}$, using It\^{o}'s Lemma we can derive
 \begin{equation} \label{ito_lem_gen}
-    dF(X_t) = \mathcal{L}F dt + (\nabla_x F)^T \sigma(X_t) dB_t,
+    dF(X_t) = \mathcal{L}F dt + (\nabla_x F)^T \sigma(X_t) dW_t,
 \end{equation}
 with
 \begin{equation} \label{generator_explicit}
@@ -1685,7 +1685,7 @@ with
 \end{equation}
  where $\nabla$ and $\nabla^2$ denote the Jacobian and Hessian operators, respectively, and $:$ denotes the Frobenius inner product. Integrating and taking expectations, we can show that
 \begin{align}
-    \mathbb{E}^x\left[F(X_t) - F(X(0))\right] &= \mathbb{E}^x\left[\int_0^t \mathcal{L}F ds + \int_0^t (\nabla_x F)^T \sigma(X_t) dB_s \right] \label{generator_int} \\
+    \mathbb{E}^x\left[F(X_t) - F(X(0))\right] &= \mathbb{E}^x\left[\int_0^t \mathcal{L}F ds + \int_0^t (\nabla_x F)^T \sigma(X_t) dW_s \right] \label{generator_int} \\
     &= \mathbb{E}^x\left[\int_0^t \mathcal{L}F ds \right] \label{generator_martin},
 \end{align}
 where (\ref{generator_martin}) follows from the martingale property (\ref{ito_martin}). Finally, by continuity of $F$, we obtain

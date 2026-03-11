@@ -1902,6 +1902,7 @@ If a probability measure is a product of $d$ probability measures satisfying Poi
 \end{lemma}\
 
 \subsection{Entropy, Fisher Information and Total Variation} \label{subsec:entropy_fisher}
+We briefly recall several notions used to measure convergence of probability measures, including relative entropy, Fisher information and total variation distance. For further background see \cite{bakry2014analysis, pavliotis_book}.
 
 Let $\pi_1$ and $\pi_2$ be two probability measures defined on a measurable space $\chi$, %with $\pi_1 \ll \pi_2$, meaning 
 such that $\pi_1$ is absolutely continuous with respect to $\pi_2$. Denote by $\frac{d\pi_1}{d\pi_2}$ the Radon-Nykodym derivative. The entropy of $\pi_1$ with respect to $\pi_2$ is defined as:
@@ -2298,17 +2299,17 @@ and equality holds when $\varphi$ is the eigenfunction corresponding to $\lambda
 
 \subsection{Introduction}
 
-Consider a stochastic process $(x_t)_{t \geq 0} \subset \mathbb{R}^d$ defined as the solution to the Itô stochastic differential equation
+Consider a stochastic process $(x_t)_{t\ge0}$ with values in $\mathbb{R}^d$ defined as the solution to the It\^{o} stochastic differential equation
 \[
 dx_t = b(x_t)\,dt + \sigma(x_t)\,dW_t,
 \]
-with initial condition $x_0 \in \mathbb{R}^d$, drift $b: \mathbb{R}^d \to \mathbb{R}^d$, diffusion $\sigma: \mathbb{R}^d \to \mathbb{R}^{d \times m}$ and $W_t \in \mathbb{R}^m$ a standard $m$-dimensional Brownian motion. In practice, such processes are rarely solvable in closed form and must be approximated via numerical discretization schemes. For example, a commonly used time-stepping scheme is the Euler–Maruyama method. For a fixed timestep $\Delta t > 0$, the scheme is given by
+with initial condition $x_0 \in \mathbb{R}^d$, drift $b: \mathbb{R}^d \to \mathbb{R}^d$, diffusion $\sigma: \mathbb{R}^d \to \mathbb{R}^{d \times m}$ and $W_t \in \mathbb{R}^m$ a standard $m$-dimensional Brownian motion. In practice, such processes are rarely solvable in closed form and must be approximated via numerical discretization schemes. For example, a commonly used time-stepping scheme is the Euler–Maruyama method. Let $t_n = n\Delta t$ with timestep $\Delta t > 0$. The scheme is given by
 \[
 x^{n+1} = x^n + b(x^n)\Delta t + \sigma(x^n)\sqrt{\Delta t}\, G^n,
 \]
-where $G^n \sim \mathcal{N}(0, I_m)$ are independent standard Gaussian vectors. Such a recursion defines a Markov chain with transition operator
-\begin{equation} \label{discrete_transition}
-    P_{\Delta t} \varphi(x) := \mathbb{E}[\varphi(x^{n+1}) \mid x^n = x],
+where $G^n \sim \mathcal{N}(0, I_m)$ are independent standard Gaussian vectors. The Euler--Maruyama scheme provides a time-discretization of the SDE. It approximates the solution both in the strong sense (pathwise) and in the weak sense (in expectation). For a bounded measurable test function $f : \mathbb{R}^d \to \mathbb{R}$, such a recursion defines a Markov chain with transition operator
+\begin{equation}
+P_{\Delta t} f(x) := \mathbb{E}[f(x^{n+1}) \mid x^n = x].
 \end{equation}
 which can be viewed as a discrete analogue of the semigroup $(e^{t\mathcal{L}})_{t \geq 0}$ associated with the generator $\mathcal{L}$ of the continuous process.
 
@@ -2377,9 +2378,14 @@ M^{-1} p \\
 -\gamma p \mathrm{~d} t+\sqrt{2 \gamma \tau} M^{1 / 2} \mathrm{~d} W_t
 \end{array}\right]}_O,
 \end{equation}
-This way, Leimkuhler and Matthews developed the ABO/BAOAB/ABOBA methods \cite{leimkuhler2024abo,leimkuhler2013rational}. For example, the BAOAB scheme can be described as
+This way, Leimkuhler and Matthews developed the ABO/BAOAB/ABOBA methods \cite{leimkuhler2024abo,leimkuhler2013rational}. We denote by $\varphi_t^A$, $\varphi_t^B$, and $\varphi_t^O$ the flows
+associated with the subsystems $A$, $B$, and $O$, respectively. For example, the BAOAB scheme can be described as
+%\begin{equation} \label{eq:baoab_flow}
+%\mathcal{F}_{h / 2}^B \circ \mathcal{F}_{h / 2}^A \circ \mathcal{F}_h^O \circ \mathcal{F}_{h / 2}^A \circ \mathcal{F}_{h / 2}^B.
+%\end{equation}
 \begin{equation} \label{eq:baoab_flow}
-\mathcal{F}_{h / 2}^B \circ \mathcal{F}_{h / 2}^A \circ \mathcal{F}_h^O \circ \mathcal{F}_{h / 2}^A \circ \mathcal{F}_{h / 2}^B.
+\varphi_{h/2}^{B} \circ \varphi_{h/2}^{A} \circ \varphi_{h}^{O}
+\circ \varphi_{h/2}^{A} \circ \varphi_{h/2}^{B}.
 \end{equation}
 We can write the update explicitly as
 $$
@@ -2393,9 +2399,9 @@ p_{n+1} & :=\hat{p}_{n+1 / 2}-\frac{h}{2} \nabla U\left(q_{n+1}\right) .
 $$
 In settings like molecular dynamics, splitting schemes like BAOAB have been shown to improve sampling accuracy. Furthermore, if we take the limit $\gamma \xrightarrow[]{} \infty$, the OU step is reduced such that, the above scheme becomes
 \begin{equation} \label{eq:baoab_limit_scheme}
-    x_{n+1}=x_n-h M^{-1} \nabla U\left(x_n\right)+\sqrt{\frac{h}{2\beta}} M^{-1 / 2}\left(R_n+R_{n+1}\right),
+    x_{n+1}=x_n-h M^{-1} \nabla U\left(x_n\right)+\sqrt{\frac{h}{2\beta}} M^{-1 / 2}\left(R_n+R_{n+1}\right).
 \end{equation}
-which was shown to achieve $\mathcal{O}(h^2)$ error to stationary averages.
+As shown in \cite{leimkuhler2013rational}, this scheme achieves $\mathcal{O}(h^2)$ accuracy for stationary averages.
 
 \subsection{Weak and Strong Errors}
 When evaluating the accuracy of an SDE discretization scheme, two primary notions of convergence are considered: weak and strong error.

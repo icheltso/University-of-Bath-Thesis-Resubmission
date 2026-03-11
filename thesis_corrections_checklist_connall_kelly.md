@@ -52,26 +52,26 @@ This checklist consolidates **all required corrections** from the external exami
 ---
 
 ## Chapter 4 (Major Rewrite)
-- [ ] p.46, l.-4: Use standard stochastic process notation $(W_t)_{t \ge 0}$.
-- [ ] p.47, l.3: Clarify martingale statement and filtration.
-- [ ] p.48, l.-3: Clarify what Corollary 5.13 guarantees.
-- [ ] p.49, l.8: Clarify new Brownian motion, filtration, and probability space.
-- [ ] Eq. (4.4): Clarify type of limit.
-- [ ] p.49, l.-4–end: Justify relation between Eqs. (4.6) and (4.7).
-- [ ] p.50, §4.2.1: Define $d$, $n$, time domain, and initial conditions.
-- [ ] p.51, l.1: Note Eq. (4.16) follows from Eq. (4.6).
-- [ ] p.51, l.-1: Fix typo in $W_t$ and state time domain.
-- [ ] p.52, l.1: Fix typo in "The forward equation".
-- [ ] p.53, l.7: Introduce $\varepsilon$.
-- [ ] p.55, §4.4.2: Add sources.
-- [ ] p.61, l.-9: Correct definition of $(x_t)_{t\ge0}$.
-- [ ] p.61, l.-1: Clarify strong vs weak approximation.
-- [ ] p.62, l.3: Define $\vartheta$.
-- [ ] p.63, l.-1: Explain $F$ notation (avoid clash with filtrations).
-- [ ] p.64, l.11: State where result was shown.
-- [ ] p.64, l.-1: Clarify SDE solved by $x$ and role of $\vartheta$.
-- [ ] p.66, l.12: (4.4.12) is an Assumption, not an equation.
-- [ ] p.70: Add chapter wrap-up.
+- [🟢] p.46, l.-4: Use standard stochastic process notation $(W_t)_{t \ge 0}$.
+- [🟢] p.47, l.3: Clarify martingale statement and filtration.
+- [🟢] p.48, l.-3: Clarify what Corollary 5.13 guarantees.
+- [🟢] p.49, l.8: Clarify new Brownian motion, filtration, and probability space.
+- [🟢] Eq. (4.4): Clarify type of limit.
+- [🟢] p.49, l.-4–end: Justify relation between Eqs. (4.6) and (4.7).
+- [🟢] p.50, §4.2.1: Define $d$, $n$, time domain, and initial conditions.
+- [🟢] p.51, l.1: Note Eq. (4.16) follows from Eq. (4.6).
+- [🟢] p.51, l.-1: Fix typo in $W_t$ and state time domain.
+- [🟢] p.52, l.1: Fix typo in "The forward equation".
+- [🟢] p.53, l.7: Introduce $\varepsilon$.
+- [🟢] p.55, §4.4.2: Add sources.
+- [🟢] p.61, l.-9: Correct definition of $(x_t)_{t\ge0}$.
+- [🟢] p.61, l.-1: Clarify strong vs weak approximation.
+- [🟢] p.62, l.3: Define $\vartheta$.
+- [🟢] p.63, l.-1: Explain $F$ notation (avoid clash with filtrations).
+- [🟢] p.64, l.11: State where result was shown.
+- [🟢] p.64, l.-1: Clarify SDE solved by $x$ and role of $\vartheta$.
+- [🟢] p.66, l.12: (4.4.12) is an Assumption, not an equation.
+- [🟢] p.70: Add chapter wrap-up.
 
 ---
 

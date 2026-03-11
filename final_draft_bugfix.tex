@@ -2170,7 +2170,7 @@ Taking the limit as $\epsilon \to 0$ recovers the Poincaré inequality:
 which holds for all $\varphi$ with zero mean under $\nu$.
 \end{proof}
 \end{comment}
-\subsection{Convergence in Weighted \texorpdfstring{$L^\infty$}{L-infinity} Spaces} \label{sec: linfty}
+\subsection{Convergence in Weighted \texorpdfstring{$L^\infty$}{L-infinity} Spaces} \label{sec:linfty}
 
 We now turn to convergence properties in the space $L^\infty$, complementing previous results established in $L^1$ and $L^2(\nu)$ spaces. Consider a stochastic evolution governed by a Markov kernel $P(x, \mathrm{d}x')$, which induces an operator on bounded measurable functions as follows:
 \[
@@ -2307,9 +2307,9 @@ with initial condition $x_0 \in \mathbb{R}^d$, drift $b: \mathbb{R}^d \to \mathb
 \[
 x^{n+1} = x^n + b(x^n)\Delta t + \sigma(x^n)\sqrt{\Delta t}\, G^n,
 \]
-where $G^n \sim \mathcal{N}(0, I_m)$ are independent standard Gaussian vectors. The Euler--Maruyama scheme provides a time-discretization of the SDE. It approximates the solution both in the strong sense (pathwise) and in the weak sense (in expectation). For a bounded measurable test function $f : \mathbb{R}^d \to \mathbb{R}$, such a recursion defines a Markov chain with transition operator
+where $G^n \sim \mathcal{N}(0, I_m)$ are independent standard Gaussian vectors. The Euler--Maruyama scheme provides a time-discretization of the SDE. It approximates the solution both in the strong sense (pathwise) and in the weak sense (in expectation). For a bounded measurable test function $\Psi : \mathbb{R}^d \to \mathbb{R}$, such a recursion defines a Markov chain with transition operator
 \begin{equation}
-P_{\Delta t} f(x) := \mathbb{E}[f(x^{n+1}) \mid x^n = x].
+P_{\Delta t} \Psi(x) := \mathbb{E}[\Psi(x^{n+1}) \mid x^n = x].
 \end{equation}
 which can be viewed as a discrete analogue of the semigroup $(e^{t\mathcal{L}})_{t \geq 0}$ associated with the generator $\mathcal{L}$ of the continuous process.
 
@@ -2405,13 +2405,17 @@ As shown in \cite{leimkuhler2013rational}, this scheme achieves $\mathcal{O}(h^2
 
 \subsection{Weak and Strong Errors}
 When evaluating the accuracy of an SDE discretization scheme, two primary notions of convergence are considered: weak and strong error.
-Weak convergence is concerned with the convergence of expectations of functionals of the solution, which is often sufficient in applications such as statistical estimation or sampling. In contrast, strong convergence focuses on path-wise accuracy, measuring how closely the trajectories of the numerical approximation follow those of the exact solution. The distinction between these two types of convergence plays a critical role in choosing and analyzing discretization methods.
+Weak convergence is concerned with the convergence of expectations of functionals of the solution, which is often sufficient in applications such as statistical estimation or sampling. In contrast, strong convergence focuses on path-wise accuracy, measuring how closely the trajectories of the numerical approximation follow those of the exact solution. The distinction between these two types of convergence plays a critical role in choosing and analyzing discretization methods. Let $(x_t)_{t\ge0}$ denote the solution of the SDE
+\[
+dx_t = b(x_t)\,dt + \sigma(x_t)\,dW_t,
+\]
+and let $x^n$ denote the numerical approximation at time $t_n = n\Delta t$ obtained with timestep $\Delta t$.
 
 \subsubsection{Weak Convergence}
 
-Let $\varphi \in C^\infty_c(\mathbb{R}^d)$ be a smooth test function with compact support. Then, under suitable regularity conditions (e.g., Lipschitz continuity of $b$ and $\sigma$), there exists $\alpha > 0$ such that, for any fixed terminal time $T > 0$, there are constants $C > 0$ and $\Delta t^* > 0$ satisfying
+Let $\Psi \in C^\infty_c(\mathbb{R}^d)$ be a smooth test function with compact support. Then, under suitable regularity conditions (e.g., Lipschitz continuity of $b$ and $\sigma$), there exists $\alpha > 0$ such that, for any fixed terminal time $T > 0$, there are constants $C > 0$ and $\Delta t^* > 0$ satisfying
 \[
-\sup_{0 \leq n \leq T/\Delta t} \left| \mathbb{E}[\varphi(x^n)] - \mathbb{E}[\varphi(x_{n\Delta t})] \right| \leq C \Delta t^\alpha,
+\sup_{0 \leq n \leq T/\Delta t} \left| \mathbb{E}[\Psi(x^n)] - \mathbb{E}[\Psi(x_{n\Delta t})] \right| \leq C \Delta t^\alpha,
 \quad \text{for all } \Delta t \in (0, \Delta t^*].
 \]
 This result quantifies the weak convergence of the numerical method, i.e., the convergence of expected values. The order $\alpha$ is typically determined via expansions such as
@@ -2459,9 +2463,10 @@ X_{n+1} = X_n - \Delta t X_n^3 + \Delta W_n.
 \]
 However, there remains a small but non-negligible probability that the noise term $\Delta W_n$ can push the solution into a regime where $X_n \approx \Delta t^{-1}$, leading to explosive behavior and thus loss of ergodicity for the numerical scheme.
 \end{example}
-Much like in the continuous case, discussed in section \ref{sec: linfty}, the convergence to a stationary distribution can often be established via two key assumptions: a Lyapunov condition (\ref{ass:lyapunov}) and a minorization condition (\ref{ass:minorization}). In practice, establishing the minorization condition is often relatively straightforward, whereas verifying the Lyapunov condition requires assumptions on the drift term\cite{mattingly2002ergodicity}. A common choice for the Lyapunov function is $\mathcal{K}(x) = 1 + |x|^n$ for some $n > 0$. Following this, we can apply theorem \ref{thm:exp-conv-linf} to prove exponential convergence of the iterate distribution to the invariant distribution. Once ergodicity and irreducibility of the discretized scheme have been established, we can invoke results (e.g., \cite[Chapter~17]{Meyn2012-oq}) to obtain almost sure convergence:
+Much like in the continuous case, discussed in Section \ref{sec:linfty}, the convergence to a stationary distribution can often be established via two key assumptions: the Lyapunov condition (Assumption \ref{ass:lyapunov}) and the minorization condition (Assumption
+\ref{ass:minorization}). In practice, establishing the minorization condition is often relatively straightforward, whereas verifying the Lyapunov condition requires assumptions on the drift term\cite{mattingly2002ergodicity}. A common choice for the Lyapunov function is $\mathcal{K}(x) = 1 + |x|^n$ for some $n > 0$. Following this, we can apply theorem \ref{thm:exp-conv-linf} to prove exponential convergence of the iterate distribution to the invariant distribution. Once ergodicity and irreducibility of the discretized scheme have been established, we can invoke results (e.g., \cite[Chapter~17]{Meyn2012-oq}) to obtain almost sure convergence:
 \begin{equation}
-\widehat{\varphi}_{N_{\text {iter }}, \Delta t} \xrightarrow[N_{\text {iter }} \rightarrow+\infty]{\text { a.s. }} \int_{\mathcal{X}} \varphi \mathrm{d} \pi_{\Delta t} .
+\widehat{\Psi}_{N_{\text {iter }}, \Delta t} \xrightarrow[N_{\text {iter }} \rightarrow+\infty]{\text { a.s. }} \int_{\mathcal{X}} \Psi \mathrm{d} \pi_{\Delta t} .
 \end{equation}
 where $\pi_{\Delta t}$ denotes the invariant measure associated with the discretized process.
 %\[
@@ -2469,14 +2474,14 @@ where $\pi_{\Delta t}$ denotes the invariant measure associated with the discret
 %\]
 Suppose now, that Theorem \ref{thm:exp-conv-linf} holds for some ergodic measure $\pi_{\Delta t}$. Assuming $x^0 \sim \pi_{\Delta t}$ (and so $x^n \sim \pi_{\Delta t}$ for all $n\geq 1$) we can use the stationarity property
 \begin{equation}
-\mathbb{E}_{\pi_{\Delta t}}\left[\Pi_{\Delta t} \varphi\left(x^n\right) \Pi_{\Delta t} \varphi\left(x^m\right)\right]=\mathbb{E}_{\pi_{\Delta t}}\left[\Pi_{\Delta t} \varphi\left(x^{|n-m|}\right) \Pi_{\Delta t} \varphi\left(x^0\right)\right]
+\mathbb{E}_{\pi_{\Delta t}}\left[\Pi_{\Delta t} \Psi\left(x^n\right) \Pi_{\Delta t} \Psi\left(x^m\right)\right]=\mathbb{E}_{\pi_{\Delta t}}\left[\Pi_{\Delta t} \Psi\left(x^{|n-m|}\right) \Pi_{\Delta t} \Psi\left(x^0\right)\right]
 \end{equation}
 to derive expressions for the asymptotic variance of the discretization, similar to that of the continuous SDE above:
 \begin{equation}
-\varsigma_{\varphi, \Delta t}^2=N_{\mathrm{corr}, \Delta t, \varphi} \varsigma_{\varphi, \mathrm{iid}, \Delta t}^2 \quad \text { where } \varsigma_{\varphi, \mathrm{iid}, \Delta t}^2=\int_{\mathcal{X}}\left(\Pi_{\Delta t} \varphi\right)^2 \mathrm{~d} \pi_{\Delta t},
+\varsigma_{\Psi, \Delta t}^2=N_{\mathrm{corr}, \Delta t, \Psi} \varsigma_{\Psi, \mathrm{iid}, \Delta t}^2 \quad \text { where } \varsigma_{\Psi, \mathrm{iid}, \Delta t}^2=\int_{\mathcal{X}}\left(\Pi_{\Delta t} \Psi\right)^2 \mathrm{~d} \pi_{\Delta t},
 \end{equation}
-where $\Pi_{\Delta t} \varphi=\varphi-\int_{\mathcal{X}} \varphi \mathrm{d} \pi_{\Delta t}$, $\varsigma_{\varphi, \mathrm{iid}, \Delta t}^2$ refers to the asymptotic variance of i.i.d. samples and $N_{\mathrm{corr}, \Delta t, \varphi}$ quantifies the number of steps required for the process to decorrelate from its previous state. Furthermore, in the limit of small $\Delta t$, the relation between the decorrelation of discrete and continuous dynamics is
-$$\theta_{\mathrm{corr}, \varphi} \simeq N_{\mathrm{corr}, \Delta t, \varphi} \Delta t.$$
+where $\Pi_{\Delta t} \Psi=\Psi-\int_{\mathcal{X}} \Psi \mathrm{d} \pi_{\Delta t}$, $\varsigma_{\Psi, \mathrm{iid}, \Delta t}^2$ refers to the asymptotic variance of i.i.d. samples and $N_{\mathrm{corr}, \Delta t, \Psi}$ quantifies the number of steps required for the process to decorrelate from its previous state. Furthermore, in the limit of small $\Delta t$, the relation between the decorrelation of discrete and continuous dynamics is
+$$\theta_{\mathrm{corr}, \Psi} \simeq N_{\mathrm{corr}, \Delta t, \Psi} \Delta t.$$
 
 
 
@@ -2535,40 +2540,40 @@ Given a test function $\varphi$, we define the time average computed along the d
 
 \subsection{Error Analysis: Decomposition}
 
-In practice, we are interested in using $\widehat{\varphi}_{N_{\text{iter}},\Delta t}$ to approximate
+In practice, we are interested in using $\widehat{\Psi}_{N_{\text{iter}},\Delta t}$ to approximate
 \[
-\mathbb{E}_\pi(\varphi) = \int_\chi \varphi \, d\pi.
+\mathbb{E}_\pi(\Psi) = \int_\chi \Psi \, d\pi.
 \]
 The total error can be decomposed into two contributions:
 \begin{equation} \label{eq:statistic_bias}
-    \widehat{\varphi}_{N_{\text{iter}},\Delta t} - \mathbb{E}_\pi(\varphi) = \underbrace{\left( \widehat{\varphi}_{N_{\text{iter}},\Delta t} - \mathbb{E}_{\pi_{\Delta t}}(\varphi) \right)}_{\text{Statistical Error}} + \underbrace{\left( \mathbb{E}_{\pi_{\Delta t}}(\varphi) - \mathbb{E}_\pi(\varphi) \right)}_{\text{Bias}}.
+    \widehat{\Psi}_{N_{\text{iter}},\Delta t} - \mathbb{E}_\pi(\Psi) = \underbrace{\left( \widehat{\Psi}_{N_{\text{iter}},\Delta t} - \mathbb{E}_{\pi_{\Delta t}}(\Psi) \right)}_{\text{Statistical Error}} + \underbrace{\left( \mathbb{E}_{\pi_{\Delta t}}(\Psi) - \mathbb{E}_\pi(\Psi) \right)}_{\text{Bias}}.
 \end{equation}
 
 \paragraph{Statistical Error.}
-Once the asymptotic regime is attained, the statistical error scales like $\mathcal{O}(1/\sqrt{N_{\text{iter}}})$. More precisely, for asymptotic variance $\varsigma_{\varphi,\Delta t}^2$
+Once the asymptotic regime is attained, the statistical error scales like $\mathcal{O}(1/\sqrt{N_{\text{iter}}})$. More precisely, for asymptotic variance $\varsigma_{\Psi,\Delta t}^2$
 \[
-\lim_{\Delta t \to 0} \Delta t \, \varsigma_{\varphi,\Delta t}^2 = \varsigma_\varphi^2,
+\lim_{\Delta t \to 0} \Delta t \, \varsigma_{\Psi,\Delta t}^2 = \varsigma_\Psi^2,
 \]
 where
 \[
-\varsigma_\varphi^2 = \lim_{t \to +\infty} t \, \mathrm{Var}_\pi(\hat{\varphi}_t), \quad \varsigma_{\varphi,\Delta t}^2 = \lim_{N_{\text{iter}} \to +\infty} N_{\text{iter}} \, \mathrm{Var}_{\pi_{\Delta t}}\left( \widehat{\varphi}_{N_{\text{iter}},\Delta t} \right).
+\varsigma_\Psi^2 = \lim_{t \to +\infty} t \, \mathrm{Var}_\pi(\hat{\Psi}_t), \quad \varsigma_{\Psi,\Delta t}^2 = \lim_{N_{\text{iter}} \to +\infty} N_{\text{iter}} \, \mathrm{Var}_{\pi_{\Delta t}}\left( \widehat{\Psi}_{N_{\text{iter}},\Delta t} \right).
 \]
 
 \paragraph{Bias (Systematic Error).}
 The bias arises because $\pi_{\Delta t} \neq \pi$. It can be expanded asymptotically as
 \begin{equation} \label{bias_error}
-    \int_{\chi} \varphi \, d\pi_{\Delta t} = \int_{\chi} \varphi \, d\pi + \Delta t^p \int_{\chi} \varphi f \, d\pi + \mathcal{O}(\Delta t^{p+1}),
+    \int_{\chi} \Psi \, d\pi_{\Delta t} = \int_{\chi} \Psi \, d\pi + \Delta t^p \int_{\chi} \Psi f \, d\pi + \mathcal{O}(\Delta t^{p+1}),
 \end{equation}
 for some function $f$ and some $p \geq \alpha$, where $\alpha$ is the weak order of the numerical scheme. The bias becomes noticeable only when the total simulation time $T = N_{\text{iter}} \Delta t$ is large.
 \subsection{Analysis of the Bias} \label{sec:ana_bias}
 
 We now provide a detailed justification of the bias expansion (\ref{bias_error}) under suitable regularity and stability assumptions. This expansion captures the leading-order contribution of the difference between the invariant measure of the numerical scheme $\pi_{\Delta t}$ and the true invariant measure $\pi$. We assume that the transition operator $P_{\Delta t}$ of the numerical scheme admits an asymptotic expansion in powers of $\Delta t$:
 \[
-P_{\Delta t} \varphi = \varphi + \Delta t \mathcal{A}_1 \varphi + \Delta t^2 \mathcal{A}_2 \varphi + \cdots + \Delta t^{p+1} \mathcal{A}_{p+1} \varphi + \Delta t^{p+2} r_{\varphi, \Delta t},
+P_{\Delta t} \Psi = \Psi + \Delta t \mathcal{A}_1 \Psi + \Delta t^2 \mathcal{A}_2 \Psi + \cdots + \Delta t^{p+1} \mathcal{A}_{p+1} \Psi + \Delta t^{p+2} r_{\Psi, \Delta t},
 \]
-for test functions $\varphi$ in a suitable space $\mathcal{S}$. The operators $\mathcal{A}_k$ are typically differential operators determined by the structure of the numerical scheme, and the order $p$ corresponds to the weak accuracy of the integrator. Typically:
+for test functions $\Psi$ in a suitable space $\mathcal{S}$. The operators $\mathcal{A}_k$ are typically differential operators determined by the structure of the numerical scheme, and the order $p$ corresponds to the weak accuracy of the integrator. Typically:
 \begin{itemize}
-    \item $\mathcal{A}_k$ are identified by expanding $\varphi(x^{n+1})$ around $\varphi(x^n)$ using the dynamics of the scheme.
+    \item $\mathcal{A}_k$ are identified by expanding $\Psi(x^{n+1})$ around $\Psi(x^n)$ using the dynamics of the scheme.
     \item $\mathcal{A}_1 = \mathcal{L}$, where $\mathcal{L}$ is the infinitesimal generator of the continuous-time Markov process.
     \item More generally, if the numerical scheme has weak order $p$, then $\mathcal{A}_k = \frac{\mathcal{L}^k}{k!}$ for $1 \leq k \leq p$.
 \end{itemize}  
@@ -2578,9 +2583,9 @@ Let $(\mathcal{K}_n)_{n \in \mathbb{N}}$ be a sequence of weight functions $\mat
 \[\mathcal{K}_n \leq \mathcal{K}_{n+1}, \text{ for all } n \geq 0.\]
 Define:
 \[
-\mathcal{S} = \left\{ \varphi \in C^\infty(\mathcal{X}) \,\middle|\, \text{ for all } k \in \mathbb{N}^d, \text{ there exists } m \in \mathbb{N} \text{ such that } \partial^k \varphi \in L^\infty_{\mathcal{K}_m}(\mathcal{X}) \right\},
+\mathcal{S} = \left\{ \Psi \in C^\infty(\mathcal{X}) \,\middle|\, \text{ for all } k \in \mathbb{N}^d, \text{ there exists } m \in \mathbb{N} \text{ such that } \partial^k \Psi \in L^\infty_{\mathcal{K}_m}(\mathcal{X}) \right\},
 \]
-where $L^\infty_{\mathcal{K}_m}$ denotes the space of functions satisfying $\|\partial^k \varphi / \mathcal{K}_m\|_{L^\infty} < \infty$.
+where $L^\infty_{\mathcal{K}_m}$ denotes the space of functions satisfying $\|\partial^k \Psi / \mathcal{K}_m\|_{L^\infty} < \infty$.
 
 \begin{itemize}
     \item For bounded $\mathcal{X}$, choose $\mathcal{K}_n = 1$, so $\mathcal{S} = C^\infty(\mathcal{X})$.
@@ -2602,18 +2607,18 @@ That is, for $\phi \in \mathcal{S}_0$, the unique solutions $\Phi$ to $\mathcal{
     \label{thm:error-inv-measure}
     Suppose that the stability assumption \ref{ass:inverse_stability} is satisfied, and that the numerical transition operator $P_{\Delta t}$ admits an expansion
     \begin{equation} \label{A_expansion}
-        P_{\Delta t} \varphi = \varphi + \Delta t \mathcal{A}_1 \varphi + \cdots + \Delta t^{p+1} \mathcal{A}_{p+1} \varphi + \Delta t^{p+2} r_{\varphi,\Delta t},
+        P_{\Delta t} \Psi = \Psi + \Delta t \mathcal{A}_1 \Psi + \cdots + \Delta t^{p+1} \mathcal{A}_{p+1} \Psi + \Delta t^{p+2} r_{\Psi,\Delta t},
     \end{equation}
-    for any $\varphi \in \mathcal{S}$, with some $p \in \mathbb{N}$. Assume that there exist constants $K > 0$, $m \in \mathbb{N}$, and $\Delta t^* > 0$ such that the remainder is uniformly bounded:
+    for any $\Psi \in \mathcal{S}$, with some $p \in \mathbb{N}$. Assume that there exist constants $K > 0$, $m \in \mathbb{N}$, and $\Delta t^* > 0$ such that the remainder is uniformly bounded:
     \[
-    \| r_{\varphi,\Delta t} \|_{L^\infty(\mathcal{K}_m)} \leq K, \quad \text{for all } \Delta t \leq \Delta t^*.
+    \| r_{\Psi,\Delta t} \|_{L^\infty(\mathcal{K}_m)} \leq K, \quad \text{for all } \Delta t \leq \Delta t^*.
     \]
     Additionally, assume the following:
     \begin{enumerate}
         \item For each $k \geq 1$, the operator $\mathcal{A}_k$ leaves $\mathcal{S}$ invariant;
         \item For all $k \in \{1, \ldots, p\}$, the operator $\mathcal{A}_k$ satisfies
         \begin{equation} \label{Ak_mean_zero}
-            \int_\mathcal{X} \mathcal{A}_k \varphi \, d\pi = 0 \quad \text{for all } \varphi \in \mathcal{S};
+            \int_\mathcal{X} \mathcal{A}_k \Psi \, d\pi = 0 \quad \text{for all } \Psi \in \mathcal{S};
         \end{equation}
         \item The function $g_{p+1} := \mathcal{A}_{p+1}^* 1 \in \mathcal{S}_0$;
         \item The measure $\pi_{\Delta t}$ integrates all scale functions: for all $n \in \mathbb{N}$,
@@ -2623,9 +2628,9 @@ That is, for $\phi \in \mathcal{S}_0$, the unique solutions $\Phi$ to $\mathcal{
     \end{enumerate}
     Then, there exists $L > 0$ such that, for all $\Delta t \in (0, \Delta t^*]$,
     \begin{equation} \label{bias_error_estimate}
-        \int_\mathcal{X} \varphi \, d\pi_{\Delta t} = \int_\mathcal{X} \varphi \, d\pi + \Delta t^p \int_\mathcal{X} \varphi f_{p+1} \, d\pi + \Delta t^{p+1} R_{\varphi,\Delta t},
+        \int_\mathcal{X} \Psi \, d\pi_{\Delta t} = \int_\mathcal{X} \Psi \, d\pi + \Delta t^p \int_\mathcal{X} \Psi f_{p+1} \, d\pi + \Delta t^{p+1} R_{\Psi,\Delta t},
     \end{equation}
-    with $|R_{\varphi,\Delta t}| \leq L$, and where the bias function $f_{p+1} \in \mathcal{S}_0$ is given by
+    with $|R_{\Psi,\Delta t}| \leq L$, and where the bias function $f_{p+1} \in \mathcal{S}_0$ is given by
     \[
     f_{p+1} = -(\mathcal{A}_1^*)^{-1} g_{p+1}.
     \]
@@ -2634,6 +2639,18 @@ That is, for $\phi \in \mathcal{S}_0$, the unique solutions $\Phi$ to $\mathcal{
     \mathcal{A}_1^* f_{p+1} = -\mathcal{A}_{p+1}^* 1.
     \]
 \end{theorem}
+
+
+\section{Chapter Summary}
+
+This chapter established the stochastic and numerical background required for the study of Langevin-based sampling methods. We
+introduced stochastic differential equations, the It\^{o} calculus framework, and numerical discretization techniques including
+Euler--Maruyama and splitting methods. We also reviewed notions of weak and strong convergence and conditions ensuring ergodicity of
+the associated Markov processes.
+
+These results will be used throughout the remainder of the thesis to analyze the behaviour of discretized Langevin dynamics and the
+sampling schemes derived from them. The next chapter introduces the specific models and algorithms that form the focus of the analysis
+in Part II.
 \begin{comment}
     \begin{proof} [Outline of proof]
     The proof is in two parts. First, the result is proven for functions $\varphi \in (P_{\Delta t} - \Id)\mathcal{S}.$ Afterwards, the proof is extended to all functions in $\mathcal{S}_0$. Consider $\phi \in \mathcal{S}$. Then invariance of $\pi_{\Delta t}$ by the discretized dynamics gives

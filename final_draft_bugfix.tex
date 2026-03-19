@@ -2810,6 +2810,14 @@ over $(u,v)\in \mathcal X= \real_+^d\times \mathbb {R}^d$ for normalisation cons
 \end{theorem}
 
 \chapter{Analysis of Hadamard-Langevin Dynamics}
+We begin by introducing the notation used throughout this section. Let $d\in\mathbb N$ denote the dimension. We consider stochastic processes $(u,v)_t\in \mathbb R_+^d \times \mathbb R^d$, and write $x_t = u_t \odot v_t \in \mathbb R^d$.
+
+We denote by $\pi$ the target probability distribution on $\mathbb R^d$, given (formally) by
+\[
+\pi(x) \propto \exp(-\beta H(x)),
+\]
+where $\beta>0$ is the inverse temperature parameter, and $H:\mathbb R^d \to \mathbb R$ is the potential function associated with the model.
+
 \section{Continuous Dynamics}
 \subsection{Formulation and Cartesian Reparametrization}
 We can use Langevin sampling to produce samples from $\pi$. Write $\pi\propto\exp(-\beta\, H)$ for $H((u,v))=\frac 12 \,\lambda\, \|(u,v)\|^2 + G(u\odot v)- \frac{1}{\beta}\,\sum_i\log u_i$. The gradient
@@ -2833,7 +2841,7 @@ dv_t&=-\lambda\,  v_t\,dt -  \,u_t \odot \nabla G(u_t\odot v_t)\,dt+  \sqrt\frac
 \end{split}
 \end{equation}
 
-We can reparametrize into Cartesian coordinates to obtain the system
+where $W_t^1$ and $W_t^2$ are independent $d$-dimensional standard Brownian motions. We can reparametrize into Cartesian coordinates to obtain the system
 
 \begin{equation} 
 \begin{split} 
@@ -2861,14 +2869,26 @@ Recall that a process is irreducible if for any Borel set $B$ with positive Lebe
 $ is continuous in $X_0$ for all Borel sets $B$.
 We say a function $\mu(y,z,v)$ is cylindrical on $\real^{3d}$ if for some $\tilde \mu\colon \real^{2d}\to \real$ we have $\mu(y,z,v)=\tilde \mu(u,v)$  for all $u=((y\odot y)+(z\odot z))^{1/2}$.
 
-
-\begin{theorem} \label{wp}  Suppose that Assumption (\ref{reg1}) holds. Subject to initial condition $(u,v)_0=(U_0,V_0)\in \mathcal{X}=\real_+^d\times \mathbb R^d$,
+\begin{comment}
+    \begin{theorem} \label{wp}  Suppose that Assumption (\ref{reg1}) holds. Subject to initial condition $(u,v)_0=(U_0,V_0)\in \mathcal{X}=\real_+^d\times \mathbb R^d$,
 %\fc{probably best to recall that $\mathcal{X} = \real_+^d\times \mathbb R^d$?} 
 there is a unique solution $(u, v)_t$ to (\ref{uvproc}) such that  $u_t>0$ almost surely and $\mean{\sup_{0\le t\le T} \norm{(u,v)_t}^q}<\infty$, for any $T>0$, $q\ge 2$. Further, $(u,v)_t$ is strong Feller and irreducible on $\mathcal X$.
 
 The probability density function $p(t,\cdot)$ of $\vec x_t$ (see \ref{cyl}) is well-defined. 
-If the initial distribution is cylindrical, the marginal distribution of $((x_t^2+y_t^2)^{1/2},v_t)$ equals the law of the solution $(u_t,v_t)$ of (\ref{uvproc}).
+If the initial distribution is cylindrical, the marginal distribution of $((x_t^2+y_t^2)^{1/2},v_t)$ equals the law of the solution $(u,v)_t$ of (\ref{uvproc}).
 % Further, if the initial density function is cylindrical, then the probability density function  $\rho(t,\cdot)$ of $(u,v)_t$ satisfies \begin{equation}\rho(t,(u,v))=p(t,(y,z,v)),\qquad u=(y\odot y+z\odot z)^{1/2}.\label{agree}\end{equation} 
+\end{theorem}
+\end{comment}
+
+\begin{theorem} \label{wp}
+Suppose that Assumption (\ref{reg1}) holds. Subject to initial condition $(u,v)_0=(U_0,V_0)\in \mathcal{X}=\real_+^d\times \mathbb R^d$, and assuming that the associated mollified Cartesian dynamics satisfy the localization condition
+\[
+\lim_{n\to\infty}\mathbb P\!\left(\sup_{0\le t\le T}\|\vec x^{(n)}_t\|\ge n\right)=0 \quad \text{for all } T>0,
+\]
+there is a unique solution $(u, v)_t$ to (\ref{uvproc}) such that  $u_t>0$ almost surely and $\mean{\sup_{0\le t\le T} \norm{(u,v)_t}^q}<\infty$, for any $T>0$, $q\ge 2$. Further, $(u,v)_t$ is strong Feller and irreducible on $\mathcal X$.
+
+The probability density function $p(t,\cdot)$ of $\vec x_t$ (see \ref{cyl}) is well-defined. 
+If the initial distribution is cylindrical, the marginal distribution of $((x_t^2+y_t^2)^{1/2},v_t)$ equals the law of the solution $(u,v)_t$ of (\ref{uvproc}).
 \end{theorem}
 
 \begin{proof}
@@ -2942,7 +2962,7 @@ with given initial data $\hat z_0$. The first component $\hat u_t$ of $\hat z_t$
     $$
     \EE\biggl[ \exp\biggl(\gamma \int_0^T \norm{b(\hat{z}_s)}^2 \,ds\biggr) \biggr] <\infty.
     $$
-    There exists a weak solution $(u_t,v_t)$ of (\ref{uvproc}) that is unique in law. Additionally, $u_t>0$ almost surely.
+    There exists a weak solution $(u,v)_t$ of (\ref{uvproc}) that is unique in law. Additionally, $u_t>0$ almost surely.
 \end{lemma}
 \begin{proof}
 

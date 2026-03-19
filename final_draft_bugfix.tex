@@ -2872,7 +2872,14 @@ If the initial distribution is cylindrical, the marginal distribution of $((x_t^
 \end{theorem}
 
 \begin{proof}
-\cite[Corollary 10.1.4]{Stroock2013-df} gives that $\vec x_t$ is strong Feller and has a well-defined probability density function. To apply this result, note that \cite[Equation (1.7) of Theorem 10.1.3]{Stroock2013-df} holds as the regularised drift and diffusion (defined by multiplying by a compactly supported mollifying function) are globally Lipschitz in our case.
+%\cite[Corollary 10.1.4]{Stroock2013-df} gives that $\vec x_t$ is strong Feller and has a well-defined probability density function. To apply this result, note that \cite[Equation (1.7) of Theorem 10.1.3]{Stroock2013-df} holds as the regularised drift and diffusion (defined by multiplying by a compactly supported mollifying function) are globally Lipschitz in our case.
+
+\cite[Corollary 10.1.4]{Stroock2013-df} gives that $\vec x_t$ is strong Feller and has a well-defined probability density function. To apply this result, we consider SDEs with mollified (compactly supported) drift and diffusion coefficients, which are smooth and globally Lipschitz. In addition, one requires the condition
+\[
+\lim_{n\to\infty}\mathbb P\!\left(\sup_{0\le t\le T}\|\vec x^{(n)}_t\|\ge n\right)=0,
+\]
+where $\vec x^{(n)}$ denotes the solution of the mollified system. While global Lipschitzness ensures that each mollified SDE is well posed, this condition does not follow directly. Under Assumption~\ref{reg1}, the drift of the Cartesian system has at most linear growth, and one expects the above condition to follow from a suitable Lyapunov estimate. We do not establish this estimate in full generality here, and regard it as an additional technical step required for the application of \cite[Theorem 10.1.3]{Stroock2013-df}.
+
 Due to the non-degenerate and additive noise, $\vec x_t$ is irreducible by standard arguments~\cite[Section 6]{Bellet2006-pq}
 
 

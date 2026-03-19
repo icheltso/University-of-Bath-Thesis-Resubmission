@@ -2721,14 +2721,24 @@ for normalisation constant $Z$, inverse temperature $\beta > 0$ and data term $G
 \end{assumption}
 
 The data term $G$ is bounded below so that $\rho$ is a probability measure for some normalisation constant $Z>0$. Note that (iii) holds if $G$ is a convex function. Important examples that satisfy (i), (ii) and (iii) include the quadratic loss $G(x) = \norm{ A x - y}^2$ for an $m\times d$ matrix $A$ and $y\in \real^m$; the logistic loss $G(x)=\sum_{i=1}^m \log( 1+ \exp(-y_i A_i^\top x) )$ for $A_i\in\real^d$; and smooth approximations of the unit loss,  such as $G(x) = \sum_i \sigma(y_i A_i^\top x)$ for $\sigma(x)=\arctan(x)$ or $\sigma(x)=1/(1+\exp(x))$.
-Note that  $G(x) = \sum_i \sigma(y_i A_i^\top x)$  satisfies condition (iv) for any function $\sigma$ with bounded derivatives, which includes the logistic loss and smooth versions of the unit.  The least-squares loss $G(x)=\norm{Ax-y}^2$ does not satisfy condition (iv) on the boundedness of $\nabla G$ and one might consider instead the Huber loss. However, in our numerical computations, the method behaves well with the quadratic loss so assumption (iv) is likely a limitation of our theoretical analysis rather than the method itself.
+Note that  $G(x) = \sum_i \sigma(y_i A_i^\top x)$  satisfies condition (iv) for any function $\sigma$ with bounded derivatives, which includes the logistic loss and smooth versions of the unit.  The least-squares loss $G(x)=\norm{Ax-y}^2$ does not satisfy condition
+(iv) on the boundedness of $\nabla G$. A common alternative is the Huber loss, which replaces the quadratic loss with a function that
+is quadratic near zero and linear for large residuals. Writing the residual as $r = Ax - y$, the Huber loss is defined by
+\[
+L_\delta(r) =
+\begin{cases}
+\frac{1}{2} r^2, & |r| \le \delta, \\
+\delta\left(|r| - \frac{1}{2}\delta\right), & |r| > \delta,
+\end{cases}
+\]
+where $\delta>0$ controls the transition between quadratic and linear behaviour. However, in our numerical computations, the method behaves well with the quadratic loss so assumption (iv) is likely a limitation of our theoretical analysis rather than the method itself.
 \section{Previous Approaches}
 \subsection{Unadjusted Langevin algorithms (ULA)}
 Consider a target distribution with a smooth potential $H: \mathbb{R}^d \xrightarrow[]{} \mathbb{R}$:
 \begin{equation} \label{smoothdist}
     \rho(x) \propto \exp{-\beta H(x)}
 \end{equation}
-A classic approach to sampling from \ref{smoothdist} is via Langevin Dynamics:
+A classic approach to sampling from the distribution $\rho$ is via Langevin Dynamics:
 \begin{equation}
     x_{n+1} = x_n - \Delta t\nabla H(x_n) + \sqrt{2\Delta t/\beta} \xi^n,
 \end{equation}
@@ -2754,13 +2764,12 @@ where the proximal operator is defined as
 \end{align*}
 One can then directly apply ULA to $H_\gamma\eqdef G + R_\gamma$, leading to the Moreau--Yosida regularized Unadjusted Langevin Algorithm (MYULA) \cite{durmus2018efficient}. Convergence to the stationary distribution requires one to take $\gamma \to 0$ \cite{durmus2018efficient}. Under suitable conditions, such as convexity of $G$ and Lipschitz smoothness, convergence results like geometric ergodicity of the stationary distribution   $\rho_\gamma \propto \exp(-\beta H_\gamma)$ have been established, as well as the convergence of $\rho_\gamma$ to $\rho$ as $\gamma \to 0$.
 \subsection{The Gibbs Sampler}
-The Bayesian lasso model is a special case where one has $\ell_1$ priors and quadratic data term $G$; that is
+The Bayesian Lasso model is a special case where one has $\ell_1$ priors and quadratic data term $G$; that is
 $$
 \rho(x) \propto \exp\pa{ \beta \pa{-\lambda \norm{x}_1 - G(x)} },
 $$
 where $G(x) = \frac12\norm{Ax-y}^2$
-for some matrix $A\in \real^{m\times d}$ and data vector $y\in \real^m$. 
-Although the proximal-based Langevin algorithms are now the `go-to' sampling methods for this problem,  an interesting approach that  pre-dates  proximal-type methods (and introduces no additional smoothing) is the following Gibbs sampler based on a hierarchical model \cite{park2008Bayesian}, which can be seen as the equivalent of the $\eta$-trick for sampling.
+for some matrix $A\in \real^{m\times d}$ and data vector $y\in \real^m$. Proximal-based Langevin methods and related splitting schemes have become standard tools for sampling from distributions with non-smooth priors, particularly in imaging and inverse problems \cite{pereyra2016proximal, durmus2018efficient, proxalgs}. An interesting approach that  pre-dates  proximal-type methods (and introduces no additional smoothing) is the following Gibbs sampler based on a hierarchical model \cite{park2008Bayesian}, which can be seen as the equivalent of the $\eta$-trick for sampling.
 
 % The Gibbs sampler is a popular Markov Chain Monte Carlo (MCMC) method used to sample from the posterior distribution of model parameters in Bayesian inference.
 
@@ -2783,7 +2792,7 @@ for $(\eta,x)\in \mathcal X=\real_+^d\times \real^d$.
 Due to (\ref{eq:laplace}), the marginal distribution in $x$ is $\rho$. As $G$ is quadratic, conditional on $\eta$,  the distribution of $x$ is  Gaussian; while conditional on $x$, the distribution of $1/\eta$ is  inverse Gaussian.
 This leads to a Gibbs sampler which alternates between sampling $x$ conditional on $\eta$  and sampling $\eta_i$ conditional on $x$.
 \section{Hadamard-Langevin Dynamics}
-The biggest drawback of proximal methods, such as MYULA, is that convergence to the target distribution is only guaranteed in the limit $\gamma \xrightarrow[]{} 0$. Additionally, statistical quantities such as modes are not preserved under smoothing. On the other hand, the Gibbs sampler approximates the target distribution exactly when working with quadratic cost functionals, but involves computing matrix inverses, making it unsuitable for high-dimensional problems. We thus introduce a sampling method based on the $u,v$-reparameterization we introduced earlier in section \ref{subsec: hada}. Unlike in the case with smoothing-based methods we no longer need to consider the approximation error. More precisely, by taking the distribution (\ref{target}), the reparametrization and change of variables as seen in (\ref{quad_form_l1}-\ref{uv_form_l1}), we obtain the following probability distribution:
+The biggest drawback of proximal methods, such as MYULA, is that convergence to the target distribution is only guaranteed in the limit $\gamma \xrightarrow[]{} 0$. Additionally, statistical quantities such as modes are not generally preserved under smoothing. On the other hand, the Gibbs sampler approximates the target distribution exactly when working with quadratic cost functionals, but involves computing matrix inverses, making it unsuitable for high-dimensional problems. We thus introduce a sampling method based on the $u,v$-reparameterization we introduced earlier in section \ref{subsec: hada}. Unlike in the case with smoothing-based methods we no longer need to consider the approximation error. More precisely, by taking the distribution (\ref{target}), the reparametrization and change of variables as seen in (\ref{quad_form_l1}-\ref{uv_form_l1}), we obtain the following probability distribution:
 \begin{align}
 \pi(u,v)=\frac{1}{Z_\pi} \prod_{i=1}^d  u_i\, \exp\pp{-\beta\, \pp{\frac12\lambda \|(u,v)\|^2+G(u\odot v)} },\label{pi}
 \end{align}
@@ -2800,7 +2809,7 @@ over $(u,v)\in \mathcal X= \real_+^d\times \mathbb {R}^d$ for normalisation cons
     \[\frac{1}{Z} = \frac{1}{Z_\pi} \left(\sqrt{\frac{\pi}{2\beta \lambda}}\right)^d.\]
 \end{theorem}
 
-\chapter{Analysis}
+\chapter{Analysis of Hadamard-Langevin Dynamics}
 \section{Continuous Dynamics}
 \subsection{Formulation and Cartesian Reparametrization}
 We can use Langevin sampling to produce samples from $\pi$. Write $\pi\propto\exp(-\beta\, H)$ for $H((u,v))=\frac 12 \,\lambda\, \|(u,v)\|^2 + G(u\odot v)- \frac{1}{\beta}\,\sum_i\log u_i$. The gradient
@@ -2824,7 +2833,7 @@ dv_t&=-\lambda\,  v_t\,dt -  \,u_t \odot \nabla G(u_t\odot v_t)\,dt+  \sqrt\frac
 \end{split}
 \end{equation}
 
-We can reparametrize into cartesian coordinates to obtain the system
+We can reparametrize into Cartesian coordinates to obtain the system
 
 \begin{equation} 
 \begin{split} 
@@ -3216,7 +3225,7 @@ The process $(u,v)_t$ is strong Feller and irreducible by Theorem \ref{wp}. Henc
 \end{proof}
 
 \section{Discretization in Cylindrical Coordinates}
-We consider various approaches to discretizing the $u,v$-parametrization, both in cylindrical (\ref{uvproc}) and cartesian (\ref{yzvproc}) coordinates.
+We consider various approaches to discretizing the $u,v$-parametrization, both in cylindrical (\ref{uvproc}) and Cartesian (\ref{yzvproc}) coordinates.
 We introduce a novel implicit-explicit scheme: for time step $\deltat$, we seek an approximation $(u,v)^n$ to $(u,v)_{n \tstep}$ via
 \begin{gather}
 \begin{split}
@@ -3717,7 +3726,7 @@ We may also consider the sequential (BO) scheme, akin to Lie-Trotter for ODEs:
 \end{equation}
 However, this should perform worse than BOB due to asymmetry creating $\mathcal{O}(h)$ terms in BCH expansion. We also confirm this in numerical tests that we won't present.
 \begin{comment}
-We compare performance to the Euler-Maruyama scheme applied to cartesian coordinates:
+We compare performance to the Euler-Maruyama scheme applied to Cartesian coordinates:
 \begin{equation} 
 \begin{split} 
 \vec x_{n+1}&=\vec x_{n} - h \,\lambda \vec x_{n} - h\,\nabla G_{3}(\vec x_n) +\sqrt{2/\beta} \, R_n\, \quad R_n \sim N(0,I_{3d})
@@ -3751,7 +3760,7 @@ We consider the case where $d=1$, and choose $A=1$, $y=3$, and $\lambda = 2.7$. 
     \caption{Error of the stationary distribution for different stepsizes}
     \label{fig:error_1d}
 \end{figure}
-We carry out the experiment with $\phi(x) = x^2$. Figure \ref{fig:error_1d} shows the error between the mean of  $\phi(u\odot v)$  evaluated via these samples compared with the integral of the true density $\rho$ (i.e., \eqref{target}) against $\phi$ (we compute this numerically  using scipy.integrate). This procedure is also repeated for Proximal Langevin, as well as the cartesian discretizations, BOB and PEM. In general, we observe $\Oo(\deltat)$ for Proximal Langevin, Hadamard and BOB. PEM performed significantly better, although due to the Monte-Carlo error, it is difficult to say whether the quadrature error scaled as $\Oo(\deltat)$.
+We carry out the experiment with $\phi(x) = x^2$. Figure \ref{fig:error_1d} shows the error between the mean of  $\phi(u\odot v)$  evaluated via these samples compared with the integral of the true density $\rho$ (i.e., \eqref{target}) against $\phi$ (we compute this numerically  using scipy.integrate). This procedure is also repeated for Proximal Langevin, as well as the Cartesian discretizations, BOB and PEM. In general, we observe $\Oo(\deltat)$ for Proximal Langevin, Hadamard and BOB. PEM performed significantly better, although due to the Monte-Carlo error, it is difficult to say whether the quadrature error scaled as $\Oo(\deltat)$.
 
 
 \subsection{20-dimensional regression}
@@ -4039,7 +4048,7 @@ We consider Gaussian deconvolution of a piecewise-constant signal (length $d = 1
 \end{figure}
 
 \subsection{2D Deconvolution with Haar wavelets}
-We perform inpainting: $A = UW^T$, where $U$ is a masking operator and $W$ represents a two-dimensional Haar wavelet transform. We run proximal and Hadamard Langevin, as well as the cartesian schemes, for $\beta = 5,100,500$. All methods are run for 10,000 burn-in iterations and 6000 sampling iterations, with a subsampling frequency of 20 (300 samples total). For the 300 samples we observe the means, as well as the quantile differences. The original, perturbed and MAP recovered images can be seen in Figure \ref{fig:camera_mask}. Furthermore, the means and quantile differences for various $\beta$ can be found in Figures \ref{fig:inpainting2} and \ref{fig:inpainting3}. In general, for small values of $\beta$, the greatest variations occur at the masked pixels. For larger values of $\beta$, we observe the most variance at the image edges.
+We perform inpainting: $A = UW^T$, where $U$ is a masking operator and $W$ represents a two-dimensional Haar wavelet transform. We run proximal and Hadamard Langevin, as well as the Cartesian schemes, for $\beta = 5,100,500$. All methods are run for 10,000 burn-in iterations and 6000 sampling iterations, with a subsampling frequency of 20 (300 samples total). For the 300 samples we observe the means, as well as the quantile differences. The original, perturbed and MAP recovered images can be seen in Figure \ref{fig:camera_mask}. Furthermore, the means and quantile differences for various $\beta$ can be found in Figures \ref{fig:inpainting2} and \ref{fig:inpainting3}. In general, for small values of $\beta$, the greatest variations occur at the masked pixels. For larger values of $\beta$, we observe the most variance at the image edges.
 
 \begin{figure}[htp]
     \centering

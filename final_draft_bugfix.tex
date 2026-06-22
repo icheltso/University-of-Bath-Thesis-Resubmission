@@ -3619,7 +3619,7 @@ Up to time $\theta_R$, we have the following error.
 \begin{proposition}\label{prop:error_under_bounded_ball}
   Let the assumptions of Proposition \ref{prop:error_discrete} hold and $\deltat \leq \frac{1}{2C_R}$.  
     For all $\epsilon>0$, 
-    \begin{equation}
+    \begin{equation} \label{stopping_hypo}
         \EE\bp{\sup_{0\leq t_k\leq T} \norm{e(t_k\wedge \theta_R)}} \leq  c  \,\exp(2\,T\, C_R)\, \deltat^{\frac12-\epsilon},
     \end{equation}
     where $c$ that depends on $\epsilon$, $C_R$, $d$, and $\lambda$.
@@ -3662,11 +3662,14 @@ where we used that
     \pa{1 + 2\,\lambda \,\deltat -  C_R\,\tstep} E_{k+1}^2 \leq \pa{1+ 2\,C_R \,\deltat } E_k^2 +   2\,E_{k+1} R_k .
 \end{align*}
 Define $c_1 = \pa{1+ 2\,C_R\, \deltat }/ \pa{1 + 2\lambda\, \deltat - \,C_R\,\tstep}$ and $c_2 = 2/ \pa{1 + 2\,\lambda\, \deltat -  C_R\,\tstep}$. Note, that for sufficiently small \(\Delta t\), the denominator
-\(1+2\lambda\Delta t-C_R\Delta t\) is positive. Then, letting $M=\left\lfloor\frac{T}{\Delta t}\right\rfloor$,
+\(1+2\lambda\Delta t-C_R\Delta t\) is positive.
+%\begin{align*}
+%    E_{k+1}^2 &\leq c_1 E_k^2 + c_2 E_{k+1} R_k \leq c_1^{k+1} E_{0}^2 + c_2 \sum_{j=0}^{k} c_1^j  E_{k+1-j} R_{k-j}\leq c_2 \sup_{k\leq M\wedge \theta_R} E_k \sum_{j=0}^{k} c_1^j   R_{k-j}.
+% \end{align*}
 \begin{align*}
-    E_{k+1}^2 &\leq c_1 E_k^2 + c_2 E_{k+1} R_k \leq c_1^{k+1} E_{0}^2 + c_2 \sum_{j=0}^{k} c_1^j  E_{k+1-j} R_{k-j}\leq c_2 \sup_{k\leq M\wedge \theta_R} E_k \sum_{j=0}^{k} c_1^j   R_{k-j}.
+    E_{k+1}^2 &\leq c_1 E_k^2 + c_2 E_{k+1} R_k \leq c_1^{k+1} E_{0}^2 + c_2 \sum_{j=0}^{k} c_1^j  E_{k+1-j} R_{k-j}
  \end{align*}
-Let
+Let $M=\left\lfloor\frac{T}{\Delta t}\right\rfloor$,
 \[
 N:=M\wedge k_R,
 \qquad
@@ -3709,7 +3712,7 @@ Since \(c_1=1+O(\Delta t)\) and \(M\Delta t\leq T\), there exists a constant
 \[
 \sup_{0\leq m\leq M}c_1^m\leq C_T .
 \]
-Therefore,
+Therefore, since $k \leq N \leq M$, we have $k-\ell \leq M$, and therefore $c_1^{k-\ell} \leq  C_T,$ and so
 \[
 \sum_{\ell=0}^{k}c_1^{k-\ell}R_\ell
 \leq
@@ -3717,15 +3720,23 @@ C_T\sum_{\ell=0}^{M-1}R_\ell .
 \]
 Hence
 \[
-\mathbb E\left[
-\sup_{0\leq m\leq M\wedge\theta_R}E_m
-\right]
-=
 \mathbb E[A]
 \leq
 c_2 C_T
 \sum_{\ell=0}^{M-1}\mathbb E[R_\ell].
 \]
+
+
+%\[
+%\mathbb E\left[
+%\sup_{0\leq m\leq M\wedge\theta_R}E_m
+%\right]
+%=
+%\mathbb E[A]
+%\leq
+%c_2 C_T
+%\sum_{\ell=0}^{M-1}\mathbb E[R_\ell].
+%\]
 
 
 %Using the previously established bound
@@ -3773,15 +3784,31 @@ Thus, uniformly in \(k\),
 \mathbb E[R_k]\leq C\Delta t^{3/2-\varepsilon}.
 \]
 Since \(M\le T/\Delta t\), it follows that
-\[
-\mathbb E\left[
-\sup_{0\le m\le M\wedge\theta_R}E_m
-\right]
+\[\mathbb E[A]
 \le
 C(\lambda,C_R,d,\varepsilon,T)
-\Delta t^{1/2-\varepsilon},
+\Delta t^{1/2-\varepsilon}.
 \]
-as required.
+%\[
+%\mathbb E\left[
+%\sup_{0\le m\le M\wedge k_R}E_m
+%\right] = \mathbb E[A]
+%\le
+%C(\lambda,C_R,d,\varepsilon,T)
+%\Delta t^{1/2-\varepsilon},
+%\]
+Finally, the preceding argument was carried out for all grid indices
+satisfying \(t_k\le \theta_R\). Therefore
+\[
+\mathbb E\left[
+\sup_{0\le t_k\le T}
+\|e(t_k\wedge\theta_R)\|
+\right]
+\le
+C(\lambda,C_R,d,\varepsilon,T)\Delta t^{1/2-\varepsilon},
+\]
+as required. This proves the desired bound on the grid up to the stopping time \(\theta_R\), and hence
+establishes (\ref{stopping_hypo}).
 
 
 

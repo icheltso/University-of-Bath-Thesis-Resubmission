@@ -48,6 +48,8 @@ This checklist consolidates **all required corrections** from the external exami
 ## Chapter 3
 - [🟢] Explain the **significance of detailed balance** for ergodic Markov chains.
 - [🟢] Add discussion of **ULA and MALA**.
+- [ ] p.43: Clarify what is meant by “posterior distribution difficult to compute”.
+- [ ] p.44: Explain difference between discrete and continuous-state Markov chains.
 
 ---
 
@@ -76,40 +78,81 @@ This checklist consolidates **all required corrections** from the external exami
 ---
 
 ## Chapter 5
-- [ ] p.74, l.6: Define **Huber loss**.
-- [ ] p.74, l.13: Fix reference to sampling from (5.5).
+- [🟢] p.74, l.6: Define **Huber loss**.
+- [🟢] p.74, l.13: Fix reference to sampling from (5.5).
+- [🟢] p.75: Capitalise **Lasso**.
+- [🟢] p.75: Add citation for claim that proximal-based Langevin methods are “go-to” sampling methods.
+- [🟢] p.76: Change “not preserved under smoothing” → “not generally preserved under smoothing”.
+- [🟢] Fix “cartesian” → “Cartesian”.
 
 ---
 
 ## Chapter 6 (Substantial Mathematical Clarifications)
-- [ ] Thm 6.1.1: Clarify non-explosion argument for mollified SDEs.
-- [ ] Thm 6.1.1: Address small-probability arguments when $u_t=0$.
-- [ ] Thm 6.1.1: Justify use of comparison principle in [36].
-- [ ] p.95: Clarify recursive inequality and expectation bounds.
+## Major mathematical issues
+- [🟢] Thm 6.1.1: Clarify non-explosion argument for mollified SDEs.
+- [🟢] Thm 6.1.1: Address small-probability arguments when $u_t = 0$.
+- [🟢] Thm 6.1.1: Justify comparison principle from [36].
+- [🟢] p.95: Clarify recursive inequality and expectation bounds.
 - [ ] p.129: Fix asymptotic bound involving $\mu$-convergence.
-- [ ] Present the $\mu$-convergence bound as a **standalone theorem**.
-- [ ] p.77: Improve chapter title.
-- [ ] p.77–81: Fully define all SDE components at chapter start.
-- [ ] p.78–79: Fix notation inconsistencies and long equations.
-- [ ] p.81: Clarify Girsanov argument with explicit explanation.
-- [ ] p.91: Clarify norms, constants, and step-size dependence.
-- [ ] p.101: Correct Leimkuhler–Matthews method and add citation.
+- [ ] Present $\mu$-convergence bound as standalone theorem.
+
+## Structural / conceptual fixes
+- [🟢] p.77: Improve chapter title.
+- [🟢] p.77–81: Fully define all SDE components.
+- [🟢] p.77–78: State dimensions and independence of Brownian motions.
+- [🟢] p.77–78: Promote result “(6.3) gives (6.1)” to its own theorem.
+- [🟡] p.78–79: Fix notation inconsistencies and long equations.
+- [🟢] p.79: Introduce processes $W^{3,y}_t$, $W^{3,z}_t$.
+- [🟢] p.80: Add equation reference for $u_t$.
+- [🟢] p.81: Clarify Girsanov argument with explanation of change of measure.
+- [🟡] p.81: Ensure time arguments appear consistently.
+- [🟢] p.81: Clarify where condition $\rho < \varpi_\omega$ is imposed.
+
+## Technical notation corrections
+- [ ] p.80: Replace $z_t$ with $\hat z_t$ where required.
+- [ ] p.81: Replace $z_t, v_t$ with $\hat z_t, \hat v_t$ where appropriate.
+- [ ] p.82: Fix $1/u_{1,t}^r \to 1/u_{i,t}^r$.
+- [ ] p.85: Fix wording of conjugate exponent sentence.
+- [ ] p.85: Replace “> Δ” with “≥ Δ”.
+- [ ] p.89: Verify correct indexing ($v_k$ vs $v_{k+1}$).
+- [ ] p.91: Clarify norms and constants; check factors of 2 and squares.
+- [ ] p.92–93: Replace references with “Corollary/Proposition …”.
+- [ ] p.93: Fix singular/plural “assumption(s)”.
+- [ ] p.94: Clarify equality vs inequality.
+- [ ] p.97: Replace “(6.2.4)” with “Assumption 6.2.4”.
+- [ ] p.98: Clarify meaning of “sublinearity”.
+- [ ] p.99: Fix wording “and” → “but”.
+
+## Additional clarifications
+- [🟡] p.85: Remove odd whitespace.
+- [🟢] p.100: Clarify meaning of “unstable”.
+- [ ] p.101: Fix Leimkuhler–Matthews method and add proper citation.
+- [ ] p.101: Replace informal language (“works pretty well”).
 
 ---
 
-## Chapter 7
-- [ ] Use distinct font for library names.
-- [ ] Fig. 7.2: Increase font size; unify vertical axis; explain pink line.
-- [ ] Fig. 7.3: Clarify notation ($\lambda$ vs $\omega$) and "useful dimension".
+# Chapter 7
+- [ ] p.102: Restate optimisation problem for clarity.
+- [ ] Ensure correct font usage for library names.
+- [ ] Improve Figure 7.2 (font size, axis consistency, explanation).
+- [ ] Improve Figure 7.3 (notation clarity).
+- [ ] Add discussion on **error metrics vs predictive accuracy**.
 
 ---
 
-## Chapter 8
+# Chapter 8
 - [ ] p.120: Add ⇐ to glossary.
+- [ ] p.121: State that proofs are in Appendix C.
+- [ ] p.123–125: Fix whitespace gaps.
 - [ ] p.126: Properly cite Ji et al.
+- [ ] p.126: Clarify $O(1/\zeta - 1/(\zeta K^\zeta))$ bound.
+- [ ] p.126: Clarify whether expectation is needed in gradient norm.
+- [ ] p.126: Clarify modularity claim regarding stoc-HOAG.
+- [ ] p.128: Clarify interpretation of $\mu$.
+- [ ] p.130: Explain use of Woodbury identity.
+- [ ] p.130: Fix capitalisation (Neumann, Gaussian).
 - [ ] p.131: Minor wording fixes.
 - [ ] Add explanation of stochastic HOAG sampling in practice.
-- [ ] Clarify big-O bounds and harmonic series argument.
 
 ---
 

@@ -2818,6 +2818,8 @@ We denote by $\pi$ the target probability distribution on $\mathbb R^d$, given (
 \]
 where $\beta>0$ is the inverse temperature parameter, and $H:\mathbb R^d \to \mathbb R$ is the potential function associated with the model.
 
+For notational simplicity, when no ambiguity arises, we occasionally omit the time index $t$.
+
 \section{Continuous Dynamics}
 \subsection{Formulation and Cartesian Reparametrization}
 We can use Langevin sampling to produce samples from $\pi$. Write $\pi\propto\exp(-\beta\, H)$ for $H((u,v))=\frac 12 \,\lambda\, \|(u,v)\|^2 + G(u\odot v)- \frac{1}{\beta}\,\sum_i\log u_i$. The gradient
@@ -2881,15 +2883,189 @@ If the initial distribution is cylindrical, the marginal distribution of $((x_t^
 \end{comment}
 
 \begin{theorem} \label{wp}
-Suppose that Assumption (\ref{reg1}) holds. Subject to initial condition $(u,v)_0=(U_0,V_0)\in \mathcal{X}=\real_+^d\times \mathbb R^d$, and assuming that the associated mollified Cartesian dynamics satisfy the localization condition
+Suppose that Assumption~\ref{reg1} holds. Subject to initial
+condition $(u,v)_0=(U_0,V_0)\in \mathcal X=\mathbb R_+^d\times\mathbb R^d$,
+there is a unique solution $(u,v)_t$ to~(\ref{uvproc}) such that
 \[
-\lim_{n\to\infty}\mathbb P\!\left(\sup_{0\le t\le T}\|\vec x^{(n)}_t\|\ge n\right)=0 \quad \text{for all } T>0,
+u_t>0 \quad \text{almost surely}
 \]
-there is a unique solution $(u, v)_t$ to (\ref{uvproc}) such that  $u_t>0$ almost surely and $\mean{\sup_{0\le t\le T} \norm{(u,v)_t}^q}<\infty$, for any $T>0$, $q\ge 2$. Further, $(u,v)_t$ is strong Feller and irreducible on $\mathcal X$.
+and
+\[
+\mathbb E\Big[\sup_{0\le s\le T}\|(u,v)_s\|^q\Big]<\infty,
+\qquad
+T>0,\; q\ge 2.
+\]
+Further, $(u,v)_t$ is strong Feller and irreducible on $\mathcal X$.
 
-The probability density function $p(t,\cdot)$ of $\vec x_t$ (see \ref{cyl}) is well-defined. 
-If the initial distribution is cylindrical, the marginal distribution of $((x_t^2+y_t^2)^{1/2},v_t)$ equals the law of the solution $(u,v)_t$ of (\ref{uvproc}).
+The probability density function $p(t,\cdot)$ of $x_t$
+(see~(\ref{cyl})) is well-defined. If the initial distribution is
+cylindrical, then the marginal distribution of
+\[
+\big((y_t^2+z_t^2)^{1/2},\,v_t\big)
+\]
+equals the law of the solution $(u,v)_t$ of~(\ref{uvproc}).
 \end{theorem}
+
+
+\begin{proof}
+Under Assumption~\ref{reg1}, $\nabla G_3$ is bounded on $\mathbb R^{3d}$.
+Indeed, $\nabla G$ is bounded by Assumption~\ref{reg1}(iv), and the
+chain-rule factors $y_i/u_i$ and $z_i/u_i$, where
+$u_i=(y_i^2+z_i^2)^{1/2}$, are uniformly bounded by $1$. Hence the drift
+\[
+-\lambda x-\nabla G_3(x)
+\]
+of~(\ref{cyl}) is bounded and measurable on $\mathbb R^{3d}$.
+Furthermore, the diffusion coefficient
+\[
+a=(2/\beta)I_{3d}
+\]
+is constant and uniformly elliptic, so conditions (1.3) and (1.4) of
+\cite{Stroock2013-df} hold.
+
+The coercivity bound
+\[
+x^\top(-\lambda x-\nabla G_3(x))
+\leq
+-\lambda\|x\|^2+K
+\]
+follows from Assumption~\ref{reg1}(iii). Applying It\^o's formula to
+$\|x_t^{(n)}\|^2$ for the localized equations and using Gronwall's
+inequality yields
+\[
+\mathbb E\Big[\sup_{s\leq t}\|x_s^{(n)}\|^2\Big]
+\leq C,
+\]
+uniformly in the localization level $n$, for each $t>0$. Chebyshev's
+inequality then implies the non-explosion condition (1.7) of
+\cite[Theorem 10.1.3]{Stroock2013-df}:
+\[
+\lim_{n\to\infty}
+\mathbb P\!\left(
+\sup_{s\leq t}\|x_s^{(n)}\|\geq n
+\right)
+=0.
+\]
+
+Consequently, \cite[Corollary 10.1.4]{Stroock2013-df} implies that the
+martingale problem associated with $(a,b)$ is well posed, that $x_t$ is
+strong Feller, and that $x_t$ admits a probability density function
+absolutely continuous with respect to Lebesgue measure on
+$\mathbb R^{3d}$ for each $t>0$. Higher moments satisfy
+\[
+\mathbb E\Big[\sup_{s\leq t}\|x_s\|^q\Big]
+<\infty,
+\]
+which follows analogously by applying It\^o's formula to
+$(\|x_t\|^2)^{q/2}$. Irreducibility of $x_t$ follows from the
+non-degenerate additive noise by standard arguments
+\cite[Section~6]{Bellet2006-pq}.
+
+The generator for~(\ref{uvproc}) has singular coefficients on a
+half-space and regularity of the density does not follow directly from
+standard SDE theory. We therefore show that the $u$-equation
+in~(\ref{uvproc}) arises from the Cartesian equation~(\ref{cyl}) and
+that the process $(u,v)_t$ inherits properties from $x_t$.
+
+Since the noise in~(\ref{cyl}) is additive and non-degenerate, the
+process $x_t$ has a probability density function absolutely continuous
+with respect to Lebesgue measure on $\mathbb R^{3d}$ for each $t>0$
+by \cite[Corollary 10.1.4]{Stroock2013-df}. Hence
+\[
+\mathbb P(u_{i,t}=0)
+=
+\mathbb P((y_{i,t},z_{i,t})=(0,0))
+=
+0
+\]
+for all $t>0$. We may therefore apply It\^o's formula to
+\[
+u=(y\odot y+z\odot z)^{1/2},
+\]
+following \cite[Proposition~3.21]{Bellet2006-pq} by approximating the
+square-root function with smooth functions and passing to the limit.
+
+This yields
+\begin{align*}
+du_t
+&=
+\frac1{u_t}\odot
+\Big(
+y_t\odot(-\lambda y_t)
++
+z_t\odot(-\lambda z_t)
+\Big)\,dt
+\\
+&\quad
+-
+\frac1{u_t}
+\Big(
+y_t\odot(y_t/u_t)
++
+z_t\odot(z_t/u_t)
+\Big)
+\odot v_t\odot\nabla G(u_t\odot v_t)\,dt
+\\
+&\quad
++
+\sqrt{\frac2\beta}
+\frac1{u_t}\odot
+\begin{pmatrix}
+y_t\\
+z_t
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+dW_t^{3,y}\\
+dW_t^{3,z}
+\end{pmatrix}
+\\
+&\quad
++
+\frac12\frac2\beta
+\left(
+-\frac1{u_t^3}
+\odot
+(y_t\odot y_t+z_t\odot z_t)
++
+\frac2{u_t}
+\right)\,dt .
+\end{align*}
+
+Using $u_t^2=y_t^2+z_t^2$, this simplifies to
+\[
+du_t
+=
+-\lambda u_t\,dt
+-
+v_t\odot\nabla G(u_t\odot v_t)\,dt
++
+\frac1{\beta u_t}\,dt
++
+\sqrt{\frac2\beta}\,dW_t,
+\]
+where
+\[
+W_t
+=
+u_t^{-1}\odot (y_t,z_t)\cdot(W_t^{3,y},W_t^{3,z})
+\]
+is again a Brownian motion by
+\cite[Theorem~3.3.16]{Karatzas1991-xr}. This is precisely the
+$u$-equation in~(\ref{uvproc}). The $v$-equation follows directly
+from~(\ref{cyl}).
+
+By uniqueness of solutions, the processes generated by~(\ref{cyl})
+and~(\ref{uvproc}) agree whenever the initial conditions agree.
+Therefore $(u,v)_t$ is well posed on
+$\mathcal X=\mathbb R_+^d\times\mathbb R^d$, is strong Feller and
+irreducible, and the law of $(u,v)_t$ is obtained as the cylindrical
+marginal of the law of $x_t$ whenever the initial distribution of
+$x_0$ is cylindrical. Finally, the moment bounds for $x_t$ imply the
+required moment bounds for $(u,v)_t$.
+\end{proof}
+
+
 
 \begin{proof}
 %\cite[Corollary 10.1.4]{Stroock2013-df} gives that $\vec x_t$ is strong Feller and has a well-defined probability density function. To apply this result, note that \cite[Equation (1.7) of Theorem 10.1.3]{Stroock2013-df} holds as the regularised drift and diffusion (defined by multiplying by a compactly supported mollifying function) are globally Lipschitz in our case.
@@ -2903,7 +3079,7 @@ where $\vec x^{(n)}$ denotes the solution of the mollified system. While global 
 Due to the non-degenerate and additive noise, $\vec x_t$ is irreducible by standard arguments~\cite[Section 6]{Bellet2006-pq}
 
 
- The generator for (\ref{uvproc}) has singular coefficients on a half space and regularity of the density does not follow directly from standard theories; we show that the $u$-equation in (\ref{uvproc}) arises from the solution $\vec x_t$ of (\ref{cyl}) and that the process $(u,v)_t$ inherits properties from $\vec x_t$. Assuming that $u_t\ne 0$, we may apply the Ito formula to  $u=(y\odot y+z\odot z)^{1/2}$ and obtain
+ The generator for (\ref{uvproc}) has singular coefficients on a half space and regularity of the density does not follow directly from standard theories; we show that the $u$-equation in (\ref{uvproc}) arises from the solution $\vec x_t$ of (\ref{cyl}) and that the process $(u,v)_t$ inherits properties from $\vec x_t$. Assuming that $u_t\ne 0$, we may apply the Ito formula to  $u_t=(y_t\odot y_t+z_t\odot z_t)^{1/2}$ and obtain, for independent $d$-dimensional brownian motions $dW_t^{3,y}, dW_t^{3,z}$,
  %\fc{I changed to noise notation from $dW^1,dW^2$ to $dW^{3,y},dW^{3,z}$, to conform with \eqref{cyl}}
 $$
 \begin{aligned}
@@ -2941,7 +3117,7 @@ The CIR process is known to have unique solutions with $\mathbb{P}(y_t > 0, \for
 \begin{equation}\label{eq:cir_2}
     d\hat u_t = \frac{(4\kappa \mu-\theta^2)/8}{\hat u_t}\,dt -\frac{\kappa}{2}\,\hat u_t \,dt + \frac{\theta}{2} \,dW_t,
 \end{equation}
-which, if we set $\theta = 2/\sqrt{2/\beta}$, $\kappa = 2\lambda$ and $\mu = \frac{2}{\beta \lambda}$, are precisely the $u_t$ dynamics with $G \equiv 0$. Note, that in this case, $2\kappa \mu = \theta^2$. The Ornstein-Uhlenbeck (OU) process is given by
+which, if we set $\theta = 2/\sqrt{2/\beta}$, $\kappa = 2\lambda$ and $\mu = \frac{2}{\beta \lambda}$, are precisely the $u_t$ dynamics (\ref{uvproc}) with $G \equiv 0$. Note, that in this case, $2\kappa \mu = \theta^2$. The Ornstein-Uhlenbeck (OU) process is given by
 $$
 d\hat v_t =-\lambda\, \hat v_t\, dt + \sqrt{\frac{2}{\beta}}\,dW_t^2,
 $$
@@ -2994,12 +3170,13 @@ $$
 %$$
 %\frac{d}{dt}\EE\bigl[y_t\bigr] \leq \EE\left[\pa{-\lambda \alpha + \alpha^2/\beta}\norm{z_t}^2 y_t + \pa{\frac{3\alpha d}{\beta}  + 2\alpha \ccc} y_t\right].
 %$$
+
 Provided that $ \alpha<\beta \lambda $, we have $\frac{d}{dt}\EE\bigl[\hat y_t\bigr] \leq  \pa{\frac{3\alpha d}{\beta}} \EE\bigl[\hat y_t\bigr]$ and therefore, by Gronwall's inequality,
 $$
 \EE\bigl[\hat{y}_t\bigr]  \leq \hat y_0 \exp\biggl(  \pa{\frac{3 \alpha d}{\beta}} t\biggr),
 $$
 where $\hat{y}_0=\exp(\alpha \norm{z_0}^2/2)<\infty$. 
-Letting $\alpha = 2\epsilon \gamma \cinfty^2 $, the condition on $\alpha$ is satisfied if $\epsilon  <\beta\lambda/(2\gamma \cinfty^2)$. Substituting for $\alpha$,
+Letting $\alpha = 2\epsilon \gamma \cinfty^2 $, the condition on $\alpha$ is satisfied if $\epsilon  <\beta\lambda/(2\gamma \cinfty^2)$. Since $\gamma>0$ and $B<\infty$, such an $\varepsilon$ exists. Substituting for $\alpha$,
 $
 \EE\bigl[\hat{y}_t\bigr]  \leq y_0 \exp\biggl(2\epsilon \gamma \cinfty^2  \pa{\frac{3 d}{\beta}} t\biggr).
 $
@@ -3131,7 +3308,6 @@ Now evaluate the $q$th moments and use moment bounds on Gaussian increments to f
 By Corollary \ref{cor}, the $\mathbb{E} \bp{\pp{\int_s^t\frac{1}{|u_r|^{2-\epsilon}} \,dr}^q}$ is finite for $\epsilon>0$ and $1 \le q < 2$. Hence, we have shown, for some constant $c$ depending on $\epsilon$ and $q$, that
 $(\mathbb E \|u_t-u_s\|^q)^{1/q}\le c\,\abs{t-s}^{1/2-\epsilon}.
 $
-
 
 2. Let $\mathcal R=\{ (u_{i,t}\wedge u_{i,s})<\Delta\}$, i.e. the region where $\frac{1}{u_{i,s}u_{i,t}}$ might blow up. Then, by Boole's inequality $\prob(\mathcal R) \le  \prob\pp{u_{i,t}<\Delta} +  \prob\pp{u_{i,s}<\Delta}$.  By Chebyshev's inequality, $\prob\pp{u_{i,t}<\Delta}\le  \Delta^{2-\epsilon}\, \mean{u_{i,t}^{\epsilon-2}}$ for $\epsilon>0$. Hence, using Corollary \ref{cor}, for a constant $c$, $\prob\pp{\mathcal R}\le c \,\Delta^{2-\epsilon}$. Now, split the expectation with respect to $\mathcal R$ as 
  \begin{equation}
@@ -3485,18 +3661,96 @@ where we used that
 \begin{align*}
     \pa{1 + 2\,\lambda \,\deltat -  C_R\,\tstep} E_{k+1}^2 \leq \pa{1+ 2\,C_R \,\deltat } E_k^2 +   2\,E_{k+1} R_k .
 \end{align*}
-Define $c_1 = \pa{1+ 2\,C_R\, \deltat }/ \pa{1 + 2\lambda\, \deltat - \,C_R\,\tstep}$ and $c_2 = 2/ \pa{1 + 2\,\lambda\, \deltat -  C_R\,\tstep}$. Then, letting $M=\left\lfloor\frac{T}{\Delta t}\right\rfloor$,
+Define $c_1 = \pa{1+ 2\,C_R\, \deltat }/ \pa{1 + 2\lambda\, \deltat - \,C_R\,\tstep}$ and $c_2 = 2/ \pa{1 + 2\,\lambda\, \deltat -  C_R\,\tstep}$. Note, that for sufficiently small \(\Delta t\), the denominator
+\(1+2\lambda\Delta t-C_R\Delta t\) is positive. Then, letting $M=\left\lfloor\frac{T}{\Delta t}\right\rfloor$,
 \begin{align*}
     E_{k+1}^2 &\leq c_1 E_k^2 + c_2 E_{k+1} R_k \leq c_1^{k+1} E_{0}^2 + c_2 \sum_{j=0}^{k} c_1^j  E_{k+1-j} R_{k-j}\leq c_2 \sup_{k\leq M\wedge \theta_R} E_k \sum_{j=0}^{k} c_1^j   R_{k-j}.
  \end{align*}
- We therefore have
- $
- \EE\biggl[\sup_{k\leq M \wedge\theta_R} E_k\biggr]\leq c_2 \sum_{j=0}^{M-1} c_1^j \,\EE[R_{k-j}].
- $
- Note that for $\deltat \leq 1/(2C_R)$, we have $c_1\leq (1+2\,\deltat\, C_R)^2$: this is a consequence of the simple inequality $(1-a)^{-1}\leq 1 + 2a$ applied to $a = \deltat\, C_R \leq 1/2$.
-Also using the geometric sum formula and the inequality $e^z \geq 1 + z$ for $z\geq 0$, we get
-  $$\sum_{j=0}^{M-1} c_1^j \leq \sum_{j=0}^{M-1}  (1+ 2\,\tstep \,C_R)^{2j} \le\frac{\exp(2\, C_R\,M\,\tstep)}{4\, C_R\,\tstep +  4\,C_R^2\,\tstep^2}.$$ 
- % $$\sum_{j=0}^{M-1} c_1^j \leq \frac{c_1^M - 1}{\alpha - 1} = \frac{\exp(2\deltat M C_R)}{4\deltat C_R + 4 \deltat^2 C_R^2}.$$ \fc{shouldn't we have $4\deltat M C_R$ in the exp(...)?}
+Let
+\[
+N:=M\wedge k_R,
+\qquad
+A:=\sup_{0\leq m\leq N}E_m .
+\]
+Since \(E_0=0\), we have
+\[
+A^2=\sup_{0\leq k\leq N-1}E_{k+1}^2 .
+\]
+The recursive estimate gives, for \(0\leq k\leq N-1\),
+\[
+E_{k+1}^2
+\leq
+c_2 A\sum_{j=0}^{k}c_1^jR_{k-j}.
+\]
+Taking the supremum over \(0\leq k\leq N-1\), we obtain
+\[
+A^2
+\leq
+c_2 A
+\sup_{0\leq k\leq N-1}
+\sum_{j=0}^{k}c_1^jR_{k-j}.
+\]
+If \(A=0\), there is nothing to prove. Otherwise, dividing by \(A\) yields
+\[
+A
+\leq
+c_2
+\sup_{0\leq k\leq N-1}
+\sum_{j=0}^{k}c_1^jR_{k-j}.
+\]
+Writing \(\ell=k-j\), we have
+\[
+\sum_{j=0}^{k}c_1^jR_{k-j}
+=
+\sum_{\ell=0}^{k}c_1^{k-\ell}R_\ell .
+\]
+Since \(c_1=1+O(\Delta t)\) and \(M\Delta t\leq T\), there exists a constant
+\(C_T>0\), independent of \(\Delta t\), such that
+\[
+\sup_{0\leq m\leq M}c_1^m\leq C_T .
+\]
+Therefore,
+\[
+\sum_{\ell=0}^{k}c_1^{k-\ell}R_\ell
+\leq
+C_T\sum_{\ell=0}^{M-1}R_\ell .
+\]
+Hence
+\[
+\mathbb E\left[
+\sup_{0\leq m\leq M\wedge\theta_R}E_m
+\right]
+=
+\mathbb E[A]
+\leq
+c_2 C_T
+\sum_{\ell=0}^{M-1}\mathbb E[R_\ell].
+\]
+
+
+%Using the previously established bound
+%\[
+%\mathbb E[R_\ell]\leq C_R\Delta t^{3/2-\varepsilon},
+%\]
+%uniformly in \(\ell\), and \(M\leq T/\Delta t\), we obtain
+%\[
+%\mathbb E\left[
+%\sup_{0\leq m\leq M\wedge\theta_R}E_m
+%\right]
+%\leq
+%C_R T \Delta t^{1/2-\varepsilon}.
+%\]
+ 
+ %We therefore have
+ %$
+ %\EE\biggl[\sup_{k\leq M \wedge\theta_R} E_k\biggr]\leq c_2 \sum_{j=0}^{M-1} c_1^j \,\EE[R_{k-j}].
+ %$
+ %Note that for $\deltat \leq 1/(2C_R)$, we have $c_1\leq (1+2\,\deltat\, C_R)^2$: this is a consequence of the simple inequality $(1-a)^{-1}\leq 1 + 2a$ applied to $a = \deltat\, C_R \leq 1/2$.
+%Also using the geometric sum formula and the inequality $e^z \geq 1 + z$ for $z\geq 0$, we get
+  %$$\sum_{j=0}^{M-1} c_1^j \leq \sum_{j=0}^{M-1}  (1+ 2\,\tstep \,C_R)^{2j} \le\frac{\exp(2\, C_R\,M\,\tstep)}{4\, C_R\,\tstep +  4\,C_R^2\,\tstep^2}.$$ 
+
+  
+ % OLDOLD $$\sum_{j=0}^{M-1} c_1^j \leq \frac{c_1^M - 1}{\alpha - 1} = \frac{\exp(2\deltat M C_R)}{4\deltat C_R + 4 \deltat^2 C_R^2}.$$ \fc{shouldn't we have $4\deltat M C_R$ in the exp(...)?}
  On the other hand, $ \EE[R_k] \leq \EE[\norm{r_{1,k}}] + \EE[\norm{r_{2,k}}]$.
  Observe that by Proposition \ref{timeregbnd} and the definition $S_\lambda$ in \eqref{eq:f},
 \begin{align*}
@@ -3511,14 +3765,34 @@ Also using the geometric sum formula and the inequality $e^z \geq 1 + z$ for $z\
 $
 \EE[\norm{r_{2,k}}] \leq c\, (C_R+\lambda) \,\deltat^{3/2}.
 $
-It follows that
+
+
+
+Thus, uniformly in \(k\),
+\[
+\mathbb E[R_k]\leq C\Delta t^{3/2-\varepsilon}.
+\]
+Since \(M\le T/\Delta t\), it follows that
+\[
+\mathbb E\left[
+\sup_{0\le m\le M\wedge\theta_R}E_m
+\right]
+\le
+C(\lambda,C_R,d,\varepsilon,T)
+\Delta t^{1/2-\varepsilon},
+\]
+as required.
+
+
+
+%It follows that
 % \begin{align}\label{temp_3}
 % \EE\left[\sup_{0\leq k\leq M\wedge \theta_R} E_k\right] \leq c\, (1+2\,\deltat\, C_R)\, C_R^{-1}\,\exp(2\,T\, C_R) \,d\,\deltat^{\frac12-\epsilon},
 % \end{align}
-$
-\EE\biggl[{\sup_{0\leq t_k\leq T\wedge \theta_R} E_k}\biggr]
-\leq c_3\,\exp( 2\,C_R\,T) \,\deltat^{\frac12-\epsilon},
-$ for a constant $c_3$ that depends on $\lambda$, $C_R$, and $d$, as required.
+%$
+%\EE\biggl[{\sup_{0\leq t_k\leq T\wedge \theta_R} E_k}\biggr]
+%\leq c_3\,\exp( 2\,C_R\,T) \,\deltat^{\frac12-\epsilon},
+%$ for a constant $c_3$ that depends on $\lambda$, $C_R$, and $d$, as required.
 \end{proof}
 We are now ready to prove Proposition \ref{prop:error_discrete}.
 \begin{proof}[Proof of Proposition~\ref{prop:error_discrete}]
@@ -3725,7 +3999,7 @@ We aim to numerically simulate the system (\ref{yzvproc}) and compare its perfor
 \subsection{Euler-Maruyama}
 We first try the Euler-Maruyama scheme. Applying to (\ref{cyl}), we obtain the update, with stepsize $h$,
 \[X_{n+1} = X_n - h\lambda X_n \, - h\nabla G_{3}(X_n)\, + \sqrt{2h/\beta}\,R_n,\]
-for $R_n \sim N(0,I_{3d})$. However, due to the singularity $\frac{1}{u_t}$, this method may be unstable.
+for $R_n \sim N(0,I_{3d})$. However, due to the singularity $\frac{1}{u_t}$, this method may be unstable in the sense that, for sufficiently large step sizes, it may fail to be ergodic and the moments of the numerical solution can grow without bound.
 
 \subsection{Splitting Methods}
 Our system can be tackled by splitting methods via dividing it into multiple parts and treating them sequentially. For example, we can divide the system (\ref{cyl}), in a similar fashion to that of the Langevin Dynamics splitting by Leimkuhler and Matthews \cite{leimkuhler2013rational}:

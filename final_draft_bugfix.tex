@@ -3316,7 +3316,49 @@ Returning to \eqref{eq:novikov}, for all $t\leq T-\epsilon$, we see
 $$
 \EE\left[ \exp\pa{\int_t^{t+\epsilon} \gamma \cinfty^2 \norm{\hat{z}_s}^2} ds \right] \leq y_0\exp\biggl( 2\epsilon \gamma \cinfty^2  \pa{\frac{3 d}{\beta}} T\biggr).
 $$
-Thus, Novikov's condition is satisfied. We can therefore apply Girsanov's theorem. Then, a solution of \ref{uvproc} exists and the solution is unique in law~\cite{Karatzas1991-xr}.
+Thus, Novikov's condition is satisfied. We can therefore apply Girsanov's theorem. Let
+
+\[
+M_T
+=
+\exp\!\left(
+\int_0^T b(\hat z_t)\cdot dW_t
+-
+\frac12
+\int_0^T \|b(\hat z_t)\|^2dt
+\right).
+\]
+
+Since Novikov's condition holds, \(M_T\) is a martingale.
+Define a new probability measure \(\mathbb Q\) on
+\(\mathcal F_T\) by
+\[
+\frac{d\mathbb Q}{d\mathbb P}=M_T .
+\]
+By Girsanov's theorem, the process
+\[
+\widetilde W_t
+=
+W_t-\int_0^t b(\hat z_s)\,ds
+\]
+is a Brownian motion under \(\mathbb Q\).
+Substituting this expression into (\ref{potential_free_sde_z}) yields
+\[
+d\hat z_t
+=
+\Bigl[-\lambda \hat z_t
++\begin{pmatrix}
+1/(\beta \hat u_t)\\
+0
+\end{pmatrix}
++b(\hat z_t)\Bigr]dt
++
+\sqrt{\frac{2}{\beta}}\,d\widetilde W_t,
+\]
+
+which is precisely the Hadamard--Langevin system (\ref{uvproc}). Hence (\ref{uvproc}) admits a weak solution. Since \(\mathbb Q\) is equivalent to \(\mathbb P\), uniqueness in
+law follows from the corresponding uniqueness result for the
+reference equation (\ref{potential_free_sde_z}) (see~\cite[Corollary 5.14]{Karatzas1991-xr}).
 %We can therefore apply Girsanov's theorem. The CIR process is positive almost surely as, following \cite{Dereich2011-tp}, each component has the form $d\hat u_t = ((4\kappa \lambda - \theta^2)/(8\hat u_t))\,dt - \frac12 \kappa \hat u_t\, dt + (\theta/2)\,d\hat W_t$ for $\theta^2 = 8/\beta$ and $2\kappa\lambda = \theta^2$, which satisfies the Feller positivity condition $2\kappa\lambda\geq \theta^2$.
 Furthermore, for all $T>0$, with the martingale defined by $M_T = \exp(\int_0^T b(\hat z_t) \cdot dW_t - \frac12 \int_0^T b(\hat z_t)^2 dt)$, we see
 $$

@@ -3255,7 +3255,7 @@ d\hat v_t =-\lambda\, \hat v_t\, dt + \sqrt{\frac{2}{\beta}}\,dW_t^2,
 $$
 which is precisely our $v$ process with $G \equiv 0$. As such, in order to show well-posedness of our SDE, we consider \ref{uvproc} as perturbed CIR and OU processes. Using Girsanov' Theorem we will be able to translate the analysis of the latter via absorbing the data term $G$. In the following, let $\hat z_t \eqdef (\hat u,\hat v)_t$ satisfy
 \begin{align}\label{potential_free_sde_z}
-d \hat z_t = \biggl[-\lambda z_t + \binom{1/(\beta \hat u_t)}{0} \biggr]\,dt + \sqrt{\frac{2}{\beta}} \,d  W_t,
+d \hat z_t = \biggl[-\lambda \hat z_t + \binom{1/(\beta \hat u_t)}{0} \biggr]\,dt + \sqrt{\frac{2}{\beta}} \,d  W_t,
 \end{align}
 with given initial data $\hat z_0$. The first component $\hat u_t$ of $\hat z_t$ is a CIR process. The CIR process is positive almost surely as, following \cite{Dereich2011-tp}, each component has the form $d\hat u_t = ((4\kappa \lambda - \theta^2)/(8\hat u_t))\,dt - \frac12 \kappa \hat u_t\, dt + (\theta/2)\,d\hat W_t$ for $\theta^2 = 8/\beta$ and $2\kappa\lambda = \theta^2$, which satisfies the Feller positivity condition $2\kappa\lambda\geq \theta^2$.%In the following, 
 %let $z_t \eqdef (u,v)_t$ satisfy
@@ -3289,7 +3289,7 @@ By Jensen's inequality,
 We now apply It\^o's lemma to bound $\EE \bigl[ \exp(\epsilon\, \gamma\, \cinfty^2 \norm{\hat{z}_s}^2 ) \bigr]$. 
 Given  $\alpha>0$ and  $\hat{y} \eqdef\exp\left(\frac{\alpha}{2}\norm{(\hat{u},\hat{v})}^2 \right)$,
 \begin{align*}
-    d\hat y_t &= \pa{-\lambda \alpha  + \frac{\alpha^2}{\beta}} \,\norm{\hat z_t}^2y_t\, dt + \pa{\frac{3\alpha d}{\beta}}\, \hat y_t\, dt + \sqrt{\frac{2}{\beta}} \alpha \hat y_t  \pa{\hat u_t^\top d W^1_t + v_t^\top d W^2_t}.
+    d\hat y_t &= \pa{-\lambda \alpha  + \frac{\alpha^2}{\beta}} \,\norm{\hat z_t}^2\hat y_t\, dt + \pa{\frac{3\alpha d}{\beta}}\, \hat y_t\, dt + \sqrt{\frac{2}{\beta}} \alpha \hat y_t  \pa{\hat u_t^\top d W^1_t + \hat v_t^\top d W^2_t}.
 \end{align*}
 %\begin{align*}
 %    dy_t &= \pa{-\lambda \alpha \norm{z_t}^2 + \frac{\alpha d}{\beta} - 2\alpha (u_t\odot v_t)^\top \nabla G(u_t\odot v_t)} \,y_t\, dt\\
@@ -3397,7 +3397,7 @@ Thus, via H\"{o}lder's inequality,
  \end{align*}
  completes the proof.
 \end{proof}
-As a corollary, we prove the following moment bounds on $1/u_{1,t}^r$ for $r<2$. The density of the invariant measure $\pi$ behaves like $u_1$ near $u_1=0$, and we expect $\mathbb{E}\bp{1/u_{1,t}^2}$ to be infinite. 
+As a corollary, we prove the following moment bounds on $1/u_{i,t}^r$ for $r<2$. The density of the invariant measure $\pi$ behaves like $u_i$ near $u_i=0$, and we expect $\mathbb{E}\bp{1/u_{1,i}^2}$ to be infinite. 
 \begin{corollary}\label{cor} Let the assumption of (\ref{reg1}) hold and the initial distribution $\rho_0((u,v))$ be such that $\rho_0/\pi$ is uniformly bounded.
 Then, for $i=1,\dots,d$,
 
@@ -3495,7 +3495,7 @@ $
   \le&     \pp{\mathbb{E} \bp{\abs{\frac 1 {u_{i,t}}-\frac1{u_{i,s}} }^p}
   }^{1/p}\;\prob\pp{\mathcal R}^{ 1/{p'}}. 
  \end{align*}
- Choose $p'=2+\epsilon$. The conjugate exponent $p<2$ so that  $\mean{u_{i,t}^{-p}}<\infty$. As $\prob(\mathcal{R})\le c\, \Delta^{2-\epsilon}$ for some $c$, 
+ Choose $p'=2+\epsilon$ and its conjugate exponent $p<2$ so that  $\mean{u_{i,t}^{-p}}<\infty$. As $\prob(\mathcal{R})\le c\, \Delta^{2-\epsilon}$ for some $c$, 
   the first term is bounded by $c\,\Delta^{
   (2-\epsilon)/(2+\epsilon)}= c\,\Delta^{1-2\epsilon/(2+\epsilon)}$. For the second term, write
   \[
@@ -3510,7 +3510,7 @@ For (different) conjugate $(p,p')$,
      }\,\pp{\mathbb{E} \bp{ {|u_{i,t}-u_{i,s}|^{\epsilon\, p'}}}}^{1/p'}.
    \end{align*}
    % \todo{in the case both $u_i(t),u_i(s)\geq\Delta$, it should be $\Delta^{-2\epsilon}$?}
-In the last line, we exploit  $u_i(s),u_i(t)>\Delta$ outside $\mathcal R$.
+In the last line, we exploit  $u_i(s),u_i(t) \geq \Delta$ outside $\mathcal R$.
 The third factor is $O(|t-s|^{\epsilon/2})$ by part 1 if $1<\epsilon p'<2$. Choose $p'=3/2\epsilon$. Then $p=1/(1-1/p')=1/(1-(2/3)\epsilon)$.
 
 Focus now on the first factor: for $(r,r')$ conjugate,
@@ -3635,8 +3635,8 @@ where the square root is interpreted element-wise and we have used the fact that
 Up to constants, the log transition kernel $P$ for  moving from $x = (u,v)^k$  to $\hat x= (u,v)^{k+1}$ under (\ref{discrete_scheme}) is
 \begin{align*}
     \log(P)(x, \hat x) &= -\frac{\beta}{4\tstep} \norm{   (1+\tstep\,\lambda) u^{k+1} - \frac{\tstep}{\beta u^{k+1}} - u^k  + \tstep\, v^k\odot \nabla G(u^k\odot v^k) ) }^2\\
-    &\quad -\frac{\beta}{4\tstep} \norm{   (1+\tstep\,\lambda) v^{k+1}  - v^{k+1}  + \tstep\, u^k\odot \nabla G(u^k\odot v^k)) ) }^2\\
-    &\quad + \sum_{i=1}^d\log\pa{ 1+\tstep\,\lambda + \frac{\tstep}{\beta  (u^k_i)^2}}.
+    &\quad -\frac{\beta}{4\tstep} \norm{   (1+\tstep\,\lambda) v^{k+1}  - v^{k}  + \tstep\, u^k\odot \nabla G(u^k\odot v^k)) ) }^2\\
+    &\quad + \sum_{i=1}^d\log\pa{ 1+\tstep\,\lambda + \frac{\tstep}{\beta  (u^{k+1}_i)^2}}.
 \end{align*}
 \end{lemma}
 \begin{proof}
@@ -3663,9 +3663,8 @@ It follows that the density of $u$ is
 $$
 f_{1,u}(t) = \frac{d}{dt}F_{1,u}(t) \propto f_0\pa{ (1+\tstep\,\lambda)\, t - \frac{\tstep}{\beta \,t} }  \pa{(1+\tstep\,\lambda) +  \frac{\tstep}{\beta \,t^2} }.
 $$
-%
-The density of $P_{1,v}(v)$ is
-$f_{1,v}(t)\propto f_0( (1+\tstep\,\lambda)\,t)$.
+Substituting $t = u^{k+1}_i$ in the Jacobian factor gives $\prod_{i=1}^d\left(1+\Delta t \lambda+\frac{\Delta t}{\beta\left(u_i^{k+1}\right)^2}\right)$. The density of $P_{1,v}(v)$ is
+$f_{1,v}(t)\propto f_0( (1+\tstep\,\lambda)\,t)$. 
 \end{proof}
 
 \subsection{Ergodicity and long-term convergence}
@@ -3695,10 +3694,10 @@ Assume that $\deltat  < \lambda/\cinfty^2$ where $\cinfty=\|\nabla G\|_\infty$. 
     \end{align*}
 Using the assumption $x^\top \nabla G(x) \geq -\ccc$ and $\cinfty=\norm{\nabla G}_\infty$, we obtain 
     \begin{align*}
-        \norm{u^k-\deltat \,v^k \odot \nabla G(u^k\odot  v^k)} &\leq \norm{u^k}^2  + \deltat^2 \cinfty^2 \norm{v^k}^2 - 2 \,\Delta t\,(u^k \odot v^k)^\top \nabla G(u^k \odot v^k)\\
+        \norm{u^k-\deltat \,v^k \odot \nabla G(u^k\odot  v^k)}^2 &\leq \norm{u^k}^2  + \deltat^2 \cinfty^2 \norm{v^k}^2 - 2 \,\Delta t\,(u^k \odot v^k)^\top \nabla G(u^k \odot v^k)\\
         &\leq \norm{u^k}^2  + \deltat^2 \cinfty^2 \norm{v^k}^2 +2\,\ccc\,\deltat.
     \end{align*}
-   A similar statement holds for $\norm{v^k-\deltat\, u^k \odot \nabla G(u^k \odot v^k)}$.
+   A similar statement holds for $\norm{v^k-\deltat\, u^k \odot \nabla G(u^k \odot v^k)}^2$.
     Combining this with $ \EE\norm{ \deltaw^i_k}^2= d\,\Delta t$ , we obtain  
     \begin{align*}
     (1+\lambda \,\deltat)^2 \EE\Bigl[\norm{(u,v)^{k+1}}^2 \mid (u,v)^k\Bigr] \leq (1+\deltat^2 \cinfty^2)\norm{(u,v)^{k}}^2  + 
@@ -3713,8 +3712,8 @@ Using the assumption $x^\top \nabla G(x) \geq -\ccc$ and $\cinfty=\norm{\nabla G
 
 By  (\ref{lem:2ndmoments_discrete}), the transition kernel satisfies a Lyapunov condition. Since the associated transition densities are smooth on any compact set of $\mathcal X$, and are strictly positive, the minorization condition is satisfied by \cite[Lemma 2.3]{mattingly2002ergodicity}. We can then apply \cite[Theorem 2.25]{Lelievre2016-hx} to obtain the following result:
 \begin{theorem}[Long-Term Convergence of Implicit-Explicit Scheme]
-\label{num_erg} Under \ref{reg1}, the distribution $P^k(X_0,\cdot)$ of the numerical approximation $x^k$  converges to the invariant distribution $\pi_{\deltat}$ geometrically. In particular, for $V((u,v))=1+\norm{(u,v)}^2$ and some $C,\rho>0$,
-    \[\norm{ P^k(X_0,\phi )  - \pi_{\deltat}(\phi)}^\infty_V\le  C \exp(-\rho\, k) \norm{\phi-\pi_\tstep(\phi)}^\infty_V,\quad k>0.
+\label{num_erg} Under \ref{reg1}, the distribution $P^k(X_0,\cdot)$ of the numerical approximation $x^k$  converges to the invariant distribution $\pi_{\deltat}$ geometrically. In particular, for $V((u,v))=1+\norm{(u,v)}^2$ and some $C_{\Delta T},\rho_{\Delta T}>0$,
+    \[\norm{ P^k(X_0,\phi )  - \pi_{\deltat}(\phi)}^\infty_V\le  C_{\Delta T} \exp(-\rho_{\Delta T}\, k) \norm{\phi-\pi_\tstep(\phi)}^\infty_V,\quad k>0.
     \]
 \end{theorem}
 
@@ -3730,7 +3729,7 @@ We  establish convergence  of our discretized scheme on a fixed time interval $[
     \item[(ii)] $(u^0,v^0)$ and $(u(0),v(0))$ follow an initial distribution $\rho_0\ll \pi $ such that $\frac{\rho_0}{\pi}$ is uniformly bounded.
 \end{itemize}
 \end{assumption}
-For $t_k=k\,\tstep$, let  $e_1(t_k) \eqdef u_{t_k} - u^k$ and $e_2(t_k) \eqdef v_{t_k} - v^k$, and $e(t_k) \eqdef (e_1(t_k), e_2(t_k)) $. Our main convergence result is as follows.
+The boundedness of $\frac{\rho_0}{\pi}$ is used only to guarantee the finiteness of the moments of the initial condition required in the proof below. A suitable moment assumption on $\rho_0$ would therefore be sufficient. For $t_k=k\,\tstep$, let  $e_1(t_k) \eqdef u_{t_k} - u^k$ and $e_2(t_k) \eqdef v_{t_k} - v^k$, and $e(t_k) \eqdef (e_1(t_k), e_2(t_k)) $. Our main convergence result is as follows.
 \begin{theorem}\label{thm:num_conv}
 Under Assumption \ref{reg3}, for any $T>0$,
 $$
@@ -3745,7 +3744,7 @@ Before proceeding with the proof we point out the two main technical challenges 
 \end{equation}
 \textit{Limited inverse moments.} As mentioned, our implicit-explicit scheme with $G\equiv 0$ is  the same as the scheme proposed in \cite{Dereich2011-tp}, who studied the discretization scheme for the Lamperti transformed version of the CIR process \eqref{eq:cir1} under the parameter choice $2\kappa\mu>\theta^2$. Their main result is the strong error bound $\EE\biggl[\sup_{0\leq t_k \leq T} \norm{ u_{t_k} - u^k}\biggr] = \Oo(\deltat^{\frac12}).$ Their analysis required inverse-moment bounds of the form $\EE[u_t^{-2}]<\infty$: this is \textit{false} when $2\kappa\mu = \theta^2$, which is precisely the case for our $u$ process when $G\equiv 0$. 
 
-To overcome this, we derive inverse-moment bounds of order up to but excluding 2 (we will make use of (\ref{cor}) and (\ref{timeregbnd}) in our proof). As a result, in the case where $G\equiv 0$, our proof shows that the discretized CIR process with parameters $2\kappa\mu =\theta^2$  satisfies the strong error bound $$\EE\biggl[\sup_{0\leq t_k \leq T} \norm{ u_{t_k} - u^k}\biggr] = \Oo(\deltat^{\frac12-\epsilon}),$$  for any $\epsilon>0$. We remark that similar ideas and error bounds were applied in \cite{hutzenthaler2014strong}.
+To overcome this, we derive inverse-moment bounds of order up to but excluding 2 (we will make use of Corollary (\ref{cor}) and Proposition (\ref{timeregbnd}) in our proof). As a result, in the case where $G\equiv 0$, our proof shows that the discretized CIR process with parameters $2\kappa\mu =\theta^2$  satisfies the strong error bound $$\EE\biggl[\sup_{0\leq t_k \leq T} \norm{ u_{t_k} - u^k}\biggr] = \Oo(\deltat^{\frac12-\epsilon}),$$  for any $\epsilon>0$. We remark that similar ideas and error bounds were applied in \cite{hutzenthaler2014strong}.
 
 \textit{Lack of global Lipschitzness.}
 The second difficulty is that  neither $S_\lambda$ nor $f$ are globally Lipschitz.  In particular, $f$ is at best only locally Lipschitz. To handle this, we will follow the analysis of \cite{higham2002strong} to stop our process whenever $\norm{(u,v)}\geq R$ and upper bound $\PP(\norm{(u,v)_t}\geq R)$. Intuitively, this can be done since our stationary distribution has exponentially decaying tails. 
@@ -3753,9 +3752,9 @@ The second difficulty is that  neither $S_\lambda$ nor $f$ are globally Lipschit
 \textit{Outline of proof.}
 The proof of \ref{thm:num_conv}  is a consequence of Propositions \ref{prop:error_discrete} and \ref{prop:error_discrete_part2} below. We first make two simplifying assumptions, \ref{ass:ball_R},\ref{ass:2}, in order to derive convergence in \ref{prop:error_discrete}. We then show in Proposition \ref{prop:error_discrete_part2} that these two assumptions hold under our main assumption (\ref{reg3}). 
  %
- We remark that while we manage to show $\tstep^{1/2-\epsilon}$ rate for a stopped process (restricted to the ball of radius $R$) in \ref{prop:error_under_bounded_ball}, our main convergence result \ref{thm:num_conv} does not provide a rate because our error bound has an exponential dependence on $C_R$ and hence $R$.
+ We remark that while we manage to show $\tstep^{1/2-\epsilon}$ rate for a stopped process (restricted to the ball of radius $R$) in Proposition \ref{prop:error_under_bounded_ball}, our main convergence result \ref{thm:num_conv} does not provide a rate because our error bound has an exponential dependence on $C_R$ and hence $R$.
 
- We begin with the following assumption:
+ We begin with the following assumptions:
 \begin{assumption}\label{ass:ball_R}
 The function $f$ defined in \eqref{eq:f} is locally Lipschitz:
 $$
@@ -3770,7 +3769,7 @@ $$
 \EE\left[\sup_{0\le t_k\leq T} \norm{(u,v)^k}^{p}\right] \vee \EE\left[\sup_{0\le t\leq T} \norm{(u,v)_t}^{p}\right] \leq A.
 $$
 \end{assumption}
-Note that Assumption \ref{ass:2} is the discrete counterpart to the $p$th-moment bounds (\ref{uv_moment}) on $(u,v)_t$. We  show in \ref{prop:error_discrete_part2} that Assumption \ref{ass:2} is indeed satisfied for our discretized process.
+Note that Assumption \ref{ass:2} is the discrete counterpart to the $p$th-moment bounds (\ref{uv_moment}) on $(u,v)_t$. We  show in Proposition \ref{prop:error_discrete_part2} that Assumption \ref{ass:2} is indeed satisfied for our discretized process.
 
 \begin{proposition}\label{prop:error_discrete}
     Suppose that Assumption \ref{reg3}(ii) and Assumption \ref{ass:2} hold, and that Assumption \ref{ass:ball_R} holds for some $R>0$. Then, 
@@ -3826,8 +3825,8 @@ r_{2,k} &\eqdef \int_{t_k}^{t_{k+1}}  \pa{ f_2((u,v)_{t_k}) - f_2((u,v)_t) } \,d
 %
 Taking inner product of \eqref{eq:err1} with $e_1(t_{k+1})$ and \eqref{eq:err2} with $e_2(t_{k+1})$, we have 
 \begin{align*}
-    \pa{\frac12 + \lambda \,\deltat - \frac{ C_R\,\tstep}{2}} \norm{e_1(t_{k+1})}^2 &=\frac12\norm{e_1(t_{k})}^2+ \frac{ C_R\,\tstep }{2} \norm{(e_1(t_{k}),e_2(t_{k}))}^2   + \norm{r_{1,k}}\,\norm{e_1(t_{k+1})}, \\
-   \left(\frac12+\lambda \,\deltat - \frac{C_R\,\tstep}{2} \right) \norm{e_2(t_{k+1})}^2 &= \frac12 \norm{e_2(t_{k})}^2+   \frac{C_R\,\tstep }{2} \norm{(e_1(t_{k}),e_2(t_{k}))}^2   + \norm{r_{2,k}}\,\norm{e_2(t_{k+1})},
+    \pa{\frac12 + \lambda \,\deltat - \frac{ C_R\,\tstep}{2}} \norm{e_1(t_{k+1})}^2 &\leq\frac12\norm{e_1(t_{k})}^2+ \frac{ C_R\,\tstep }{2} \norm{(e_1(t_{k}),e_2(t_{k}))}^2   + \norm{r_{1,k}}\,\norm{e_1(t_{k+1})}, \\
+   \left(\frac12+\lambda \,\deltat - \frac{C_R\,\tstep}{2} \right) \norm{e_2(t_{k+1})}^2 &\leq \frac12 \norm{e_2(t_{k})}^2+   \frac{C_R\,\tstep }{2} \norm{(e_1(t_{k}),e_2(t_{k}))}^2   + \norm{r_{2,k}}\,\norm{e_2(t_{k+1})},
 \end{align*}
 where we used that
  ${a^\top}{b}\leq \frac12 \norm{a}^2 + \frac12 \norm{b}^2$, that $f_i$ is $C_R$-Lipschitz, and that  $$\bigl(S_\lambda(u_{t_{k+1}}) - S_\lambda(u^{k+1})\bigr)^\top e_1(t_{k+1}) \leq -\lambda \norm{e_1(t_{k+1})}^2$$
@@ -4040,7 +4039,7 @@ Finally, we verify  that Assumptions \ref{ass:ball_R} and \ref{ass:2} hold under
 %     \item $B \eqdef \sup_{x} \norm{\nabla G(x)}<\infty$, 
 %     \item $x^\top \nabla G(x) \geq -C_0$.
 % \end{itemize}
-Let \ref{reg3} hold with  $\nabla G$ being $L$-Lipschitz. Additionally, recall from Assumption \ref{reg1}, that $$\cinfty=\sup_{x} \norm{\nabla G(x)}_\infty<\infty,\qquad x^\top \nabla G(x) \ge -\ccc, \quad \text{ for all } x\in \mathcal X.$$ 
+Let Assumption \ref{reg3} hold with  $\nabla G$ being $L$-Lipschitz. Additionally, recall from Assumption \ref{reg1}, that $$\cinfty=\sup_{x} \norm{\nabla G(x)}_\infty<\infty,\qquad x^\top \nabla G(x) \ge -\ccc, \quad \text{ for all } x\in \mathcal X.$$ 
 Then, Assumption \ref{ass:ball_R} holds for any $R>0$ with $C_R \lesssim R^2 \clip + \cinfty$, and Assumption \ref{ass:2} holds for any $p>2$.
 %$A \lesssim  5^{p/2}  } T^{\frac{p}{2}} \exp\pa{T^{p-1}  B^{p/2}}$$ for any $p>2$.
 It follows from Proposition \ref{prop:error_discrete} that 
@@ -4109,7 +4108,7 @@ We take the power of $p/2$ on both sides and use an application of Holder's ineq
   &\leq Z_0^p + C^{\frac{p}2}  \,\deltat^p\, M^{\frac{p}{2}-1} \sum_{j=0}^M Z_j^{p} + (CT)^{\frac{p}{2}} + C^{\frac{p}{2}} M^{\frac{p}{2}-1} \sum_{j=1}^{M-1} \norm{\deltaw_j}^p + C^{\frac{p}{2}} \Biggl|\sum_{j=0}^{M-1} ((n_1,n_2)^j)^\top{\deltaw_j}\Biggr|^{p/2},
 \end{align*}
 where $M = \lfloor \frac{T}{\Delta t} \rfloor$. For the last two terms, observe that
-  $\EE\sum_{j=0}^{M-1} \norm{\deltaw_j}^p \lesssim M (\deltat)^{p/2}$ and that, by the Burkholder--Davis--Gundy inequality \cite{10.1214/aop/1176997023}, and the sublinearity of $f_1,f_2$ with respect to $\|(u,v)\|$, we have \begin{align*}
+  $\EE\sum_{j=0}^{M-1} \norm{\deltaw_j}^p \lesssim M (\deltat)^{p/2}$ and that, by the Burkholder--Davis--Gundy inequality \cite{10.1214/aop/1176997023}, and together with the fact that $f_1,f_2$ have at most linear growth with respect to $\|(u,v)\|$, we have \begin{align*}
    \EE \Biggl|\sum_{j=0}^{M-1} ((n_1,n_2)^j)^\top {\deltaw_j}\Biggr|^{\frac{p}2} &\lesssim \EE \Biggl(\sum_{j=0}^{M-1} \norm{(u^j,v^j)}^2 \deltat\Biggr)^{\frac{p}4}
     \leq \deltat^{\frac{p}4} M^{\frac{p}{4}-1}\sum_{j=0}^{M-1} \EE[Z_j^{\frac{p}2}]
     = \deltat\, T^{\frac{p}{4}-1} \sum_{j=0}^{M-1} \EE[Z_j^{\frac{p}2}].
@@ -4192,7 +4191,7 @@ Choose $T=\abs{\log(\delta/2\,c_3)}/(\rho)$, so that, using (\ref{hoheh}) with $
   \end{proof}
 
 The second assumption of this theorem, (\ref{hehho}), is given by Theorem \ref{thm:num_conv}.
-The first assumption, (\ref{hoheh}), which requires a geometric rate of convergence uniform in the timestep $\tstep$, is more challenging. The geometric ergodicity presented in Theorem \ref{num_erg} is geometric in the number of time steps, and the estimate degrades as the time step is decreased and is not sufficient. Despite this limitation, (\ref{hoheh}) is a natural assumption to make and numerical evidence suggests that the discretized invariant measure $\pi_{\tstep}$ should converge to the true invariant measure $\pi$ as $\Delta t \to 0$. See Subsection \ref{subsec: 1d_experiment}, for example.
+The first assumption, (\ref{hoheh}), which requires a geometric rate of convergence uniform in the timestep $\tstep$, is more challenging. The geometric ergodicity presented in Theorem \ref{num_erg} is geometric in the number of time steps, but the estimate degrades as the time step is decreased and is not sufficient. Despite this limitation, (\ref{hoheh}) is a natural assumption to make and numerical evidence suggests that the discretized invariant measure $\pi_{\tstep}$ should converge to the true invariant measure $\pi$ as $\Delta t \to 0$. See Subsection \ref{subsec: 1d_experiment}, for example.
 
 
 \section{Discretizations in Cartesian Coordinates}
@@ -4200,7 +4199,7 @@ We aim to numerically simulate the system (\ref{yzvproc}) and compare its perfor
 \subsection{Euler-Maruyama}
 We first try the Euler-Maruyama scheme. Applying to (\ref{cyl}), we obtain the update, with stepsize $h$,
 \[X_{n+1} = X_n - h\lambda X_n \, - h\nabla G_{3}(X_n)\, + \sqrt{2h/\beta}\,R_n,\]
-for $R_n \sim N(0,I_{3d})$. However, due to the singularity $\frac{1}{u_t}$, this method may be unstable in the sense that, for sufficiently large step sizes, it may fail to be ergodic and the moments of the numerical solution can grow without bound.
+for $R_n \sim N(0,I_{3d})$. However, due to the singular drift term $1/u_t$, the Euler--Maruyama scheme does not preserve positivity and may produce iterates near or across the singularity at $u=0$, leading to large numerical errors and poor approximation of the long-time dynamics.
 
 \subsection{Splitting Methods}
 Our system can be tackled by splitting methods via dividing it into multiple parts and treating them sequentially. For example, we can divide the system (\ref{cyl}), in a similar fashion to that of the Langevin Dynamics splitting by Leimkuhler and Matthews \cite{leimkuhler2013rational}:
@@ -4226,7 +4225,7 @@ We may also consider the sequential (BO) scheme, akin to Lie-Trotter for ODEs:
 \label{seq_split}
 \end{aligned}
 \end{equation}
-However, this should perform worse than BOB due to asymmetry creating $\mathcal{O}(h)$ terms in BCH expansion. We also confirm this in numerical tests that we won't present.
+However, this should perform worse than BOB due to asymmetry creating $\mathcal{O}(h)$ terms in BCH expansion. We also confirm this behaviour in numerical experiments, which we do not present here.
 \begin{comment}
 We compare performance to the Euler-Maruyama scheme applied to Cartesian coordinates:
 \begin{equation} 
@@ -4236,39 +4235,49 @@ We compare performance to the Euler-Maruyama scheme applied to Cartesian coordin
 \end{split}
 \end{equation}
 \end{comment}
-Additionally, recall that by taking the limit of the friction coefficient $\gamma \to \infty$ in the BAOAB scheme for underdamped Langevin dynamics, we can derive a new pseudo-Euler-Maruyama scheme (\ref{eq:baoab_limit_scheme}), that has $\mathcal{O}(h^2)$ error in stationary averages\cite{leimkuhler2013rational}. We try a similar approach with application to the BOB scheme (\ref{bob_split}).
-\begin{equation} 
-\begin{split} 
-\vec x_{n+1}&=\vec x_{n} - h \,\lambda \vec x_{n} - h\,\nabla G_{3}(\vec x_n) +\sqrt{2h/\beta} \, (R_n\, + R_{n+1}) \quad R_n, R_{n+1} \sim N(0,I_{3d})
-\label{pseudo-euler}
-\end{split}
-\end{equation}
-The scheme above doesn't approximate invariant measure that well. However, from trial and error, we found that
-\begin{equation}
-\begin{aligned}
-\vec x_{n+1}&=\vec x_{n} - h \,\lambda \vec x_{n} - h\,\nabla G_{3}(\vec x_n) +\sqrt{h/2\beta} \, (R_n\, + R_{n+1}) \quad R_n, R_{n+1} \sim N(0,I_{3d})
-\end{aligned}
-\end{equation}
-works pretty well and demonstrates $\mathcal{O}(h^2)$ error in test cases, as predicted by Leimkuhler. We refer to this as the Pseudo-Euler-Maruyama or PEM scheme in the numerics section below.
+Motivated by the Leimkuhler--Matthews method for stochastic gradient systems
+\cite{LeimkuhlerMatthewsTretyakov2014}, we consider the following
+Pseudo-Euler--Maruyama (PEM) scheme:
+
+\[
+x_{n+1}
+=
+x_n
+-
+h\lambda x_n
+-
+h\nabla G_3(x_n)
++
+\sqrt{\frac{h}{2\beta}}
+\,(R_n+R_{n+1}),
+\qquad
+R_n,R_{n+1}\sim N(0,I_{3d}).
+\]
+
+Numerical experiments suggest that this scheme approximates stationary averages
+considerably more accurately than the standard Euler--Maruyama discretization and
+exhibits approximately second-order convergence of these averages with respect to the
+timestep $h$. Similar second-order accuracy for stationary averages was established for the Leimkuhler--Matthews method in \cite{LeimkuhlerMatthewsTretyakov2014}.
 
 \chapter{Experimental Results}
 The code for reproducing numerics in the following sections is available at the \href{https://github.com/icheltso/thesis/tree/main/thesis\_bayes\_lasso}{thesis\_bayes\_lasso} folder of the Github repository. Note that the \href{https://docs.jax.dev/en/latest/installation.html#installation}{JAX} python package is required to run the experiments.
 
 \subsection{1D Regression Problem} \label{subsec: 1d_experiment}
-We consider the case where $d=1$, and choose $A=1$, $y=3$, and $\lambda = 2.7$. To estimate the impact of $\Delta t$ for the stationary distribution, for different stepsizes, we run Hadamard Langevin for $T_{burn}=3000$ and then record samples over $T_{rec} = 2500$ total time. In order to counter the Monte-Carlo error (as in (\ref{eq:statistic_bias})), we scale burn-in and sampling iterations as $\mathcal{O}(\Delta t^{-1})$. Furthermore, we scale subsampling frequency as $\mathcal{O}(\Delta t^{-1})$, so that the total number of samples in each chain is constant at 100. Finally, and most importantly, in order to achieve quadratic growth of independent samples, we increase the number of paths at each timestep as $\mathcal{O}(\Delta t^{-2})$. Even so, the best performing method still experienced dominating Monte-Carlo error, as seen in (\ref{fig:error_1d}).
+In this section, we compare the sampling methods introduced in Chapters 5 and 6 on Bayesian Lasso regression problems. We consider both one-dimensional and higher-dimensional settings and assess the accuracy of the resulting stationary distributions and sampling efficiency. Unless otherwise stated, the model parameters are chosen as described below. We consider the case where $d=1$, and choose $A=1$, $y=3$, and $\lambda = 2.7$. To estimate the impact of $\Delta t$ for the stationary distribution, for different stepsizes, we run Hadamard Langevin for $T_{burn}=3000$ and then record samples over $T_{rec} = 2500$ total time. In order to counter the Monte-Carlo error (as in (\ref{eq:statistic_bias})), we scale burn-in and sampling iterations as $\mathcal{O}(\Delta t^{-1})$. Furthermore, we scale subsampling frequency as $\mathcal{O}(\Delta t^{-1})$, so that the total number of samples in each chain is constant at 100. Finally, and most importantly, in order to achieve quadratic growth of independent samples, we increase the number of paths at each timestep as $\mathcal{O}(\Delta t^{-2})$. Even so, the best performing method still experienced dominating Monte-Carlo error, as seen in (\ref{fig:error_1d}).
 \begin{figure}[htb]
     \centering
     \includegraphics[width=1\linewidth]{IMG/loglog_plot_quad.pdf}
     \caption{Error of the stationary distribution for different stepsizes}
     \label{fig:error_1d}
 \end{figure}
-We carry out the experiment with $\phi(x) = x^2$. Figure \ref{fig:error_1d} shows the error between the mean of  $\phi(u\odot v)$  evaluated via these samples compared with the integral of the true density $\rho$ (i.e., \eqref{target}) against $\phi$ (we compute this numerically  using scipy.integrate). This procedure is also repeated for Proximal Langevin, as well as the Cartesian discretizations, BOB and PEM. In general, we observe $\Oo(\deltat)$ for Proximal Langevin, Hadamard and BOB. PEM performed significantly better, although due to the Monte-Carlo error, it is difficult to say whether the quadrature error scaled as $\Oo(\deltat)$.
+We carry out the experiment with $\phi(x) = x^2$. Figure \ref{fig:error_1d} shows the error between the mean of  $\phi(u\odot v)$  evaluated via these samples compared with the integral of the true density $\rho$ (i.e., \eqref{target}) against $\phi$ (we compute this numerically  using \texttt{scipy.integrate}). This procedure is also repeated for Proximal Langevin, as well as the Cartesian discretizations, BOB and PEM. In general, we observe $\Oo(\deltat)$ for Proximal Langevin, Hadamard and BOB. PEM performed significantly better, although due to the Monte-Carlo error, it is difficult to say whether the quadrature error scaled as $\Oo(\deltat)$.
 
 
 \subsection{20-dimensional regression}
-We consider the case of $d=20$, and $A\in\RR^{40\times 20}$ is a random Gaussian matrix of mean zero and variance $\frac{1}{16m}$. We let $\lambda = \frac12 \norm{A^\top y}_\infty$ and $y=A x_0$ where $x_0$ is a 2-sparse vector.  For Proximal and Hadamard Langevin, BOB and PEM, we run $10^4$ burn-in iterations before recording $10^5$  samples,  while for Gibbs (due to its slower running time and faster convergence), we record $10^4$ samples after 10 burn-in samples. To assess the convergence of each scheme, we evaluate the effective sample size (ESS) which we computed using the package arviz \cite{arviz_2019}.   The sample means for each of the 20 dimensions are shown in Figure \ref{fig:means-dim20}. Figure \ref{fig:means-dim20} also shows the ESS in each dimension. Note that Gibbs has the highest ESS, followed by Hadamard. In general, for these low-dimensional settings, the  Gibbs sampler displays fast mean convergence behavior, and the Hadamard sampler also displays a similar pattern (although less sharp than the Gibbs sampler).
+We consider the case of $d=20$, and $A\in\RR^{40\times 20}$ is a random Gaussian matrix of mean zero and variance $\frac{1}{16m}$. We let $\lambda = \frac12 \norm{A^\top y}_\infty$ and $y=A x_0$ where $x_0$ is a 2-sparse vector.  For Proximal and Hadamard Langevin, BOB and PEM, we run $10^4$ burn-in iterations before recording $10^5$  samples,  while for Gibbs (due to its slower running time and faster convergence), we record $10^4$ samples after 10 burn-in samples. To assess the convergence of each scheme, we evaluate the effective sample size (ESS) which we computed using the \texttt{arviz} package \cite{arviz_2019}.   The sample means for each of the 20 dimensions are shown in Figure \ref{fig:means-dim20}. Figure \ref{fig:means-dim20} also shows the ESS in each dimension. Note that Gibbs has the highest ESS, followed by Hadamard. In general, for these low-dimensional settings, the  Gibbs sampler displays fast mean convergence behavior, and the Hadamard sampler also displays a similar pattern (although less sharp than the Gibbs sampler).
 
-\begin{figure}[htbp]
+\begin{comment}
+    \begin{figure}[htbp]
     \centering
     % Row 1
     \begin{subfigure}{0.45\textwidth}
@@ -4314,6 +4323,14 @@ We consider the case of $d=20$, and $A\in\RR^{40\times 20}$ is a random Gaussian
     \end{subfigure}
 
     \caption{(a)-(e) Running averages of iterates for various sampling methods; (f) Comparison of ESS of covariates for sampling methods.}
+    \label{fig:means-dim20}
+\end{figure}
+\end{comment}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{IMG/20d/figure_7_2_20d.pdf}
+    \caption{(a)--(e) Running averages of iterates for the Prox-L1, UV Hadamard, BOB, PEM and Gibbs samplers, respectively. The highlighted curves correspond to the two informative dimensions of the true parameter vector. (f) Effective sample sizes of the covariates for each sampling method.}
     \label{fig:means-dim20}
 \end{figure}
 

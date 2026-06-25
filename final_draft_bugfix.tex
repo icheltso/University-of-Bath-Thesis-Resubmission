@@ -4274,7 +4274,7 @@ We carry out the experiment with $\phi(x) = x^2$. Figure \ref{fig:error_1d} show
 
 
 \subsection{20-dimensional regression}
-We consider the case of $d=20$, and $A\in\RR^{40\times 20}$ is a random Gaussian matrix of mean zero and variance $\frac{1}{16m}$. We let $\lambda = \frac12 \norm{A^\top y}_\infty$ and $y=A x_0$ where $x_0$ is a 2-sparse vector.  For Proximal and Hadamard Langevin, BOB and PEM, we run $10^4$ burn-in iterations before recording $10^5$  samples,  while for Gibbs (due to its slower running time and faster convergence), we record $10^4$ samples after 10 burn-in samples. To assess the convergence of each scheme, we evaluate the effective sample size (ESS) which we computed using the \texttt{arviz} package \cite{arviz_2019}.   The sample means for each of the 20 dimensions are shown in Figure \ref{fig:means-dim20}. Figure \ref{fig:means-dim20} also shows the ESS in each dimension. Note that Gibbs has the highest ESS, followed by Hadamard. In general, for these low-dimensional settings, the  Gibbs sampler displays fast mean convergence behavior, and the Hadamard sampler also displays a similar pattern (although less sharp than the Gibbs sampler).
+We consider the case of $d=20$, and $A\in\RR^{40\times 20}$ is a random Gaussian matrix of mean zero and variance $\frac{1}{16m}$. We let $\lambda = \frac12 \norm{A^\top y}_\infty$ and $y=A x_0$ where $x_0$ is a 2-sparse vector - the first two components of $x_0$ are nonzero and therefore correspond to the informative dimensions of the regression problem. The remaining eighteen components correspond to noise dimensions. In Figure~\ref{fig:means-dim20}, the informative dimensions are highlighted to distinguish their behaviour from that of the noise dimensions. For Proximal and Hadamard Langevin, BOB and PEM, we run $10^4$ burn-in iterations before recording $10^5$  samples,  while for Gibbs (due to its slower running time and faster convergence), we record $10^4$ samples after 10 burn-in samples. To assess the convergence of each scheme, we evaluate the effective sample size (ESS) which we computed using the \texttt{arviz} package \cite{arviz_2019}. The running sample means for each of the 20 dimensions are shown in Figure \ref{fig:means-dim20}. Figure \ref{fig:means-dim20} also shows the ESS in each dimension. Note that Gibbs has the highest ESS, followed by PEM, Hadamard and BOB. In general, for these low-dimensional settings, the  Gibbs sampler displays fast mean convergence behavior, and the Hadamard and splitting method samplers also display a similar pattern (although less sharp than the Gibbs sampler).
 
 \begin{comment}
     \begin{figure}[htbp]
@@ -4364,7 +4364,7 @@ We consider the case of $d=20$, and $A\in\RR^{40\times 20}$ is a random Gaussian
         \caption{}
     \end{subfigure}
 
-    \caption{(left) Example synthetic Dataset: Useful dimensions and decision boundary; (right) Typical MAP for higher value of lambda (note the non-zero useful dimensions).}
+    \caption{(left) Example synthetic dataset showing the informative dimensions and the decision boundary; (right) Typical MAP estimate obtained with a larger value of $\lambda$. The nonzero coefficients correspond primarily to the informative dimensions.}
     \label{fig:db3d}
 \end{figure}
 
@@ -4388,7 +4388,7 @@ where $\Sigma_N \in \mathbb{R}^{k_N \times k_N}$ is a covariance matrix with uni
 \[
 \Sigma_N = \sigma_N^2 \left( \rho_N \mathbf{1} \mathbf{1}^\top + (1 - \rho_N) I \right).
 \] 
-The above construction is intended to illustrate the effects of regularization: a linear classifier trained without any regularization is likely to assign nonzero weights to the noisy dimensions $Y_i$, thereby reducing classification accuracy. In contrast, a sparsity-inducing regularizer (or prior) should encourage the model to focus on the useful features $X_i$ and suppress contributions from noise. For our setup, we choose
+The above construction is intended to illustrate the effects of regularization: a linear classifier trained without any regularization is likely to assign nonzero weights to the noisy dimensions $Y_i$, thereby reducing classification accuracy. In contrast, a sparsity-inducing regularizer (or prior) should encourage the model to focus on the informative features $X_i$ and suppress contributions from noise. For our setup, we choose
 \[
 k_U = 3, \quad k_N \in \{27, 97\}, \quad \mu_N = 0, \quad \sigma_N = 1, \quad \rho_N \in \{0, 0.5\}
 \]
@@ -4396,7 +4396,28 @@ yielding four experiments, where we have a) either a 30- or 100-dimensional feat
 \begin{equation} \label{eq:binary_logistic}
     G(x) = \sum_{i=1}^m \log\left(1 + \exp(-y_i A_i^\top x)\right),
 \end{equation}
-where $A \in \mathbb{R}^{200 \times 100}$ is the design matrix containing 200 training samples and $y \in \{-1, 1\}^{200}$ are the associated class labels. We compare the performance of four sampling-based inference algorithms: Proximal Langevin, UV-Langevin, BOB, and PEM. Each sampler is run until convergence (after discarding an initial burn-in phase), after which we collect 10,000 posterior samples. Using these samples, we compute the mean predictive classification accuracy and the mean ROC/AUC score on a test set of 50 points generated in the same fashion as the training set. For robustness, the entire experiment is repeated 100 times, with both the training and test datasets regenerated for each run. We report the median of the mean predictive accuracies and AUC scores across these 100 repetitions and compare them to a deterministic Lasso solver. The results for all experiments are visualized in Tables \ref{tab:train_test_accuracy_binary}-\ref{tab:train_test_accuracy_binary_small_corr}. This setup was inspired by that of Mallick and Yi \cite{mallick2014Bayesian}, however in our case, the optimal hyperparameter $\lambda$ was chosen via gridsearch for both the deterministic solver and Bayesian samplers. We expected median mean test accuracy to be higher for the Bayesian samplers, as opposed to the Lasso solver, similar to the findings of Mallick and Yi. However, this was not the case and Lasso outperformed the other methods in all four experiments.
+where $A \in \mathbb{R}^{200 \times 100}$ is the design matrix containing 200 training samples and $y \in \{-1, 1\}^{200}$ are the associated class labels.
+
+It is important to note that the predictive metrics reported in this section
+(classification accuracy and ROC/AUC score) measure out-of-sample predictive
+performance rather than the quality of the posterior approximation itself.
+A method may achieve high predictive accuracy while providing only a point
+estimate of the posterior distribution, whereas Bayesian samplers are designed
+to approximate the full posterior and quantify uncertainty. Consequently,
+differences in predictive accuracy should not be interpreted as direct measures
+of sampling quality.
+
+We compare the performance of four sampling-based inference algorithms: Proximal Langevin, UV-Langevin, BOB, and PEM. Each sampler is run until convergence (after discarding an initial burn-in phase), after which we collect 10,000 posterior samples. Using these samples, we compute the mean predictive classification accuracy and the mean ROC/AUC score on a test set of 50 points generated in the same fashion as the training set. For robustness, the entire experiment is repeated 100 times, with both the training and test datasets regenerated for each run. We report the median of the mean predictive accuracies and AUC scores across these 100 repetitions and compare them to a deterministic Lasso solver. The results for all experiments are visualized in Tables \ref{tab:train_test_accuracy_binary}-\ref{tab:train_test_accuracy_binary_small_corr}. This setup was inspired by that of Mallick and Yi \cite{mallick2014Bayesian}, however in our case, the optimal hyperparameter $\lambda$ was chosen via gridsearch for both the deterministic solver and Bayesian samplers. %We expected median mean test accuracy to be higher for the Bayesian samplers, as opposed to the Lasso solver, similar to the findings of Mallick and Yi. However, this was not the case and Lasso outperformed the other methods in all four experiments.
+%The results for all experiments are visualized in Tables \ref{tab:train_test_accuracy_binary}--\ref{tab:train_test_accuracy_binary_small_corr}.
+Interestingly, the deterministic Lasso solver achieved the highest median
+classification accuracy in all four experiments. However, these predictive
+metrics should be interpreted with care, since classification accuracy and
+ROC/AUC assess predictive performance rather than the quality of posterior
+approximation. The Bayesian methods additionally provide uncertainty
+quantification by approximating the posterior distribution, which is not
+captured by these predictive metrics alone. We therefore interpret these
+results primarily as a comparison of predictive performance rather than a
+direct comparison of sampling quality.
 \begin{table}[h!]
     \centering
     \begin{tabular}{l c c}
@@ -4466,7 +4487,9 @@ where $A \in \mathbb{R}^{200 \times 100}$ is the design matrix containing 200 tr
 \end{table}
 
 \subsection{Binary Classifier with Cancer Dataset}
-We set up another binary classification problem, this time using the Wisconsin breast cancer dataset\footnote{https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data}, with 569 total samples, each containing 30 features. This dataset is divided into 357 benign and 212 malignant samples. We split this into training and test sets of size 455 and 114, respectively. We use the same logistic loss $G$ as in (\ref{eq:binary_logistic}). For Hadamard, proximal Langevin, as well as the BOB and PEM schemes, we simulate for $\beta = 5, 100$, using $10^5$ burn-in iterations and $3\times10^5$ sampling iterations, with a subsampling frequency of 1000, for a total of 3000 final uncorrelated samples. In Figures \ref{fig:cancer5} and \ref{fig:cancer100} you can see the mean weights and quantiles for the cases $\beta = 5$ and $\beta = 100$, respectively. In both cases, we observe the highest variance in mean non-zero weights. Interestingly, the mean test accuracy for the Bayesian methods was higher than for deterministic lasso (used to compute the MAP), when $\beta = 5$. Here, the test accuracy for the deterministic solution was 96.49\%, while the mean test accuracy (over 3000 samples) for all Bayesian methods was 97.37\%. On the other hand, for higher values of $\beta$, both the mean test accuracy for the Bayesian methods and the test accuracy for LASSO were very similar, which is expected as the samples in this case are all concentrated around the MAP. Additionally, at lower $\beta$, the samples had a lower mean sklearn logistic score. Both this and the higher mean test accuracy scores suggests that samples produced at lower $\beta$ could have useful generalizing properties.
+We set up another binary classification problem, this time using the Wisconsin breast cancer dataset\footnote{https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data}, with 569 total samples, each containing 30 features. This dataset is divided into 357 benign and 212 malignant samples. We split this into training and test sets of size 455 and 114, respectively. We use the same logistic loss $G$ as in (\ref{eq:binary_logistic}). For Hadamard, proximal Langevin, as well as the BOB and PEM schemes, we simulate for $\beta = 5, 100$, using $10^5$ burn-in iterations and $3\times10^5$ sampling iterations, with a subsampling frequency of 1000, for a total of 3000 final uncorrelated samples. In Figures \ref{fig:cancer5} and \ref{fig:cancer100} you can see the mean weights and quantiles for the cases $\beta = 5$ and $\beta = 100$, respectively. In both cases, we observe the highest variance in mean non-zero weights. Interestingly, the mean test accuracy for the Bayesian methods was higher than for deterministic lasso (used to compute the MAP), when $\beta = 5$. Here, the test accuracy for the deterministic solution was 96.49\%, while the mean test accuracy (over 3000 samples) for all Bayesian methods was 97.37\%. On the other hand, for higher values of $\beta$, both the mean test accuracy for the Bayesian methods and the test accuracy for LASSO were very similar, which is expected as the samples in this case are all concentrated around the MAP. Additionally, at lower $\beta$, the samples had a lower mean sklearn logistic score. Both this and the higher mean test accuracy scores suggests that samples produced at lower $\beta$ could possess useful generalizing properties. Since these observations are based on predictive accuracy and logistic loss, they should be interpreted as evidence of predictive performance rather than direct evidence of superior posterior approximation.
+
+With regards to gauging the methods' sampling qualities, while predictive accuracy alone cannot determine whether a sampler correctly approximates the posterior distribution, Figures \ref{fig:cancer5} and \ref{fig:cancer100} show that all four methods recover highly similar posterior means and credibility intervals. In particular, the same features are consistently assigned the largest posterior weights across all methods. This suggests that the methods produce broadly comparable approximations of the posterior distribution despite employing different sampling mechanisms. Furthermore, increasing $\beta$ reduces posterior uncertainty and causes the posterior to concentrate around the MAP estimator, as expected from the form of the Gibbs distribution. The similarity of posterior means and credibility intervals across all four methods provides evidence that the observed differences in predictive accuracy are not due to substantial differences in posterior approximation quality.
 
 \begin{figure}[htbp]
     \centering
@@ -4660,7 +4683,15 @@ We perform inpainting: $A = UW^T$, where $U$ is a masking operator and $W$ repre
 \end{figure}
 \newpage
 \subsection{Summary}
-Across regression, classification, and inverse problems, our experiments demonstrate that Hadamard Langevin offers competitive sampling performance, with efficiency close to Gibbs in moderate dimensions and improvements over Cartesian schemes in deconvolution tasks. In the one-dimensional regression problem, PEM showed the best numerical accuracy, though its behaviour was obscured by Monte Carlo error at small stepsizes. For high-dimensional regression and classification, deterministic Lasso consistently matched or outperformed Bayesian samplers in predictive accuracy, while the latter offered comparable ROC/AUC scores without clear gains. By contrast, in inverse problems such as deconvolution and inpainting, Bayesian samplers provided meaningful uncertainty quantification, with variance correctly concentrated near discontinuities, masked regions, and edges, and Hadamard and related schemes yielding stable reconstructions. Taken together, these results suggest that Hadamard Langevin is a promising alternative to sampling methods such as Gibbs in moderate-dimensional problems.
+Across regression, classification, and inverse problems, our experiments demonstrate that Hadamard Langevin offers competitive sampling performance, with efficiency close to Gibbs in moderate dimensions and improvements over Cartesian schemes in deconvolution tasks. In the one-dimensional regression problem, PEM showed the best numerical accuracy, though its behaviour was obscured by Monte Carlo error at small stepsizes. For high-dimensional regression and classification, deterministic Lasso consistently matched or outperformed Bayesian samplers in predictive accuracy, while the latter offered comparable ROC/AUC scores without clear gains.
+
+It should be noted that predictive accuracy and ROC/AUC quantify predictive
+performance rather than posterior approximation quality. Consequently, these
+results do not imply that the deterministic Lasso provides a better
+approximation of the posterior distribution; rather, they indicate that it
+achieved comparable or superior predictive performance on these datasets.
+
+By contrast, in inverse problems such as deconvolution and inpainting, Bayesian samplers provided meaningful uncertainty quantification, with variance correctly concentrated near discontinuities, masked regions, and edges, and Hadamard and related schemes yielding stable reconstructions. Taken together, these results suggest that Hadamard Langevin is a promising alternative to sampling methods such as Gibbs in moderate-dimensional problems.
 
 \part{Hyperparameter Optimization}
 

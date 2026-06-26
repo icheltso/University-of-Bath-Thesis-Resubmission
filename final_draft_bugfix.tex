@@ -97,7 +97,12 @@ I declare that this thesis is my own work and has not been submitted for any oth
 \begin{abstract}
 This thesis develops new algorithms and theory for sampling with sparse priors, with the central contribution being the introduction of Hadamard-Langevin dynamics.
 
-Sparse optimization plays a critical role in compressed sensing, inverse problems, and machine learning. While $\ell_1$-type regularizers are widely used to promote sparsity, their nonsmooth nature presents analytical and computational challenges, especially in Bayesian sampling. Standard approaches such as unadjusted Langevin algorithms, Gibbs sampling, or smoothing-based methods often suffer from instability, poor convergence, or biased approximations.
+Sparse optimization plays a critical role in compressed sensing,
+inverse problems, and machine learning. While $\ell_1$-type regularizers are widely used to promote sparsity, their nonsmooth nature presents analytical and computational challenges, especially in Bayesian sampling. Standard approaches such as unadjusted Langevin algorithms,
+Gibbs sampling, and smoothing-based methods may face challenges
+when applied to nonsmooth targets, including slow mixing,
+discretization error, or approximation bias
+\cite{pereyra2016proximal,durmus2018efficient}.
 
 To address this, we propose a new class of samplers based on Hadamard reparameterizations of nonsmooth priors. These reparameterizations allow the design of Langevin-type dynamics that retain the statistical properties of sparse models while being more tractable for analysis and discretization. We establish ergodicity, moment bounds, and finite-time convergence for the resulting processes and study their discretizations in both cylindrical and Cartesian coordinates.
 
@@ -146,11 +151,15 @@ Hadamard-based reparametrizations.
 
 \chapter{Introduction}
 \end{comment}
-Sparsity has become a cornerstone of modern applied mathematics. Whether in compressed sensing, inverse problems, or machine learning, sparsity-promoting regularizers such as the $\ell_1$-norm are essential tools for recovering interpretable solutions from limited or noisy data. Yet, while their optimization properties are well studied, their role in Bayesian sampling remains challenging.
+Sparsity has become a cornerstone of modern applied mathematics.
+Whether in compressed sensing, inverse problems, or machine learning,
+sparsity-promoting regularizers such as the $\ell_1$-norm are essential
+tools for recovering interpretable solutions from limited or noisy data
+\cite{anha,bach2012optimization}. Yet, while their optimization properties are well studied, their role in Bayesian sampling remains challenging.
 
 This thesis introduces a new class of sampling algorithms: Hadamard-Langevin dynamics. These algorithms are specifically designed for sparse priors, using Hadamard reparameterizations to transform nonsmooth regularizers into smoother forms that allow for the exact recovery of the original density and avoid the bias introduced by proximal-type approaches. In contrast to methods based on the Moreau envelope, which replace the nonsmooth component with a smooth approximation, the Hadamard formulation preserves the true $\ell_1$ structure. This perspective hinges on the Gaussian mixture representation of the Laplace prior and can be viewed as an overparameterization: we construct an auxiliary density from which the original model can be exactly recovered.
 
-We establish a rigorous theoretical foundation for these dynamics. In continuous time, we prove results on ergodicity, moment bounds, and finite-time convergence. For discrete implementations, we propose a semi-implicit scheme in cylindrical coordinates, for which we prove convergence to the stationary distribution of the continuous dynamics, establishing strong convergence of the method. Additionally, we propose various splitting method-based discretizations in Cartesian coordinates, that we evaluate empirically. These results are complemented by numerical experiments, ranging from low-dimensional regression to high-dimensional classification and deconvolution tasks, where Hadamard-Langevin dynamics is competitive with standard approaches.
+We establish a rigorous theoretical foundation for these dynamics. In continuous time, we prove results on ergodicity, moment bounds, and finite-time convergence. For discrete implementations, we propose a semi-implicit scheme in cylindrical coordinates and prove convergence of its invariant measure to that of the continuous dynamics, assuming a timestep-uniform geometric ergodicity condition. Additionally, we propose various splitting method-based discretizations in Cartesian coordinates, that we evaluate empirically. These results are complemented by numerical experiments, ranging from low-dimensional regression to high-dimensional classification and deconvolution tasks, where Hadamard-Langevin dynamics is competitive with standard approaches.
 
 In addition to sampling, the thesis also addresses the related but distinct problem of stochastic bilevel optimization for hyperparameter selection. Many sparse models depend critically on the choice of regularization parameters, which can be optimized through bilevel formulations. We analyze existing methods such as stocBio and propose stoc-HOAG, a stochastic modification of the HOAG algorithm. A central challenge in this setting is the conditioning of the inner problem, for which we provide remedies based on improved sampling approaches. Although these methods do not rely on Hadamard reparameterizations, we emphasize that such reparameterizations can be naturally combined with stochastic bilevel approaches to handle nonsmooth inner problems, pointing toward a promising direction for future research.
 
@@ -285,6 +294,11 @@ the Hadamard product is defined elementwise by
 
 \end{definition}
 
+\begin{definition}[Positive definite]
+    \item[$A \succ 0$] Matrix positive definiteness. For a symmetric matrix
+$A$, the notation $A \succ 0$ means that $A$ is positive definite,
+i.e. $x^\top A x > 0$ for all nonzero vectors $x$.
+\end{definition}
 
 
 
@@ -337,7 +351,7 @@ As $\lambda \to 0$, this recovers the original least-squares solution (when $A^T
 
 
 \subsection{Motivation - Sparse Regularization}
-In recent years, practical demand in areas such as image processing and deep learning, has led to increased interest in regularization as a sparsity-enforcing tool. This is also the main motivation behind our report. Firstly we explain what `sparsity' is. Recall the regularized problem \ref{reg_ml}. Suppose we are trying to fit a polynomial $u(x)$, with parameters $u_0,u_1,\hdots, u_k$, that is
+In recent years, practical demand in areas such as image processing and deep learning, has led to increased interest in regularization as a sparsity-enforcing tool. This is also the main motivation behind our report. Firstly we explain what `sparsity' is. Recall the regularized problem \eqref{reg_ml}. Suppose we are trying to fit a polynomial $u(x)$, with parameters $u_0,u_1,\hdots, u_k$, that is
 \[u(x) = u_0 + u_1 x + u_2 x^2 + \hdots + u_kx^k\]
 A sparse solution of this problem would be one with as few non-zero $u_j$ as possible, while making sure that the loss $\sum^n_{i=1} L(u(x_i),y_i)$ is minimal. With respect to this problem, the regularizer $R(u)$ will be responsible for enforcing sparsity. We now discuss the reasons for considering sparse-regularized problems.
 
@@ -370,7 +384,7 @@ However, for $0<p<1$, (\ref{lp_lin}) is non-convex (NP-hard, see Exercise 2.10 o
 \begin{equation} \label{basis_pursuit}
     \min_x \|x\|_1 \quad \text{s.t.} \quad Ax=b.
 \end{equation}
-That is, we reach the highest degree of sparsity, while maintaining convexity. For $A \in \mathbb{R}^{m \times N}$, we have by Theorem 3.1 in \cite{anha}, that the solution would be at least $m-$sparse. Furthermore, by introducing slack variables, one can get rid of the absolute values and recast (\ref{basis_pursuit}) as a linear program in $2N$ variables. We generally do not aim to solve \ref{basis_pursuit} exactly (e.g., due to noisy inputs $x$), and consider the relaxation, or \textit{basis pursuit denoising}:
+That is, we reach the highest degree of sparsity, while maintaining convexity. For $A \in \mathbb{R}^{m \times N}$, we have by Theorem 3.1 in \cite{anha}, that the solution would be at least $m-$sparse. Furthermore, by introducing slack variables, one can get rid of the absolute values and recast (\ref{basis_pursuit}) as a linear program in $2N$ variables. We generally do not aim to solve \eqref{basis_pursuit} exactly (e.g., due to noisy inputs $x$), and consider the relaxation, or \textit{basis pursuit denoising}:
 \begin{equation} \label{bpd}
     \min_x \|x\|_1 \quad \text{s.t.} \quad \|Ax-b\|_2 \leq \eta, \quad \eta>0.
 \end{equation}
@@ -509,7 +523,7 @@ Each $v \in \partial f(x)$ is called a subgradient of $f$ at $x$. We say a funct
 \]
 \end{definition}
 \begin{example}[Subdifferential of $|x|$]
-Consider the absolute value function $f(x) = |x| $for $x \in \mathbb{R} $. Its subdifferential is
+Consider the absolute value function $f(x) = |x| $ for $x \in \mathbb{R} $. Its subdifferential is
 \[
 \partial f(x) =
 \begin{cases}
@@ -662,7 +676,7 @@ $$f(z^*) = |x|.$$ This simple example illustrates the principle that certain non
 \begin{theorem}[Quadratic Variational Form, \cite{poon}] \label{qvf_thm}
 Let $R:\mathbb{R}^n \xrightarrow[]{} \mathbb{R}.$ Then the following are equivalent:
 \begin{itemize}
-    \item $R(\beta) = \phi(\beta \circ \beta)$, where $\phi$ is proper, concave and upper semi-continuous, with domain $R^d_+.$
+    \item $R(\beta) = \phi(\beta \circ \beta)$, where $\phi$ is proper, concave and upper semi-continuous, with domain $\mathbb{R}^d_+.$
     \item There exists a convex function $\psi$ for which $R(\beta) = \inf_{z \in \mathbb{R}^n_+} \frac{1}{2} \sum_{i=1}^n z_i \beta_i^2 + \psi(z).$
 \end{itemize}
 Furthermore, $\psi(z) = (-\phi)^* (-z/2)$ is defined via the convex conjugate $(-\phi)^*$ of $(-\phi)$. When $R$ is a norm, we have that, for $\psi(\eta) = \frac{1}{2} h(\frac{1}{\eta}),$
@@ -774,10 +788,10 @@ Recall the imaging problem (\ref{lasso_gen}):
 \begin{equation*}
     x^* = \argmin_x  \|Ax-b\|_2^2 + \lambda\|Dx\|_1.
 \end{equation*}
-Before we solve this problem, we need to consider the hyperparameter $\lambda > 0$, the weight of the regularization term. Note that as $\lambda \xrightarrow[]{} 0$, $x^*$ approaches the solution of the non-regularized least squares problem, while as $\lambda \xrightarrow[]{} \infty$, the regularizer starts to dominate the solution. This trade-off is illustrated in Figure~\ref{fig:deblurry_tiger      }. For small values of $\lambda$, the reconstruction is dominated by the data fidelity term and may overfit noise, whereas for large $\lambda$, the regularization term dominates, leading to overly sparse or oversmoothed 
+Before we solve this problem, we need to consider the hyperparameter $\lambda > 0$, the weight of the regularization term. Note that as $\lambda \xrightarrow[]{} 0$, $x^*$ approaches the solution of the non-regularized least squares problem, while as $\lambda \xrightarrow[]{} \infty$, the regularizer starts to dominate the solution. This trade-off is illustrated in Figure~\ref{fig:deblurry_tiger}. For small values of $\lambda$, the reconstruction is dominated by the data fidelity term and may overfit noise, whereas for large $\lambda$, the regularization term dominates, leading to overly sparse or oversmoothed 
 solutions. The right panel shows the corresponding regularization path, highlighting the dependence of the reconstruction quality (measured by SNR) on $\lambda$.
 
-We are interested in finding the optimal value of the hyperparameter, that is, a balance between sparsity of the solution, and its visual accuracy. To formalize this, we solve the bi-level problem
+We are interested in finding the optimal value of the hyperparameter, that is, a balance between sparsity of the solution, and its visual accuracy. To formalize this, we solve the bilevel problem
 \begin{align} 
 &\min _{\lambda \in \mathcal{D} \subset \mathbb{R}} L\left(\lambda \right) \triangleq C(\hat{x}(\lambda), \lambda) \label{bilev1_img}\\
 &\text { s.t. } \hat{x}(\lambda) =\underset{x \in \mathbb{R}^{n}} \argmin \|Ax-b\|_2^2 + \lambda\|Dx\|_1 \label{inprob_img},
@@ -868,7 +882,7 @@ where $\theta$ denote network parameters, $\mathcal{L}_T$ and $\mathcal{L}_V$ ar
 
 \section{Hyperparameter Optimization with Smooth Inner Problem}
 \label{section-hoag}
-Recall the bi-level problem
+Recall the bilevel problem
 \begin{align*} 
 &\min _{\lambda \in \mathcal{D} \subset \mathbb{R}^r} L\left(\lambda \right) \triangleq C(\hat{x}(\lambda), \lambda)\\
 &\text { s.t. } \hat{x}(\lambda) =\underset{x \in \mathbb{R}^{n}} \argmin {F(x, \lambda)},
@@ -1033,7 +1047,7 @@ for some small $\gamma > 0$, chosen to satisfy the Wolfe conditions, which ensur
 \[\nabla C(\hat{x}(\lambda), \lambda) = \nabla_\lambda C(\hat{x}(\lambda)) - \nabla^2_{x \lambda} F(\hat{x}(\lambda))^\top \left[ \nabla^2_{xx} F(\hat{x}(\lambda)) \right]^{-\top} \nabla_x C(\hat{x}(\lambda), \lambda).\]
 In the HOAG setting, quasi Newton methods have already been employed, replacing $\left[ \nabla^2_{xx} F(\hat{x}(\lambda)) \right]^{-1}$ with an approximation $H$, so that we have the approximate hypergradient
 \[\nabla \tilde{C}(\hat{x}(\lambda), \lambda) = \nabla_\lambda C(\hat{x}(\lambda)) - \nabla^2_{x \lambda} F(\hat{x}(\lambda))^\top H^\top \nabla_x C(\hat{x}(\lambda), \lambda).\]
-For example, in the paper by Ramzi et al. \cite{ramzi2022shine}, the proposed algorithm obtains the solution $\hat{x}(\lambda)$ for the inner problem and finds the the Hessian inverse  approximation $\left[ \nabla^2_{xx} F(\hat{x}(\lambda)) \right]^{-1}$ using $n$ steps of either the Broyden or BFGS method. It was shown theoretically, that the hypergradient $\nabla \tilde{C}(\hat{x}(\lambda), \lambda)$ converges superlinearly to $\nabla C(\hat{x}(\lambda), \lambda)$ as $n \xrightarrow[]{} \infty.$ Furthermore, it was shown empirically, that this approach converges faster than standard HOAG, when the inner problem was $\ell_2$-regularized logistic regression. Aside from BFGS and Broyden, there exists also the SR1, or Symmetric-Rank One method. Unlike the former, SR1 has a cheaper rank-1 update to the approximation $H$ and has shown, in practice, faster convergence to the true Hessian \cite{khalfan1993symmetric}. Motivated by this, we introduce the SR1 in the hyper-parameter optimization setting. Recall the optimality condition of the inner problem (\ref{opt_cond_smooth}):
+For example, in the paper by Ramzi et al. \cite{ramzi2022shine}, the proposed algorithm obtains the solution $\hat{x}(\lambda)$ for the inner problem and finds the the Hessian inverse  approximation $\left[ \nabla^2_{xx} F(\hat{x}(\lambda)) \right]^{-1}$ using $n$ steps of either the Broyden or BFGS method. It was shown theoretically, that the hypergradient $\nabla \tilde{C}(\hat{x}(\lambda), \lambda)$ converges superlinearly to $\nabla C(\hat{x}(\lambda), \lambda)$ as $n \xrightarrow[]{} \infty.$ Furthermore, it was shown empirically, that this approach converges faster than standard HOAG, when the inner problem was $\ell_2$-regularized logistic regression. Aside from BFGS and Broyden, there exists also the SR1, or Symmetric-Rank One method. Unlike the former, SR1 has a cheaper rank-1 update to the approximation $H$ and has shown, in practice, faster convergence to the true Hessian \cite{khalfan1993symmetric}. Motivated by this, we introduce the SR1 in the hyperparameter optimization setting. Recall the optimality condition of the inner problem (\ref{opt_cond_smooth}):
 \[\nabla_x F(\hat{x}(\lambda),\lambda) = 0.\]
 In particular, we have, at step $k$:
 \[\nabla_x F(\hat{x}(\lambda_k),\lambda_k) = 0.\]
@@ -1056,7 +1070,7 @@ Thus, we have both a simple update rule for the Hessian,
     B_{k+1} = B_k + \frac{(y_k - B_ks_k)(y_k - B_ks_k)^\top}{(y_k - B_ks_k)^\top s_k},
 \end{equation}
 and, thanks to the Sherman-Morrison formula, a simple update for the Hessian inverse approximation $H_k$:
-\begin{equation} \label{sr1_upd}
+\begin{equation} \label{sr1_upd2}
     H_{k+1} = H_k + \frac{(y_k - H_ks_k)(y_k - H_ks_k)^\top}{(y_k - H_ks_k)^\top s_k}.
 \end{equation}
 We propose an even simpler update rule:
@@ -1084,13 +1098,13 @@ where $H_0 = \frac{1}{\gamma t_k} \mathrm{Id}$. If (\ref{orth_chck}) does not ho
 \subsection{Neumann Series}
 \label{subsec: neumann}
 We have another result regarding matrix inversions: if $A$ is a positive-definite matrix, such that $\|A\| \leq 1$, then
-\begin{equation} \label{neumann} 
+\begin{equation} \label{neumann_orig} 
     A^{-1} = \sum^{\infty}_{i=0} (I-A)^i.
 \end{equation}
-There are two consequences to this result. Firstly, we can use (\ref{neumann}) to approximately solve the linear system in Algorithm \ref{alg:hoag} by matrix-vector multiplications. Inverting an $m \times m$ Hessian would have a complexity of $\mathcal{O}(m^3)$, while leveraging an $L-$term Neumann series would have $\mathcal{O}(Lm^2)$, where we generally have $L<m$, especially for large datasets. However a more important consequence, is that we can derive a stochastic modification of the HOAG method. Recall the formulated problem 
+There are two consequences to this result. Firstly, we can use (\ref{neumann_orig}) to approximately solve the linear system in Algorithm \ref{alg:hoag} by matrix-vector multiplications. Inverting an $m \times m$ Hessian would have a complexity of $\mathcal{O}(m^3)$, while leveraging an $L-$term Neumann series would have $\mathcal{O}(Lm^2)$, where we generally have $L<m$, especially for large datasets. However a more important consequence, is that we can derive a stochastic modification of the HOAG method. Recall the formulated problem 
 \begin{align} 
-&\min _{\lambda \in \mathcal{D} \subset \mathbb{R}^r} L\left(\lambda \right) \triangleq C(\hat{x}(\lambda), \lambda) \label{outer_hoag_neu}\\
-&\text { s.t. } \hat{x}(\lambda) =\underset{x \in \mathbb{R}^{n}} \argmin {F(x, \lambda)}. \label{inner_hoag_neu}
+&\min _{\lambda \in \mathcal{D} \subset \mathbb{R}^r} L\left(\lambda \right) \triangleq C(\hat{x}(\lambda), \lambda) \label{outer_hoag_neu_orig}\\
+&\text { s.t. } \hat{x}(\lambda) =\underset{x \in \mathbb{R}^{n}} \argmin {F(x, \lambda)}. \label{inner_hoag_neu_orig}
 \end{align}
 The crux of this approach is that we can use (\ref{neumann}) to obtain a subroutine that finds a stochastic approximation to $[\nabla_{xx}^2 F]^{-1}$ and thus to $\nabla L$, matching these in expectation. The Hessian Inverse Approximation subroutine was first formulated by Ghadimi \& Wang \cite{ghadimi2018approximation}. Suppose, for a positive integer $b$, for a randomly chosen $p \in \{1,\cdots,b-1\}$, we have $p$ i.i.d. samples $\nabla^2_{xx} \tilde{F}_i$ of the Hessian  $\nabla^2_{xx} F$, so that $\mathbb{E}[\nabla^2_{xx} \tilde{F}_i(x,\lambda)] = \nabla^2_{xx} F(x,\lambda).$ Let $L_F$ denote the Lipschitz constant of $\nabla_x F$ (w.r.t. $x$). Then, if we denote
 \begin{equation} \label{HIA}
@@ -1101,7 +1115,7 @@ The crux of this approach is that we can use (\ref{neumann}) to obtain a subrout
 \end{equation}
 it can be shown, that
 \[\mathbb{E}[H_{xx}] = \frac{1}{L_F} \sum_{i=0}^{b-1}\left[I-\frac{1}{L_F} \nabla^2_{xx} F(x,\lambda)\right]^i.\]
-As a result, the Hessian Inverse Subroutine provides a biased estimate of $[\nabla_{xx}^2 F]^{-1}$, wherein the bias can be reduced by increasing the number of Hessian samples. However, Ghadimi did not provide any results on the variance of their approximation. Hence, a drawback of Ghadimi's Neumann Inversion Subroutine, is that the variance of the resulting approximation forces us to use a diminishing stepsize in the outer loop to ensure convergence, and even in this case it is not guaranteed. As a result, a variant of (\ref{HIA}) was used by Ji, Yang \& Liang to develop the StocBio algorithm \cite{ji2021bilevel}. In short, StocBio is a double-loop algorithm. In the inner loop it finds a solution $x_k$ to the inner problem (\ref{inner_hoag_neu}) using stochastic gradient descent. We then construct, setting $\prod_{j=Q+1}^Q(\cdot) = I$,
+As a result, the Hessian Inverse Subroutine provides a biased estimate of $[\nabla_{xx}^2 F]^{-1}$, wherein the bias can be reduced by increasing the number of Hessian samples. However, Ghadimi did not provide any results on the variance of their approximation. Hence, a drawback of Ghadimi's Neumann Inversion Subroutine, is that the variance of the resulting approximation forces us to use a diminishing stepsize in the outer loop to ensure convergence, and even in this case it is not guaranteed. As a result, a variant of (\ref{HIA}) was used by Ji, Yang \& Liang to develop the StocBio algorithm \cite{ji2021bilevel}. In short, StocBio is a double-loop algorithm. In the inner loop it finds a solution $x_k$ to the inner problem (\ref{inner_hoag_neu_orig}) using stochastic gradient descent. We then construct, setting $\prod_{j=Q+1}^Q(\cdot) = I$,
 \begin{equation} \label{HIA_StocBio}
     v_Q= \eta \sum_{q=-1}^{Q-1} \prod_{j=Q-q}^Q\left(I- \eta \nabla_y^2 \tilde{F}\left(x_k, \lambda_k ; \mathcal{B}_j\right)\right) \nabla_x \tilde{C}(x_k,\lambda_k,\mathcal{S}_C),
 \end{equation}
@@ -1111,7 +1125,7 @@ where $\nabla_y^2 \tilde{F}\left(x_k, \lambda_k ; \mathcal{B}_j\right)$ are samp
 
 Hence, we can use (\ref{HIA_StocBio}) to solve the system $\nabla_{xx}^2 F(x_k,\lambda_k)v = \nabla_x \tilde{C}(x_k,\lambda_k)$ (much like the second step in algorithm \ref{alg:hoag}) using only matrix-vector multiplication and low-sample approximations of the Hessian $\nabla_{xx}^2 F(x_k,\lambda_k)$. Finally, the approximate hypergradient is constructed:
 \[\tilde{\nabla} L = \nabla_\lambda C(x_k,\lambda_k) - \nabla_{x \lambda}^2 F(x_k,\lambda_k)^\top v_Q.\]
-Ji, Yang \& Liang have further developed two algorithms - MRBO and VRBO, building upon StocBio\cite{yang2021provably}. The former is a single loop algorithm, that uses momentum-based techniques to keep a running average of gradient estimations at each step, which are used to simultaneously update $x_k$ and $\lambda_k$. This method uses a decreasing stepsize for the updates. The latter is a double-loop algorithm that uses variance reduction techniques, similar to SVRG (Johnson \& Zhang \cite{johnson2013accelerating}). The outer loop is divided into epochs, while the inner loop, much like in the case of StocBio, solves the inner problem (\ref{inner_hoag_neu}), using the relevant gradients that are updated once per epoch with a relatively large batch of samples $\mathcal{S}_1$. Between the epochs the gradients are continuously updated using small batches of samples $\mathcal{S}_2$. To elaborate, the hypergradient $\nabla \tilde{L}$, when evaluated at the start of a new epoch, takes the form
+Ji, Yang \& Liang have further developed two algorithms - MRBO and VRBO, building upon StocBio\cite{yang2021provably}. The former is a single loop algorithm, that uses momentum-based techniques to keep a running average of gradient estimations at each step, which are used to simultaneously update $x_k$ and $\lambda_k$. This method uses a decreasing stepsize for the updates. The latter is a double-loop algorithm that uses variance reduction techniques, similar to SVRG (Johnson \& Zhang \cite{johnson2013accelerating}). The outer loop is divided into epochs, while the inner loop, much like in the case of StocBio, solves the inner problem (\ref{inner_hoag_neu_orig}), using the relevant gradients that are updated once per epoch with a relatively large batch of samples $\mathcal{S}_1$. Between the epochs the gradients are continuously updated using small batches of samples $\mathcal{S}_2$. To elaborate, the hypergradient $\nabla \tilde{L}$, when evaluated at the start of a new epoch, takes the form
 \begin{equation} \label{VRBO_hyper}
     \begin{aligned}
 &\widehat{\nabla} L\left(\lambda_k ; \mathcal{S}_1\right)=\frac{1}{S_1} \sum_{i=1}^{S_1}\left(\nabla_x C\left(x_k, \lambda_k ; \xi_i\right)\right. \\
@@ -1121,14 +1135,13 @@ Ji, Yang \& Liang have further developed two algorithms - MRBO and VRBO, buildin
 where all samples in $\mathcal{S}_1 = \left\{\zeta_i^j(j=1, \ldots, Q), \xi_i, \zeta_i, i=1, \ldots, S_1\right\}$ are independent. This method uses a constant stepsize. StocBio has a complexity of $\mathcal{O}(\epsilon^{-2})$ to reach such a point $\bar{\lambda}$, that $\|\nabla L(\bar{\lambda})\| \leq \epsilon.$ MRBO and VRBO, on the other hand, have a complexity of $\mathcal{O}(\epsilon^{-1.5})$ to achieve this. In fact, it was shown that these two algorithms outperform all of the existing stochastic bilevel optimization algorithms by a factor of $\mathcal{O}(\epsilon^{-0.5})$. Furthermore, all three of the stochastic algorithms demonstrated a faster convergence, as opposed to approximate implicit differentiation algorithms, such as HOAG (alg \ref{alg:hoag}).  
 %Add sentence on how MRBO/VRBO or their analysis may be improved (discussed in future research section).
 %Hence, the stochastic Hessian inverse subroutine provides a viable avenue for future research.
-\newpage
 \section{Hyperparameter Optimization with Non-Smooth Inner Problem}
 \label{section-hoag_nonsmooth}
 So far, we assumed the inner problem of bilevel optimization was smooth. In many practical settings, however, the inner objective includes non-smooth regularizers such as the $\ell_1$-norm in LASSO. This breaks the assumptions of classical implicit differentiation, since the inner solution map $\lambda \mapsto \hat{x}(\lambda)$ may fail to be differentiable everywhere. To be more specific, consider the following bilevel problem:
 \begin{align} 
 %&\min _{\lambda \in \mathbb{R}^r} L\left(\lambda \right) \triangleq \|A_{test}\hat{x}(\lambda) - b_{test}\|_2^2 \label{bilev_ns1}\\
 &\min _{\lambda \in \mathbb{R}^r} L\left(\lambda \right) \triangleq \mathcal{C}(\hat{x}(\lambda),\lambda) \label{bilev_ns1}\\
-&\text { s.t. } \hat{x}(\lambda) =\underset{x \in \mathbb{R}^{n}} \argmin {F(x,\lambda) \triangleq f(x) + \sum_{j=1}^\infty g_j(x,\lambda)} \label{inprob_ns},
+&\text { s.t. } \hat{x}(\lambda) =\underset{x \in \mathbb{R}^{n}} \argmin {F(x,\lambda) \triangleq f(x) + \sum_{j=1}^\infty g_j(x,\lambda)} \label{inprob_ns0},
 \end{align}
 where $g(x,\lambda) = \sum_{j=1}^\infty g_j(x,\lambda)$ is not differentiable. Several approaches have been proposed in the literature to address this issue. One line of work, due to Bertrand et al.~\cite{bertrand2022implicit}, develops a direct treatment of the nonsmooth setting using properties of proximal operators and active set identification. The key insight is that the proximal fixed-point mapping  
 \[
@@ -1137,7 +1150,6 @@ x \mapsto \prox_{\gamma_j g_j}(x_j - \gamma_j \nabla f(x))
 is differentiable at the optimum $\hat{x}$. Moreover, its gradient vanishes on the non-active set, which makes it possible to construct a Jacobian of the solution map despite nonsmoothness. This allows hypergradients to be computed via approximate linear system solves, leading to algorithms that resemble HOAG but explicitly account for sparsity structure.  
 
 An alternative, proposed by Poon and Peyré~\cite{poon}, reparametrizes the nonsmooth problem into a smooth one, so that standard implicit differentiation applies directly. This smooth reformulation is the perspective adopted in this thesis.  
-
 
 \subsection{Smooth reparametrization via Hadamard}
 Consider the bilevel least squares problem
@@ -1259,7 +1271,10 @@ where:
 \item $p(\mathcal{D})$ is a scaling factor, representing the marginal likelihood or evidence, ensuring that $p(\theta \mid \mathcal{D})$ is a valid probability distribution;
 \item $p(\theta \mid \mathcal{D})$ is the posterior distribution, which represents our updated beliefs about $\theta$ after observing the data.
 \end{itemize}
-Bayes' theorem provides a framework for statistical inference, enabling us to incorporate prior information into the analysis and systematically update our beliefs as new data becomes available. In many practical applications, the posterior distribution $p(\theta \mid \mathcal{D})$ is difficult to compute due to the complexity of the marginal likelihood $p(\mathcal{D})$, which requires integrating over all possible values of $\theta$:
+Bayes' theorem provides a framework for statistical inference, enabling us to incorporate prior information into the analysis and systematically update our beliefs as new data becomes available. In many practical applications, the posterior distribution
+$p(\theta\mid \mathcal{D})$ cannot be evaluated in closed form because the
+marginal likelihood $p(\mathcal{D})$ requires integration over all possible
+values of $\theta$:
 \begin{equation}
 p(\mathcal{D}) = \int p(\mathcal{D} \mid \theta) p(\theta) d\theta.
 \end{equation}
@@ -1275,6 +1290,10 @@ $\pi(\theta) = p(\theta \mid D)$, which is often known only up to a normalizatio
 
 MCMC constructs a Markov chain $\{\theta^{(k)}\}_{k \ge 0}$ with transition kernel 
 $P(\theta' \mid \theta)$ such that the target distribution $\pi$ is invariant. 
+
+Throughout this thesis we consider Markov chains on continuous state spaces, typically $\mathbb{R}^d$. In this setting, probability masses are replaced by probability
+densities, and sums over states are replaced by integrals with respect to
+the underlying measure.
 A probability measure $\pi$ is said to be invariant for the chain if
 
 \begin{equation} \label{eq:invariance_ker}
@@ -1294,9 +1313,9 @@ Ergodicity typically requires:
     \item \textbf{Aperiodicity:} the chain does not evolve in deterministic cycles.
 \end{itemize}
 
-Under these conditions, the chain converges to the invariant distribution from any starting point. 
+Under these conditions, the chain converges to the invariant distribution from any starting point\cite{robert2004monte,meyn2012-oq}. 
 
-\subsection*{Detailed Balance and Reversibility}
+\subsection{Detailed Balance and Reversibility}
 
 A common way to ensure that a distribution $\pi$ is invariant is to impose the 
 \emph{detailed balance condition} \cite{pavliotis_book}:
@@ -1363,7 +1382,7 @@ Let $p(x_1, x_2, \dots, x_d)$ be a joint distribution with full conditionals
 \[
 p(x_i \mid x_{-i}) \quad \text{where } x_{-i} = (x_1, \dots, x_{i-1}, x_{i+1}, \dots, x_d).
 \]
-The Gibbs sampler generates a Markov chain $\{x^{(t)}\}_{t \geq 0}$ as follows:
+The Gibbs sampler generates a Markov chain $\{x^{(t)}\}_{t \geq 0}$ as follows \cite{geman1984stochastic}:
 \begin{enumerate}
     \item Initialize $x^{(0)} = (x_1^{(0)}, \dots, x_d^{(0)})$ arbitrarily.
     \item For $t = 1,2,\dots$ and $i = 1,\dots,d$, update sequentially
@@ -1427,7 +1446,7 @@ Let the target distribution be
 
 where $U : \mathbb{R}^d \to \mathbb{R}$ is a differentiable potential.
 
-\subsection*{Overdamped Langevin Diffusion}
+\subsection{Overdamped Langevin Diffusion}
 
 Consider the stochastic differential equation
 
@@ -1448,7 +1467,7 @@ is symmetric in $L^2(\pi)$, meaning that the diffusion is reversible with respec
 Since exact simulation of \eqref{eq:langevin_sde} is generally not possible, 
 we discretize it in time.
 
-\subsection*{Unadjusted Langevin Algorithm (ULA)}
+\subsection{Unadjusted Langevin Algorithm (ULA)}
 
 Applying the Euler--Maruyama scheme with timestep $h > 0$ yields
 
@@ -1473,7 +1492,7 @@ However, it does not exactly preserve $\pi$ at the discrete level. Instead,
 it admits an invariant distribution $\pi_h$ satisfying $\pi_h \to \pi$ as $h \to 0$ \cite{wibisono}. 
 Thus ULA introduces a discretization bias.
 
-\subsection*{Metropolis-Adjusted Langevin Algorithm (MALA)}
+\subsection{Metropolis-Adjusted Langevin Algorithm (MALA)}
 
 To remove the discretization bias, one can apply a Metropolis--Hastings correction 
 to the ULA proposal.
@@ -1506,9 +1525,11 @@ $\pi$ exactly.
 Langevin-based methods are particularly effective in moderate to high dimensions, 
 as gradient information guides exploration of the state space. 
 
-In Part~II, we develop Hadamard--Langevin dynamics, 
-which modify the potential structure through reparameterization 
-to accommodate sparse priors.
+Classical Langevin methods are typically developed for smooth
+potentials. However, many sparsity-promoting priors lead to
+nonsmooth target densities, making the direct application of classical Langevin methods challenging. Part II introduces Hadamard-Langevin dynamics,
+which address this issue through a suitable reparameterization of
+the target distribution.
 
 
 
@@ -1523,6 +1544,7 @@ Stochastic processes play a fundamental role in modeling uncertainty. They provi
 
 
 \subsection{Brownian Motion and Measure-Theoretic Tools}
+\label{sec:bm_girsanov}
 Brownian motion is a continuous-time stochastic process with independent and normally distributed increments. It serves as a fundamental building block in probability theory and has extensive applications in physics, finance, and engineering.
 
 \begin{definition}[Brownian Motion on a Filtered Probability Space]
@@ -1557,7 +1579,7 @@ In the context of stochastic processes, we often define a new probability measur
 \[
 \frac{d\mathbb{Q}}{d\mathbb{P}} \bigg|_{\mathcal{F}_t} = M_t,
 \]
-where $(M_t)_{t \geq 0}$ is a positive martingale like the exponential martingale discussed above. This is the key object in Girsanov’s theorem, allowing us to shift the drift of Brownian motion.
+where $(M_t)_{t \geq 0}$ is a positive martingale like the exponential martingale discussed below. This is the key object in Girsanov’s theorem, allowing us to shift the drift of Brownian motion.
 
 \begin{definition}[Exponential Martingale]
 Let $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t \geq 0}, \mathbb{P})$ be a filtered probability space and let $(W_t)_{t \geq 0}$ be a standard Brownian motion adapted to $(\mathcal{F}_t)$. Suppose $X = (X_t)_{t \geq 0}$ is an $(\mathcal{F}_t)$-adapted process such that
@@ -1598,14 +1620,22 @@ Assume that the process $Z(X)$ defined by
 $$
 Z_t(X) \triangleq \exp \left[\sum_{i=1}^d \int_0^t X_s^{(i)} d W_s^{(i)}-\frac{1}{2} \int_0^t\left\|X_s\right\|^2 d s\right]
 $$
-is a martingale. This property is ensured under Novikov’s condition (see \cite[Corollary 5.13 of Novikov Condition]{Karatzas1991-xr}). Define a process $\tilde{W}=\left\{\tilde{W}_t=\left(\tilde{W}_t^{(1)}, \ldots\right.\right.$, $\left.\left.\tilde{W}_t^{(d)}\right), \tilde{\mathcal{F}}_t ; 0 \leq t<\infty\right\}$ by
+is a martingale. This property is ensured under Novikov’s condition (see \cite[Corollary 5.13 of Novikov Condition]{Karatzas1991-xr}). 
+For each fixed \(T<\infty\), define a probability measure
+\(\tilde{\mathbb P}_T\) on \((\Omega,\mathcal F_T)\) by
+\[
+\frac{d\tilde{\mathbb P}_T}{d\mathbb P}\bigg|_{\mathcal F_T}
+=
+Z_T(X).
+\]
+Define a process $\tilde{W}=\left\{\tilde{W}_t=\left(\tilde{W}_t^{(1)}, \ldots\right.\right.$, $\left.\left.\tilde{W}_t^{(d)}\right), \tilde{\mathcal{F}}_t ; 0 \leq t<\infty\right\}$ by
 
 $$
 \tilde{W}_t^{(i)} \triangleq W_t^{(i)}-\int_0^t X_s^{(i)} d s ; \quad 1 \leq i \leq d, \quad 0 \leq t<\infty
 $$
 
 
-For each fixed $T \in[0, \infty)$, the process $\left\{\tilde{W}_t, \tilde{\mathcal{F}}_t ; 0 \leq t \leq T\right\}$ is a d-dimensional Brownian motion on ( $\Omega, \mathcal{F}_T, \widetilde{P}_T$ ).
+For each fixed $T \in[0, \infty)$, the process $\left\{\tilde{W}_t, \tilde{\mathcal{F}}_t ; 0 \leq t \leq T\right\}$ is a d-dimensional Brownian motion on ( $\Omega, \mathcal{F}_T, \tilde{\mathbb{P}}_T$ ).
 \end{theorem}
 
 \begin{comment}
@@ -1618,7 +1648,10 @@ Brownian motion is used in various fields, including:
 \end{itemize}
 \end{comment}
 
-
+Having introduced the probabilistic tools required for changes of measure,
+we now review stochastic differential equations and It\^{o} calculus, which
+provide the mathematical framework for the continuous-time dynamics studied
+throughout the remainder of the thesis.
 
 
 \section{SDEs and It\^{o} Calculus}
@@ -1638,7 +1671,7 @@ It\^{o} calculus provides the framework for analyzing stochastic integrals and d
 \end{equation}
 where $f$ is an $\{\mathcal{F}_t\}$-adapted process, generated by the Brownian motion $W_t$. Assuming $f$ is square-integrable, the It\^{o} Integral satisfies the It\^{o} isometry \cite{pavliotis_book}:
 \begin{equation} \label{ito_isometry}
-    \mathbb{E} \left[ \int_0^T f(t) dW(t)\right]^2 = \int_0^T \mathbb{E}|f(t)|^2 dt.
+    \mathbb{E} \left[ \int_0^T f(t) dW(t)\right]^2 = \int_0^T \mathbb{E}\left[|f(t)|\right]^2 dt.
 \end{equation}
 Furthermore, the It\^{o} Integral is a martingale, so that 
 \begin{equation} \label{ito_martin}
@@ -1648,7 +1681,7 @@ In stochastic calculus differentiation is redefined via It\^{o}'s lemma:
 \begin{equation} \label{ito_lem}
     dF(X_t) = \frac{\partial F}{\partial x} dX_t + \frac{1}{2} \frac{\partial^2 F}{\partial x^2} (dX_t)^2.
 \end{equation}
-With regards to SDE \ref{sde_eqn_diff}, we can expand the above to obtain a more explicit form. For twice differentiable $F$,
+With regards to SDE \eqref{sde_eqn_diff}, we can expand the above to obtain a more explicit form. For twice differentiable $F$,
 \begin{equation} \label{ito_lem_exp}
     dF(X_t) = \left\{(\nabla_x F)^T \mu_t(X_t) + \frac{1}{2} [\sigma_t(X_t)\sigma_t(X_t)^T (H_x F) ] \right\} \,dt + (\nabla_x F)^T \sigma_t(X_t) dW_t,
 \end{equation}
@@ -1989,7 +2022,7 @@ Satisfying a Log-Sobolev inequality is equivalent to exponential convergence to 
 
 \begin{enumerate}
     \item \textbf{Convexity assumptions on the potential}: 
-    If the potential $ V $ satisfies $ \nabla^2(V) \geq R \, \mathrm{Id}_d $ for some constant $ R > 0 $, then the measure $ \nu $ satisfies LSI with constant $ \beta R $, as shown by Bakry and Emery\cite{bakryemery}.
+    If the potential $ V $ satisfies $\nabla^2(V) \succeq R I_d$ for some constant $ R > 0 $, then the measure $ \nu $ satisfies LSI with constant $ \beta R $, as shown by Bakry and Emery\cite{bakryemery}.
     
     \item \textbf{Product measures}: 
     Consider the case where $ \psi_\infty = \prod_{i=1}^d \psi_\infty^i $, and each $ \psi_\infty^i $ satisfies LSI with constants $ R_i $. In this case, the product measure $ \psi_\infty $ satisfies LSI with constant $ \min(R_1, R_2, \dots, R_d) $, as demonstrated by Gross\cite{Gross1975}.
@@ -2003,7 +2036,7 @@ Satisfying a Log-Sobolev inequality is equivalent to exponential convergence to 
 \end{enumerate}
 We explain these in more detail. Convexity assumptions are commonly used in literature, so the next result is especially useful: 
 \begin{theorem}[Bakry-Emery Criterion \cite{bakryemery}]
-    Assume that $\mathcal{D} = \mathbb{R}^d$ and $\nabla^2(V) \geq R \, \mathrm{Id}_d$ for some constant $R > 0$. Then the measure $\nu$ satisfies LSI with constant  $R$.
+    Assume that $\mathcal{D} = \mathbb{R}^d$ and $\nabla^2(V) \succeq R I_d$ for some constant $R > 0$. Then the measure $\nu$ satisfies LSI with constant  $R$.
 \end{theorem}
 \begin{proof}[Proof sketch]
 The argument is based on computing the time derivative of $\mathcal{I}(\psi(t)\mid\nu)$ while enforcing that $\psi$ evolves according to the Fokker–Planck equation.  
@@ -2210,7 +2243,7 @@ We define the weighted $L^\infty$ norm via the function $\mathcal{K}$:
 \|\phi\|_{L^\infty_\mathcal{K}} := \left\| \frac{\phi}{\mathcal{K}} \right\|_{L^\infty} < +\infty.
 \]
 
-\begin{theorem}[Exponential Convergence in Weighted $L^\infty$ Spaces,  \texorpdfstring{\cite[Theorem~15.0.1]{Meyn2012-oq}}{}, \texorpdfstring{\cite[Theorem~1.2]{Hairer2011-of}}{}, \texorpdfstring{\cite[Theorem 2.25]{Lelievre2016-hx}}]
+\begin{theorem}[Exponential Convergence in Weighted $L^\infty$ Spaces,  \texorpdfstring{\cite[Theorem~15.0.1]{meyn2012-oq}}{}, \texorpdfstring{\cite[Theorem~1.2]{Hairer2011-of}}{}, \texorpdfstring{\cite[Theorem 2.25]{Lelievre2016-hx}}]
 \label{thm:exp-conv-linf}
 Suppose that Assumptions~\ref{ass:lyapunov} and~\ref{ass:minorization} hold. Then the kernel $P$ admits a unique invariant measure $\pi$, satisfying $\int_\chi \mathcal{K} \, \mathrm{d}\pi < \infty$. Furthermore, there exist constants $C > 0$, $r \in (0,1)$ such that for all $\varphi \in L^\infty_\mathcal{K}(\chi)$ and all $n \in \mathbb{N}$,
 \[
@@ -2464,7 +2497,14 @@ X_{n+1} = X_n - \Delta t X_n^3 + \Delta W_n.
 However, there remains a small but non-negligible probability that the noise term $\Delta W_n$ can push the solution into a regime where $X_n \approx \Delta t^{-1}$, leading to explosive behavior and thus loss of ergodicity for the numerical scheme.
 \end{example}
 Much like in the continuous case, discussed in Section \ref{sec:linfty}, the convergence to a stationary distribution can often be established via two key assumptions: the Lyapunov condition (Assumption \ref{ass:lyapunov}) and the minorization condition (Assumption
-\ref{ass:minorization}). In practice, establishing the minorization condition is often relatively straightforward, whereas verifying the Lyapunov condition requires assumptions on the drift term\cite{mattingly2002ergodicity}. A common choice for the Lyapunov function is $\mathcal{K}(x) = 1 + |x|^n$ for some $n > 0$. Following this, we can apply theorem \ref{thm:exp-conv-linf} to prove exponential convergence of the iterate distribution to the invariant distribution. Once ergodicity and irreducibility of the discretized scheme have been established, we can invoke results (e.g., \cite[Chapter~17]{Meyn2012-oq}) to obtain almost sure convergence:
+\ref{ass:minorization}). In practice, establishing the minorization condition is often relatively straightforward, whereas verifying the Lyapunov condition requires assumptions on the drift term\cite{mattingly2002ergodicity}. A common choice for the Lyapunov function is $\mathcal{K}(x) = 1 + |x|^n$ for some $n > 0$. Following this, we can apply theorem \ref{thm:exp-conv-linf} to prove exponential convergence of the iterate distribution to the invariant distribution. Once ergodicity and irreducibility of the discretized scheme have been established, we can invoke results (e.g., \cite[Chapter~17]{meyn2012-oq}) to obtain almost sure convergence. Let \(\Psi:\mathcal X\to\mathbb R\) be an observable and define the empirical average
+\[
+\widehat\Psi_{N_{\rm iter},\Delta t}
+:=
+\frac{1}{N_{\rm iter}}
+\sum_{k=0}^{N_{\rm iter}-1}\Psi(x^k),
+\]
+where \((x^k)_{k\ge0}\) is the Markov chain generated by the discretized dynamics with timestep \(\Delta t\). Then,
 \begin{equation}
 \widehat{\Psi}_{N_{\text {iter }}, \Delta t} \xrightarrow[N_{\text {iter }} \rightarrow+\infty]{\text { a.s. }} \int_{\mathcal{X}} \Psi \mathrm{d} \pi_{\Delta t} .
 \end{equation}
@@ -2474,13 +2514,30 @@ where $\pi_{\Delta t}$ denotes the invariant measure associated with the discret
 %\]
 Suppose now, that Theorem \ref{thm:exp-conv-linf} holds for some ergodic measure $\pi_{\Delta t}$. Assuming $x^0 \sim \pi_{\Delta t}$ (and so $x^n \sim \pi_{\Delta t}$ for all $n\geq 1$) we can use the stationarity property
 \begin{equation}
-\mathbb{E}_{\pi_{\Delta t}}\left[\Pi_{\Delta t} \Psi\left(x^n\right) \Pi_{\Delta t} \Psi\left(x^m\right)\right]=\mathbb{E}_{\pi_{\Delta t}}\left[\Pi_{\Delta t} \Psi\left(x^{|n-m|}\right) \Pi_{\Delta t} \Psi\left(x^0\right)\right]
+\mathbb{E}_{\pi_{\Delta t}}\left[\Pi_{\Delta t} \Psi\left(x^n\right) \Pi_{\Delta t} \Psi\left(x^m\right)\right]=\mathbb{E}_{\pi_{\Delta t}}\left[\Pi_{\Delta t} \Psi\left(x^{|n-m|}\right) \Pi_{\Delta t} \Psi\left(x^0\right)\right],
 \end{equation}
-to derive expressions for the asymptotic variance of the discretization, similar to that of the continuous SDE above:
+for all integers $n,m \geq 0$. To derive expressions for the asymptotic variance of the discretization, similar to that of the continuous SDE above:
 \begin{equation}
 \varsigma_{\Psi, \Delta t}^2=N_{\mathrm{corr}, \Delta t, \Psi} \varsigma_{\Psi, \mathrm{iid}, \Delta t}^2 \quad \text { where } \varsigma_{\Psi, \mathrm{iid}, \Delta t}^2=\int_{\mathcal{X}}\left(\Pi_{\Delta t} \Psi\right)^2 \mathrm{~d} \pi_{\Delta t},
 \end{equation}
-where $\Pi_{\Delta t} \Psi=\Psi-\int_{\mathcal{X}} \Psi \mathrm{d} \pi_{\Delta t}$, $\varsigma_{\Psi, \mathrm{iid}, \Delta t}^2$ refers to the asymptotic variance of i.i.d. samples and $N_{\mathrm{corr}, \Delta t, \Psi}$ quantifies the number of steps required for the process to decorrelate from its previous state. Furthermore, in the limit of small $\Delta t$, the relation between the decorrelation of discrete and continuous dynamics is
+where
+\[
+N_{\mathrm{corr},\Delta t,\Psi}
+=
+1+2\sum_{k=1}^{\infty}
+\frac{
+\mathbb E_{\pi_{\Delta t}}
+\!\left[
+(\Pi_{\Delta t}\Psi)(x^k)
+(\Pi_{\Delta t}\Psi)(x^0)
+\right]
+}{
+\varsigma_{\Psi,\mathrm{iid},\Delta t}^{2}
+}
+\]
+is the integrated autocorrelation factor, which quantifies the increase in variance due to temporal correlations. Here, $\Pi_{\Delta t} \Psi=\Psi-\int_{\mathcal{X}} \Psi \mathrm{d} \pi_{\Delta t}$ and $\varsigma_{\Psi,\mathrm{iid},\Delta t}^{2}$ denotes the asymptotic variance associated with independent samples from $\pi_{\Delta t}$.
+
+Furthermore, if we let $\theta_{\mathrm{corr},\Psi}$ denote the corresponding decorrelation timescale in the continuous-time limit, then in the limit of small $\Delta t$, the relation between the decorrelation of discrete and continuous dynamics is
 $$\theta_{\mathrm{corr}, \Psi} \simeq N_{\mathrm{corr}, \Delta t, \Psi} \Delta t.$$
 
 
@@ -2746,7 +2803,7 @@ with random variable $\xi^n \sim N(0,\Id_d)$, stepsize $\Delta t >0$. This can b
 \begin{equation} \label{over_lang}
     dXt = -\nabla H(x_n) dt + \sqrt{2/\beta} \, dW_t.
 \end{equation}
-Classic convergence results, such as those by Leli{\`e}vre and Stoltz, as well by Meyn and Tweedie \cite{Meyn2012-oq} are discussed earlier in the thesis. Geometric ergodicity of the continuous time SDE (\ref{over_lang}) can also be obtained via Log-Sobolev inequalities under certain convexity and smoothness assumptions.
+Classic convergence results, such as those by Leli{\`e}vre and Stoltz, as well by Meyn and Tweedie \cite{meyn2012-oq} are discussed earlier in the thesis. Geometric ergodicity of the continuous time SDE (\ref{over_lang}) can also be obtained via Log-Sobolev inequalities under certain convexity and smoothness assumptions.
 
 \subsection{Smoothing-based Algorithms}
 In the case where $H(x) = G(x) + R(x)$ contains a non-smooth term $R$, a canonical approach is to replace $R$ by a smooth approximation defined by the Moreau--Yosida envelope $R_\gamma$ \cite{pereyra2016proximal}:
@@ -2796,13 +2853,13 @@ The biggest drawback of proximal methods, such as MYULA, is that convergence to 
 \begin{align}
 \pi(u,v)=\frac{1}{Z_\pi} \prod_{i=1}^d  u_i\, \exp\pp{-\beta\, \pp{\frac12\lambda \|(u,v)\|^2+G(u\odot v)} },\label{pi}
 \end{align}
-over $(u,v)\in \mathcal X= \real_+^d\times \mathbb {R}^d$ for normalisation constant $Z_\pi$ and $\norm{(u,v)}^2=\norm{u}^2+\norm{v}^2$. The Hadamard  product $x=u\odot v$ has the same distribution $\rho$ defined in \ref{target}. This is formalized in the following statement.
+over $(u,v)\in \mathcal X= \real_+^d\times \mathbb {R}^d$ for normalisation constant $Z_\pi$ and $\norm{(u,v)}^2=\norm{u}^2+\norm{v}^2$. The Hadamard  product $x=u\odot v$ has the same distribution $\rho$ defined in \eqref{target}. This is formalized in the following statement.
 
 
 
 
 
-\begin{theorem}\label{thm:overparam}If $(u,v)\sim \pi$ as defined in \ref{pi}, then $x=u \odot v\sim\rho$ as defined in \ref{target}. In particular, for any smooth $\phi:\mathbb{R}^d \xrightarrow[]{} \mathbb{R}$,
+\begin{theorem}\label{thm:overparam}If $(u,v)\sim \pi$ as defined in \eqref{pi}, then $x=u \odot v\sim\rho$ as defined in \eqref{target}. In particular, for any smooth $\phi:\mathbb{R}^d \xrightarrow[]{} \mathbb{R}$,
     \[\int_{\mathcal X} \phi(u \odot v) \pi(u,v)\,du\,dv = \int_{\mathbb{R}^
     d} \phi(x) \,\rho(x)\,dx.\]
     Furthermore, if we denote by $Z_\pi$ and $Z$ the normalization factors of $\pi$ and $\rho$, respectively, then
@@ -3253,7 +3310,7 @@ which, if we set $\theta = 2/\sqrt{2/\beta}$, $\kappa = 2\lambda$ and $\mu = \fr
 $$
 d\hat v_t =-\lambda\, \hat v_t\, dt + \sqrt{\frac{2}{\beta}}\,dW_t^2,
 $$
-which is precisely our $v$ process with $G \equiv 0$. As such, in order to show well-posedness of our SDE, we consider \ref{uvproc} as perturbed CIR and OU processes. Using Girsanov' Theorem we will be able to translate the analysis of the latter via absorbing the data term $G$. In the following, let $\hat z_t \eqdef (\hat u,\hat v)_t$ satisfy
+which is precisely our $v$ process with $G \equiv 0$. As such, in order to show well-posedness of our SDE, we consider \eqref{uvproc} as perturbed CIR and OU processes. Using Girsanov' Theorem we will be able to translate the analysis of the latter via absorbing the data term $G$. In the following, let $\hat z_t \eqdef (\hat u,\hat v)_t$ satisfy
 \begin{align}\label{potential_free_sde_z}
 d \hat z_t = \biggl[-\lambda \hat z_t + \binom{1/(\beta \hat u_t)}{0} \biggr]\,dt + \sqrt{\frac{2}{\beta}} \,d  W_t,
 \end{align}
@@ -3330,7 +3387,7 @@ M_T
 \]
 
 Since Novikov's condition holds, \(M_T\) is a martingale.
-Define a new probability measure \(\mathbb Q\) on
+Following the construction of Section \ref{sec:bm_girsanov}, define a new probability measure \(\mathbb Q\) on
 \(\mathcal F_T\) by
 \[
 \frac{d\mathbb Q}{d\mathbb P}=M_T .
@@ -3374,7 +3431,7 @@ Theorem \ref{wp} establishes moment bounds for the dynamics (\ref{uvproc}) of th
 \begin{equation} \label{uv_moment}
     \mean{\sup_{0\le t\le T} \norm{(u,v)_t}^q}<\infty,\text{ for any }T>0, \, q\ge 2
 \end{equation}
-Let $L^q(\pi)$ denote the set of integrable functions $\phi\colon\mathcal X\to\real$ such that $\int \abs{\phi(x)}^q \pi(x)\,dx<\infty,$ where $\pi$ is the invariant measure \ref{pi}. In the following,  we show how to control expectations of $\phi((u,v)_t)$, which extends the moment bounds to $\phi\in L^q(\pi)$, and includes some $\phi$ that are singular near $u_i=0$.
+Let $L^q(\pi)$ denote the set of integrable functions $\phi\colon\mathcal X\to\real$ such that $\int \abs{\phi(x)}^q \pi(x)\,dx<\infty,$ where $\pi$ is the invariant measure \eqref{pi}. In the following,  we show how to control expectations of $\phi((u,v)_t)$, which extends the moment bounds to $\phi\in L^q(\pi)$, and includes some $\phi$ that are singular near $u_i=0$.
 
 \begin{proposition}\label{l1}Let $(u,v)_t$ denote the solution of (\ref{uvproc}) with initial distribution $\rho_0$. Let $p\geq 1$. Assume that ($p,q)$ are conjugate and that  $h_0=\rho_0/\pi$ belongs to $L^p(\pi)$. If $\phi \in L^q(\pi)$, then $\mean{ \phi((u,v)_t)}\le \norm{\phi}_{L^q(\pi)}\, \norm{h_0}_{L^p(\pi)}$ for $t>0$.
 \end{proposition}
@@ -3561,7 +3618,7 @@ The assumption that $G$ is bounded holds for  $G(x)=\sum \sigma(y_i a_i^\top x)$
 
 \subsubsection{One-sided bounds on gradient of \texorpdfstring{$G$}{G}}
 Boundedness of $G$ is a strong condition and we prove a different ergodicity result that assumes $x^\top \nabla G(x)$ is bounded below and which holds for many unbounded examples such as $G(x)=\norm{Ax-y}^2$.
-The proof depends on the theory of Lyapunov--Foster drift conditions~\cite{Meyn2012-oq,Hairer2011-of,Lelievre2016-hx}. 
+The proof depends on the theory of Lyapunov--Foster drift conditions~\cite{meyn2012-oq,Hairer2011-of,Lelievre2016-hx}. 
 
 For the Lyapunov function $V((u,v))=1+\norm{(u,v)}^2$, let $L^\infty_V$ denote the Banach space  of  measurable functions $\phi\colon \mathcal X\to\real$ such that the norm $$\norm{\phi}^\infty_
 V\coloneq\sup_x \abs{\phi(x)/V(x)}<\infty.$$
@@ -4697,8 +4754,9 @@ By contrast, in inverse problems such as deconvolution and inpainting, Bayesian 
 
 \chapter{Stocbio, StocHOAG and the conditioning issue} \label{chp: stoc_cond}
 \section{Introduction}
-In the field of smooth bilevel optimization, existing deterministic algorithms, based on implicit differentiation of the inner problem, such as HOAG \cite{pedregosa2016hyperparameter} and BA \cite{ghadimi2018approximation}, have been effectively used to solve problems in areas such as hyperparameter optimization. These algorithms, however, exhibit a high per-iteration complexity, in large part due to the inversion of a matrix, that takes place during the implicit differentiation stage. To tackle this issue, stochastic algorithms have been developed. Here, stochasticity is introduced in large part to invert the Hessian in sub-$\mathcal{O}(n^3)$ time. We will be investigating one such algorithm in partiular - stocBio \cite{ji2021bilevel}. This algorithm, albeit having one of the fastest convergence rates among comparable algorithms, requires the tuning of a large number of parameters. Furthermore, stocBio suffers from a sensitivity to the conditioning of the inner problem, much like most other bilevel algorithms. The aim of this report is to investigate a different parameter setup for the algorithm that alleviates this sensitivity.
+In the field of smooth bilevel optimization, existing deterministic algorithms, based on implicit differentiation of the inner problem, such as HOAG \cite{pedregosa2016hyperparameter} and BA \cite{ghadimi2018approximation}, have been effectively used to solve problems in areas such as hyperparameter optimization. These algorithms, however, exhibit a high per-iteration complexity, in large part due to the inversion of a matrix, that takes place during the implicit differentiation stage. To tackle this issue, stochastic algorithms have been developed. Here, stochasticity is introduced in large part to invert the Hessian in sub-$\mathcal{O}(n^3)$ time. We will be investigating one such algorithm in partiular - stocBio \cite{ji2021bilevel}. This algorithm, albeit having one of the fastest convergence rates among comparable algorithms, requires the tuning of a large number of parameters. Furthermore, stocBio suffers from a sensitivity to the conditioning of the inner problem, much like most other bilevel algorithms. %The aim of this chapter is to investigate a simpler parameter setup for the algorithm that maintains a similar condition-complexity to stocBio.
 %\begin{thebibliography}{99}
+The aim of this chapter is to investigate a simpler parameter setup for the algorithm while retaining comparable convergence guarantees and studying its dependence on the conditioning of the inner problem.
 
 \subsection{Problem Statement \& Assumptions}
 We set up a bilevel problem. For a bounded domain $\mathcal D \subset \mathbb{R}^r$, we wish to find $\lambda \in \mathcal{D}$ and $\hat{x}(\lambda) \in \mathbb{R}^n$, such that
@@ -4842,7 +4900,7 @@ The authors also provide theoretical convergence guarantees for this algorithm.
     \mu^2 B} \right).\]
     
 \end{theorem}
-Of note here is that, for small $\mu$, the above is bounded as $\mathcal{O}(1/\mu^5)$. As mentioned previously, our aim will be to change the parameter choices in such a manner, that convergence will be less sensitive to an ill-conditioned problem. For this purpose, we will allow the parameters to change with the outer iteration. As such, we relabel them accordingly
+Of note here is that, for small $\mu$, the above is bounded as $\mathcal{O}(1/\mu^5)$. As mentioned previously, our aim is to investigate alternative parameter choices that modify the dependence of the algorithm on the strong convexity parameter $\mu$ while maintaining comparable convergence guarantees. For this purpose, we will allow the parameters to change with the outer iteration. As such, we relabel them accordingly
 
 
 \begin{itemize}
@@ -4853,6 +4911,8 @@ Of note here is that, for small $\mu$, the above is bounded as $\mathcal{O}(1/\m
         \item $B_k$ - The base number of samples of $\nabla_{xx} \tilde{F}$ for the Neumann series (\ref{HIA_stocBio}) at $k$-th outer iteration, where the number of samples at the $Q+1-j$-th step of the subroutine is $B_k(1-\eta\mu)^{j-1}$ (for $k-$th approximate hypergradient).
         \item $Q_k$ - Number of Neumann series steps at $k$-th outer iteration.
     \end{itemize}
+
+In practice, these quantities act as mini-batch sizes. For the numerical experiments in Section \ref{sec:stoc_hoag_num} they are prescribed deterministically as functions of the outer iteration index $k$, according to the parameter schedule in Theorem \ref{hoag_thm_glcv}.
 
 \begin{algorithm}[]
 \caption{Stochastic HOAG}
@@ -4933,28 +4993,10 @@ Suppose Assumptions \ref{conv_ass}, \ref{smo_ass} and \ref{nablaFxl_bnd} hold. C
 + 4E^2\eta^2 M^2 \left( \tfrac{\kappa^2}{B (2 - \eta \mu)^2} 
 + \tfrac{1}{|\mathcal{S}_{\nabla_x C,k}|(2\eta \mu - \eta^2 \mu^2)} \right).
 \]
-\begin{comment}
-    \[2\eta^2M^2\left(\frac{\kappa^2}{B (2 - \eta \mu)^2} + \frac{1}{|\mathcal{S}_{\nabla_{x} C,k}|(2\eta \mu - \eta^2 \mu^2)} \right)\left(\frac{L^2}{|\mathcal{S}_{\nabla_{x\lambda} F,k}|} + E^2\right)  +  \frac{\kappa^2M^2}{|\mathcal{S}_{\nabla_{x\lambda} F,k}|}+ \frac{M^2}{|\mathcal{S}_{\nabla_{\lambda} C,k}|}.\]
-Furthermore, if in (\ref{HIA_stocBio}) we set $v_0 = \nabla_x C(x_k,\lambda_k)$, then we have
-    \[Var(\widehat{\nabla} \mathcal{L}) \leq \eta^2M^2\frac{\kappa^2}{B (2 - \eta \mu)^2} \left(\frac{L^2}{|\mathcal{S}_{\nabla_{x\lambda} F,k}|} + E^2\right)  +  \frac{\kappa^2M^2}{|\mathcal{S}_{\nabla_{x\lambda} F,k}|}+ \frac{M^2}{|\mathcal{S}_{\nabla_{\lambda} C,k}|}.\]
-\end{comment}
 
-
-\begin{comment}
-    \begin{align}
-\mathrm{Var}(\widehat{\nabla}\mathcal{L})
-&\le \frac{M^2}{|\mathcal{S}_{\nabla_{\lambda} C,k}|}
-+ \eta^2 M^2\Bigg[
-  \Big(\tfrac{8L^2}{|\mathcal{S}_{\nabla_{x\lambda} F,k}|}+4E^2\Big)\frac{\kappa^2}{B(2-\eta\mu)^2} \notag \\[4pt]
-&\hspace{3cm}
-  + \Big(\tfrac{8L^2}{|\mathcal{S}_{\nabla_{x\lambda} F,k}|}+4E^2\Big)\frac{1}{|\mathcal{S}_{\nabla_x C,k}|(2\eta\mu-\eta^2\mu^2)}
-\Bigg]
-+ \frac{4L^2M^2}{|\mathcal{S}_{\nabla_{x\lambda} F,k}|\mu^2}.
-\end{align}
-\end{comment}
-    
 \end{proposition}
 
+The proofs of Propositions \ref{evq_bnd}, \ref{varvq_better} and \ref{bound_nabla_hat} are deferred to Appendix C.
 
 \subsection{Convergence Proof}
 Before we proceed to the proof of the convergence, we still need to characterize the smoothness properties of the hypergradient $\nabla \mathcal{L}.$ For this we use the result by Ghadimi \& Wang, 2018 \cite{ghadimi2018approximation}:
@@ -5206,13 +5248,64 @@ Thus, the right-hand side of the inequality (\ref{tele_ineq}) is finite, and so
 \begin{equation} \label{weighted_sum}
     \sum_{k=1}^\infty (\nu_k - L_{\mathcal{L}}\nu_k^2)\mathbb{E}\|\nabla\mathcal{L}(\lambda_k)\|^2 < \infty
 \end{equation}
-Furthermore, from (\ref{weighted_sum}), we get that
-\[\min_{k \leq K} \mathbb{E}\|\nabla \mathcal{L}(\lambda_k)\|^2 \leq \frac{\sum_{k=1}^K (\nu_k - L_{\mathcal{L}}\nu_k^2)\mathbb{E}\|\nabla\mathcal{L}(\lambda_k)\|^2}{\sum_{k=1}^K (\nu_k - L_{\mathcal{L}}\nu_k^2)} \xrightarrow[]{K \to \infty} 0\]
+%Furthermore, from (\ref{weighted_sum}), we get that
+%\[\min_{k \leq K} \mathbb{E}\|\nabla \mathcal{L}(\lambda_k)\|^2 \leq \frac{\sum_{k=1}^K (\nu_k - L_{\mathcal{L}}\nu_k^2)\mathbb{E}\|\nabla\mathcal{L}(\lambda_k)\|^2}{\sum_{k=1}^K (\nu_k - L_{\mathcal{L}}\nu_k^2)} \xrightarrow[]{K \to \infty} 0\]
 %\[\liminf_{k \to \infty} \mathbb{E}\|\nabla\mathcal{L}(\lambda_k)\|^2 = 0.\]
-Finally, recalling our choice of stepsize $\nu_k = \frac{1}{2L_\mathcal{L}}$, and other parameters in (\ref{params_conv}), we obtain
-\[\sum_{k=1}^K (\nu_k - L_{\mathcal{L}}\nu_k^2) = \mathcal{O} \left(K \right), \quad \sum_{k=1}^K (\nu_k - L_{\mathcal{L}}\nu_k^2)\|\nabla\mathcal{L}(\lambda_k)\|^2 = \mathcal{O} \left(\frac{1}{\zeta} - \frac{1}{\zeta K^\zeta} \right) \xrightarrow[]{\zeta \to 0} \mathcal{O}\left(\ln{K} \right),\]
-giving us a convergence rate of
-\[\mathcal{O} \left(\frac{\ln{K}}{K} \right).\]
+%Finally, recalling our choice of stepsize $\nu_k = \frac{1}{2L_\mathcal{L}}$, and other parameters in (\ref{params_conv}), we obtain
+%\[\sum_{k=1}^K (\nu_k - L_{\mathcal{L}}\nu_k^2) = \mathcal{O} \left(K \right), \quad \sum_{k=1}^K (\nu_k - L_{\mathcal{L}}\nu_k^2)\|\nabla\mathcal{L}(\lambda_k)\|^2 = \mathcal{O} \left(\frac{1}{\zeta} - \frac{1}{\zeta K^\zeta} \right) \xrightarrow[]{\zeta \to 0} \mathcal{O}\left(\ln{K} \right),\]
+%giving us a convergence rate of
+%\[\mathcal{O} \left(\frac{\ln{K}}{K} \right).\]
+Furthermore, from \eqref{weighted_sum}, we get that
+\[
+\min_{k\leq K}\mathbb E\|\nabla \mathcal L(\lambda_k)\|^2
+\leq
+\frac{
+\sum_{k=1}^{K}
+(\nu_k-L_{\mathcal L}\nu_k^2)
+\mathbb E\|\nabla \mathcal L(\lambda_k)\|^2
+}{
+\sum_{k=1}^{K}
+(\nu_k-L_{\mathcal L}\nu_k^2)
+}.
+\]
+By \eqref{tele_ineq}, together with the estimates above, the numerator is bounded by
+\[
+C_0+C_1\sum_{k=1}^{K}\frac{1}{k^{1+\zeta}},
+\]
+for constants \(C_0,C_1>0\) independent of \(K\). Using the integral test,
+\[
+\sum_{k=1}^{K}\frac{1}{k^{1+\zeta}}
+\leq
+1+\int_1^K x^{-(1+\zeta)}\,dx
+=
+1+\frac{1-K^{-\zeta}}{\zeta}.
+\]
+Moreover, since \(\nu_k=1/(2L_{\mathcal L})\), we have
+\[
+\nu_k-L_{\mathcal L}\nu_k^2=\frac{1}{4L_{\mathcal L}},
+\qquad
+\sum_{k=1}^{K}(\nu_k-L_{\mathcal L}\nu_k^2)
+=
+\mathcal O(K).
+\]
+Therefore, for fixed \(\zeta>0\),
+\[
+\min_{k\leq K}\mathbb E\|\nabla \mathcal L(\lambda_k)\|^2
+=
+\mathcal O\left(\frac{1}{K}\right).
+\]
+In the limiting case \(\zeta\to0\), the sum behaves like the harmonic series, since
+\[
+\lim_{\zeta\to0}\frac{1-K^{-\zeta}}{\zeta}
+=
+\log K.
+\]
+Thus one obtains the bound
+\[
+\min_{k\leq K}\mathbb E\|\nabla \mathcal L(\lambda_k)\|^2
+=
+\mathcal O\left(\frac{\log K}{K}\right).
+\]
 \end{proof}
 %\end{comment}
 
@@ -5223,8 +5316,9 @@ giving us a convergence rate of
 \section{Comparison with stocBio}
 In the following sections we will compare our setup to that of Ji et. al. In light of that, let us recall the motivations for this comparison. The two major points that we address are:
 \begin{itemize}
-    \item Relaxed parameter choices - we want to relax the parameter choices in such a way that we still maintain similar rates of convergence, while improving upon the sensitivity to the inner problem condition.
-    \item Modularity - we want to devise an algorithm with comparable convergence guarantees to stocBio, where the theoretical base allows for inner problem solver other than SGD.
+    \item Relaxed parameter choices - we want to relax the parameter choices in such a way that we still maintain similar rates of convergence, %while maintaining similar sensitivity to the inner problem condition.
+    while preserving convergence guarantees and understanding how the resulting complexity depends on the conditioning of the inner problem.
+    \item Modularity - we want to separate the convergence analysis of the outer optimisation from the particular method used to approximately solve the inner problem. Although the theoretical development and numerical implementation in this chapter use SGD for the inner problem, the resulting bound isolates the contribution of the inner-solver error through the term \(D_{1,k}\). This makes clear where alternative inner solvers could be incorporated in future work.
 \end{itemize}
 \begin{comment}
     We will begin by comparing the assumptions of the two methods. Stochastic HOAG shares the assumptions of stocBio, with the exception of \ref{nablaFxl_bnd}, the boundedness of $\nabla^2_{x \lambda} F$. %While the two methods both assume bounds on $\|x_k - \hat{x}(\lambda_k)\|$, in our case we only require that this is bounded in expectation.
@@ -5239,7 +5333,7 @@ Before we begin with any comparisons, let us define the following:
     For an output of the algorithm $\bar{\lambda}$, we say that $\bar{\lambda}$ is an $\epsilon$-accurate stationary point of $\mathcal{L}(\lambda)$ if $\mathbb{E}\|\nabla\mathcal{L}(\bar{\lambda})\| \leq \epsilon$.
 \end{definition}
 
-In the paper by Ji et al. the following assumption is made, akin to our assumption \ref{conv_ass}.
+In the paper by Ji et al.~\cite{ji2021bilevel} the following assumption is made, akin to our assumption \ref{conv_ass}.
 
 \begin{assumption}[Convexity]
     The inner function $F(x, \lambda)$ is $\mu$ strongly-convex w.r.t. $x$. For the stochastic setting, the same assumption holds for $\tilde{F}(x, \lambda ; \zeta)$.
@@ -5264,14 +5358,14 @@ In practice, this bound is never achieved, as $\lambda$ is on a bounded domain, 
         \item $D_g$ - the number of samples of $\nabla_{x\lambda} \tilde{F}$ (for every approximate hypergradient).
         \item $D_f$ - The number of samples of $\nabla_x \tilde{C}$ (for every approximate hypergradient).
         \item $\mathcal{S}_{\nabla_\lambda C}$ - the number of samples of $\nabla_{\lambda} \tilde{C}$ (for every approximate hypergradient).
-        \item $B$ - The base number of samples of $\nabla_{xx} \tilde{F}$ for the neumann series (\ref{HIA_stocBio}), where the number of samples at the $Q+1-j$-th step of the subroutine is $BQ(1-\eta\mu)^{j-1}.$
+        \item $B$ - The base number of samples of $\nabla_{xx} \tilde{F}$ for the Neumann series (\ref{HIA_stocBio}), where the number of samples at the $Q+1-j$-th step of the subroutine is $BQ(1-\eta\mu)^{j-1}.$
     \end{itemize}
 \end{theorem}
 As mentioned previously, the left-hand-side above is bounded at the very least as $\mathcal{O}(1 / \mu^5)$. Additionally, to reach an $\epsilon$-close stationary point, the gradient complexities of the inner and outer problems, respectively, must satisfy
 \[GC(C,\epsilon) = KDS = \mathcal{O}(\mu^{-9} \epsilon^{-2}), \quad GC(F,\epsilon) = KD_f = \mathcal{O} (\mu^{-5} \epsilon^{-2}). \]
 Additionally, the Hessian vector complexity (From the Neumann series subroutine) must satisfy
 \[HV(\epsilon) = K \sum_{j=1}^Q B Q(1-\eta \mu)^{j-1} = \mathcal{O}\left(\frac{1}{\mu^6\epsilon^2} \ln \frac{1}{\mu^2\epsilon}\right).\]
-Of note is the extreme complexity of the inner problem with respect to its condition $\mu$. Let us inspect whether our parameter choices improve the $\mu$-complexity or the convergence bound sensitivity to $\mu$. Note, that, analogous to Theorem \ref{thm3}, we can derive a similar result for our case, using the consequences of Theorem \ref{hoag_thm_glcv} above. Inspect line \ref{tele_ineq} in our convergence proof. Lower-bounding the left hand side, we obtain
+Of note is the strong dependence of the inner-problem complexity on the strong convexity parameter $\mu$. Let us now inspect how our parameter choices affect the $\mu$-dependence of the resulting complexity bounds, and whether they can reduce this sensitivity while maintaining comparable convergence guarantees. Note, that, analogous to Theorem \ref{thm3}, we can derive a similar result for our case, using the consequences of Theorem \ref{hoag_thm_glcv} above. Inspect line \ref{tele_ineq} in our convergence proof. Lower-bounding the left hand side, we obtain
 \begin{equation} \label{tele_ineq2}
     \frac{1}{K}\sum_{k=1}^K \mathbb{E}\|\nabla\mathcal{L}(\lambda_k)\|^2 \leq  \frac{L_\mathcal{L}\left(4\mathcal{L}(\lambda_1) - 4\mathcal{L}_{inf}\right)}{K} + \frac{1}{K}\sum_{k=1}^K \left(2D_{3,k}\nu_k^2 L^2_{\mathcal{L}} + 6\nu_kL_\mathcal{L}\mathbb{E}[D_{1,k}^2] + 6\nu_k D_{2,k}^2\right),
 \end{equation}
@@ -5297,10 +5391,144 @@ Regarding the inner problem, we get that $T_k = \mathcal{O}\left(k^{1+\zeta}\rig
 \[GC(C,\epsilon) = \sum_{k=1}^K T_k = \sum_{k=1}^{K} k^{1+\zeta} = \mathcal{O}(K^{2+\zeta}) \approx \mathcal{O} \left(\frac{1}{\mu^6 \epsilon^2}\right).\]
 Finally, let us inspect the Neumann series. Note, that to achieve an $\epsilon$-accurate point, we must have base samples to grow as $B_k = \mathcal{O} \left( k^{1+\zeta} \right)$. Thus, the Neumann series complexity is
 \[HV(\epsilon) = \sum_{k=1}^K \sum_{j=1}^{Q_k} B_k (1-\eta\mu)^{j-1}=\sum_{k=1}^K B_k \frac{1 - \frac{1}{\sqrt{k^{1+\zeta}}}}{\eta\mu} = \mathcal{O}\left(\frac{1}{\mu^7 \epsilon^2} \right).\]
-As we see, while the outer gradient complexity and the Hessian-vector complexities have slightly worsened, the gradient complexity of the inner problem has improved by an order of $\mu^3$. Let us now provide a $\mu$-convergence bound. For this purpose, we inspect the three terms $D_{1,k}, D_{2,k}, D_{3,k}$ in (\ref{varbndthm2}). For the sake of simplicity we consider only the case $s=0$. Using Lemma \ref{sgdmu}, we get that $\mathbb{E} [D_{1,k}^2] = \mathcal{O}\left(\frac{1}{\mu^6}\sum_{k=1}^K\frac{1}{T_k}\right) \approx \mathcal{O}\left(\frac{1}{\mu^6}\ln{\frac{1}{\mu}}\right)$. Next, let us inspect $D_{2,k}^2$. Substituting the value of $Q_k$ from Theorem \ref{hoag_thm_glcv}, we get that $D_{2,k}^2 \approx \mathcal{O} \left( \frac{1}{\mu^2} \ln{\frac{1}{\mu}}\right)$. Finally, inspecting the $D_{3,k}$ term, we get that
-\[\sum^{K}_{k=1} D_{3,k} = \mathcal{O}\left( \frac{\kappa^2}{B_k (2 - \eta \mu)^2} \right) \approx \mathcal{O}\left( \frac{1}{\mu^4} \ln{\frac{1}{\mu}} \right).\]
+As we see, while the outer gradient complexity and the Hessian-vector complexity
+slightly worsen, the gradient complexity of the inner problem improves by an
+order of \(\mu^3\) relative to the parametrisation of Ji et al. %Let us now provide a $\mu$-convergence bound. For this purpose, we inspect the three terms $D_{1,k}, D_{2,k}, D_{3,k}$ in (\ref{varbndthm2}). For the sake of simplicity we consider only the case $s=0$. Using Lemma \ref{sgdmu}, we get that $\mathbb{E} [D_{1,k}^2] = \mathcal{O}\left(\frac{1}{\mu^6}\sum_{k=1}^K\frac{1}{T_k}\right) \approx \mathcal{O}\left(\frac{1}{\mu^6}\ln{\frac{1}{\mu}}\right)$. Next, let us inspect $D_{2,k}^2$. Substituting the value of $Q_k$ from Theorem \ref{hoag_thm_glcv}, we get that $D_{2,k}^2 \approx \mathcal{O} \left( \frac{1}{\mu^2} \ln{\frac{1}{\mu}}\right)$. Finally, inspecting the $D_{3,k}$ term, we get that
+%\[\sum^{K}_{k=1} D_{3,k} = \mathcal{O}\left( \frac{\kappa^2}{B_k (2 - \eta \mu)^2} \right) \approx \mathcal{O}\left( \frac{1}{\mu^4} \ln{\frac{1}{\mu}} \right).\]
 
-As such, bringing $\mathbb{E} [D_{1,k}^2], D_{2,k}^2, D_{3,k}$ into (\ref{tele_ineq2}), we get that the left hand side is bounded by at most $\mathcal{O}\left( \frac{1}{\mu^3} \ln{\left( \frac{1}{\mu} \right)} \right)$. Compared to the parametrisation of Ji et al. we see an improvement at least on the order of $\mu$.
+We now turn from the oracle complexity of the individual subroutines to the
+dependence of the convergence bound itself on the conditioning parameter
+\(\mu\). The following corollary isolates the \(\mu\)-dependence of the
+right-hand side of \eqref{tele_ineq2}. In particular, it clarifies that the
+Neumann-series variance term in \(D_{3,k}\) is not the dominant contribution
+to the final bound; the dominant contribution comes instead from the
+inner-solver error term \(D_{1,k}\).
+
+\begin{comment}
+    \begin{corollary}[\(\mu\)-dependence of the convergence bound]
+Under the parameter choices of Theorem \ref{hoag_thm_glcv}, the averaged convergence bound obtained from (\ref{tele_ineq2}) satisfies
+\[
+\frac1K\sum_{k=1}^{K}\mathbb{E}\|\nabla \mathcal L(\lambda_k)\|^2
+=
+O\left(
+\frac{1}{K\mu^3}
++
+\frac{\log K}{K\mu^6}
++
+\frac{1}{K\mu^2}
+\right).
+\]
+In particular, the dominant dependence on \(\mu\) arises from the inner-solver error term \(D_{1,k}\), while the Neumann-series variance term in \(D_{3,k}\) contributes only \(O((K\mu^2)^{-1})\) after averaging.
+\end{corollary}
+
+\begin{proof}
+    Consider the contribution of the Neumann-series variance term in \(D_{3,k}\). From (\ref{varbndthm2}), this contribution is of the form
+\[
+\sum_{k=1}^{K}
+\frac{\kappa^2}{B_k(2-\eta\mu)^2}.
+\]
+Since \(\kappa=L/\mu\), \(B_k=O(k^{1+\zeta})\), and \(\eta\mu<1\), we obtain
+\[
+\sum_{k=1}^{K}
+\frac{\kappa^2}{B_k(2-\eta\mu)^2}
+=
+O\left(
+\frac{1}{\mu^2}
+\sum_{k=1}^{K}\frac{1}{k^{1+\zeta}}
+\right)
+=
+O\left(\frac{1}{\mu^2}\right),
+\]
+as \(\zeta>0\). Thus this term is not the dominant contribution in the \(\mu\)-dependence. The dominant contribution instead comes from the inner-solver error term \(D_{1,k}\). Using Lemma \ref{sgdmu} and \(T_k=O(k^{1+\zeta})\), we have
+\[
+\sum_{k=1}^{K}\mathbb{E}[D_{1,k}^{2}]
+=
+O\left(
+\frac{1}{\mu^6}
+\sum_{k=1}^{K}\frac{1}{k}
+\right)
+=
+O\left(\frac{1}{\mu^6}\log K\right).
+\]
+Since \(K=O(\mu^{-3}\epsilon^{-1})\), this gives the leading \(\mu\)-dependence in the final complexity bound. As such, bringing $\mathbb{E} [D_{1,k}^2], D_{2,k}^2, D_{3,k}$ into (\ref{tele_ineq2}), we get that the left hand side is bounded by at most $\mathcal{O}\left( \frac{1}{\mu^3} \ln{\left( \frac{1}{\mu} \right)} \right)$. Compared to the parametrisation of Ji et al. we see an improvement at least on the order of $\mu$.
+\end{proof}
+
+\end{comment}
+
+
+\begin{corollary}[$\mu$-dependence of the convergence bound]
+Under the parameter choices of Theorem~\ref{hoag_thm_glcv}, the averaged convergence bound obtained from \ref{tele_ineq2} satisfies
+\[
+\frac{1}{K}\sum_{k=1}^{K}\mathbb{E}\|\nabla \mathcal L(\lambda_k)\|^2
+=
+O\left(
+\frac{1}{K\mu^3}
++
+\frac{\log K}{K\mu^6}
++
+\frac{1}{K\mu^2}
+\right).
+\]
+In particular, the dominant dependence on $\mu$ comes from the inner-solver error term
+$D_{1,k}$, rather than from the Neumann-series variance term in $D_{3,k}$.
+\end{corollary}
+
+\begin{proof}
+We inspect the three error terms $D_{1,k}$, $D_{2,k}$ and $D_{3,k}$ appearing in
+\eqref{tele_ineq2}. First consider the Neumann-series variance contribution in
+$D_{3,k}$. From \eqref{varbndthm2}, this term is of the form
+\[
+\sum_{k=1}^{K}
+\frac{\kappa^2}{B_k(2-\eta\mu)^2}.
+\]
+Since $\kappa=L/\mu$, $B_k=O(k^{1+\zeta})$, and $\eta\mu<1$, we obtain
+\[
+\sum_{k=1}^{K}
+\frac{\kappa^2}{B_k(2-\eta\mu)^2}
+=
+O\left(
+\frac{1}{\mu^2}
+\sum_{k=1}^{K}\frac{1}{k^{1+\zeta}}
+\right)
+=
+O\left(\frac{1}{\mu^2}\right),
+\]
+as $\zeta>0$. Thus this contribution is not the dominant term in the
+$\mu$-dependence.
+
+The dominant contribution instead comes from the inner-solver error term
+$D_{1,k}$. Using Lemma~C.1.1 and $T_k=O(k^{1+\zeta})$, we have, using the
+looser bound $k^{-(1+\zeta)}\leq k^{-1}$,
+\[
+\sum_{k=1}^{K}\mathbb{E}[D_{1,k}^2]
+=
+O\left(
+\frac{1}{\mu^6}
+\sum_{k=1}^{K}\frac{1}{k}
+\right)
+=
+O\left(\frac{\log K}{\mu^6}\right).
+\]
+Similarly, the remaining terms in $D_{2,k}$ and $D_{3,k}$ contribute at most
+lower-order terms in $\mu$. Substituting these estimates into \eqref{tele_ineq2}
+gives
+\[
+\frac{1}{K}\sum_{k=1}^{K}\mathbb{E}\|\nabla \mathcal L(\lambda_k)\|^2
+=
+O\left(
+\frac{1}{K\mu^3}
++
+\frac{\log K}{K\mu^6}
++
+\frac{1}{K\mu^2}
+\right),
+\]
+where we also used $L_C=O(\mu^{-3})$. This proves the claim.
+\end{proof}
+
+
+
+
 
 \begin{comment}
     \subsection{Conditioning in a Quadratic Problem}
@@ -5354,8 +5582,8 @@ where, assuming $\nabla_{xx}^2 \tilde{F}_t$ is low-rank, we can leverage the Woo
 
 
 
-\section{Numerics}
-We did not conduct an empirical study of the effect of conditioning on convergence, but we did compare the performance of Stocbio and Stoc-HOAG on the same problem. We generate a random gaussian train matrix $A \in \mathbb{R}^{10 \times 20}$ and a sparse solution vector $x_0 \in \mathbb{R}^{10}$. We construct the data vector $y = Ax_0 + err$, where $err \in \mathbb{R}^{10}$ is some small gaussian error vector. Then the problem we will be trying to tackle is
+\section{Numerics} \label{sec:stoc_hoag_num}
+We did not conduct an empirical study of the effect of conditioning on convergence, but we did compare the performance of Stocbio and Stoc-HOAG on the same problem. We generate a random Gaussian train matrix $A \in \mathbb{R}^{10 \times 20}$ and a sparse solution vector $x_0 \in \mathbb{R}^{10}$. We construct the data vector $y = Ax_0 + err$, where $err \in \mathbb{R}^{10}$ is some small Gaussian error vector. Then the problem we will be trying to tackle is
 \begin{align} 
 &\min_{\lambda \in \mathcal{D}} \mathcal{L}\left(\lambda \right) \triangleq \|\hat{x}(\lambda) - x_0\|_2^2 \label{outer_hoag_test}\\
 &\text { s.t. } \hat{x}(\lambda) =\underset{x \in \mathbb{R}^{n}} \argmin \frac{1}{2}\|A x - y\|_2^2 + \frac{e^\lambda +\mu_0}{2}\|x\|_2^2. \label{inner_hoag_test},
@@ -5368,7 +5596,7 @@ where $\mu_0 > 0$ is a global strong-convexity parameter, that ensures the inner
     \item Stoc-HOAG with SGD for inner problem and $v_Q$ updated via ISGD.
 \end{enumerate}
 
-We run for $\mu_0 = 1$, 20000 outer iterations. The results are presented in Figure \ref{fig:stoc_bio_hoag} below. The Stoc-HOAG algorithms all feature a comparable $\mathcal{O}\left( 1/K \right)$ convergence to Stocbio in this toy problem, suggesting that we can obtain even tighter guarantees that of Theorem \ref{hoag_thm_glcv}.
+We run for $\mu_0 = 1$, 20000 outer iterations. The results are presented in Figure \ref{fig:stoc_bio_hoag}. The Stoc-HOAG algorithms all feature a comparable $\mathcal{O}\left( 1/K \right)$ convergence to Stocbio in this toy problem, suggesting that we can obtain even tighter guarantees that of Theorem \ref{hoag_thm_glcv}.
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{IMG/stochoag/a_run_of_STHOAG_grad.pdf}
@@ -5379,7 +5607,7 @@ We run for $\mu_0 = 1$, 20000 outer iterations. The results are presented in Fig
 The code for reproducing numerics in this section is available at the \href{https://github.com/icheltso/thesis/tree/main/thesis\_stoc\_hoag}{thesis\_stoc\_hoag} folder of the Github repository.
 
 \section{Conclusion}
-The stocBio algorithm is one of the more recent approaches to stochastic bilevel optimisation. However, as with many other algorithms, designed to tackle bilevel problems, it suffers from a high sensitivity to the strong-convexity parameter $\mu$ of the inner level problem. In this chapter we introduce a reparametrisation for the algorithm that make it more robust in this regard, providing comparable practical convergence and improving complexity with regards to $\mu$.
+The stocBio algorithm is one of the more recent approaches to stochastic bilevel optimisation. However, as with many other algorithms, designed to tackle bilevel problems, it suffers from a high sensitivity to the strong-convexity parameter $\mu$ of the inner level problem. In this chapter we introduce a reparametrisation for the algorithm that make it more robust in this regard, providing comparable practical convergence and reducing the dependence of the inner-solver complexity on $\mu$, at the cost of slightly larger outer-gradient and Hessian-vector complexities.
 
 %\end{thebibliography}
 \addcontentsline{toc}{chapter}{References}
@@ -5396,7 +5624,7 @@ The stocBio algorithm is one of the more recent approaches to stochastic bilevel
 \section{HOAG}
 \begin{proof}[Proof of Theorem \ref{hoag_thm_simplified}]
 An equivalent condition to $L(\lambda)$ having Lipschitz continuous gradient is that for any $\alpha,\beta \in \mathcal{D}$ \cite{Zhou2018}:
-\begin{equation} \label{lipschitz_equiv}
+\begin{equation} \label{lipschitz_equiv2}
     L(\beta) \leq L(\alpha) + \nabla L(\alpha)^\top (\beta - \alpha) + \frac{L}{2}\|\beta - \alpha\|^2.
 \end{equation}
 Substituting for $\alpha = \lambda_k, \beta = \lambda_{k+1} = \lambda_k - \frac{1}{L}p_k$, we add and subtract $p_k^\top(\lambda_k - \lambda_{k-1})$ to get
@@ -5496,7 +5724,7 @@ We begin by expanding the left-hand side
 
 \begin{proof}[Change of variable for Theorem \ref{thm:overparam}]
 We apply a change of variables of $x = u \odot v$ and $\eta = u \odot u /(\lambda \beta)$ to \eqref{eq:gibbs}. 
-Indeed, we then have $x_i^2/\eta = \lambda\beta v_i^2$ and so $J = (\partial(x,\eta) / \partial(u,v))$ is a $2d \times 2d$ block-matrix, where
+Indeed, we then have $x_i^2/\eta_i = \lambda\beta v_i^2$ and so $J = (\partial(x,\eta) / \partial(u,v))$ is a $2d \times 2d$ block-matrix, where
     $$\operatorname{det}J 
     = 
     \operatorname{det}\begin{pmatrix}
@@ -5573,8 +5801,8 @@ Denote
 \begin{align*}
     A_j &= I- \eta \nabla_{xx}^2 \tilde{F}(x_k,\lambda_k, \mathcal{B}_j); \\
     \tilde{B} &= \nabla_x \tilde{C} (x_k,\lambda_k,\zeta); \\
-    A &= \mathbb{E}A_j = I- \eta \nabla_{xx}^2 F(x_k,\lambda_k); \\
-    B &= \mathbb{E}B = \nabla_x C (x_k,\lambda_k);
+    A &= \mathbb{E} \left[ A_j \right] = I- \eta \nabla_{xx}^2 F(x_k,\lambda_k); \\
+    B &= \mathbb{E} \left[\tilde{B} \right] = \nabla_x C (x_k,\lambda_k);
 \end{align*}
 Then 
 \[\mathrm{Var}(v_Q) = \mathbb{E} \|v_Q - \mathbb{E}v_Q \|^2\]

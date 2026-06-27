@@ -4787,7 +4787,7 @@ We define the stochastic approximations $\tilde{F}(x, \lambda; \zeta)$ and $\til
     \mathbb{E}_{\zeta}[\tilde{F}\left(x, \lambda ; \zeta\right)] &= F\left(x, \lambda\right), \\
     \mathbb{E}_{\xi}[\tilde{C}(x,\lambda,\xi)] &= C(x,\lambda),
 \end{align*}
-where $\zeta$ and $\xi$ are drawn uniformly at random from their respective datasets.
+where $\zeta$ and $\xi$ are drawn uniformly at random from their respective datasets. Let us first make some convexity assumptions
 
 
 
@@ -4853,6 +4853,15 @@ Let $z = (x,\lambda) \in \mathbb{R}^{n} \times \mathcal{D}$. Suppose the derivat
     \item For any $z, z^{\prime}$, $\left\|\nabla_x^2 F(z)-\nabla_x^2 F\left(z^{\prime}\right)\right\| \leq \rho\left\|z-z^{\prime}\right\|$.
 \end{itemize}
 For the stochastic case, the same assumptions hold for $\nabla_{x\lambda} F(z; \zeta)$ and $\nabla_x^2 F(z ; \zeta)$ for any $\zeta$.
+\end{assumption}
+
+\begin{assumption}[Bounded Mixed Partial Derivative]
+\label{nablaFxl_bnd}
+Assume that the mixed partial derivative $\nabla_{x\lambda}^2F$ is uniformly bounded in operator norm, i.e.
+\[
+\|\nabla_{x\lambda}^2F(x,\lambda)\|\le E
+\]
+for all $(x,\lambda)$ under consideration.
 \end{assumption}
 
 \subsection{stocBio and stoc-HOAG}
@@ -4985,13 +4994,35 @@ Suppose Assumptions \ref{conv_ass}, \ref{smo_ass}, \ref{pls_ass} hold. Then we h
 \end{proposition}
 
 Similarly, we derive a bound for the variance of $\widetilde{\nabla} \mathcal{L}$:
+
 \begin{proposition}[Bound on $\mathrm{Var}(\widehat{\nabla} \mathcal{L})$] \label{bound_nabla_hat}
 Suppose Assumptions \ref{conv_ass}, \ref{smo_ass} and \ref{nablaFxl_bnd} hold. Choose $\eta$, such that $\eta \mu < 1.$ Denote the condition number as $\kappa = \frac{L}{\mu}$. Let $|\mathcal{B}_{Q-1+j}| = B(1-\eta\mu)^{j-1}$. Then the variance of the approximate hypergradient satisfies
-\[\mathrm{Var}(\widehat{\nabla} \mathcal{L}(\lambda_k)) = \mathbb{E}\|\widehat{\nabla} \mathcal{L}(\lambda_k) - \mathbb{E}\widehat{\nabla} \mathcal{L}(\lambda_k)\|^2 \leq\]
+\begin{comment}
+    \[\mathrm{Var}(\widehat{\nabla} \mathcal{L}(\lambda_k)) = \mathbb{E}\|\widehat{\nabla} \mathcal{L}(\lambda_k) - \mathbb{E}\widehat{\nabla} \mathcal{L}(\lambda_k)\|^2 \leq\]
 \[\frac{M^2}{|\mathcal{S}_{\nabla_\lambda C,k}|} 
 + 2 \frac{L^2 M^2}{\mu^2|\mathcal{S}_{\nabla_{x\lambda} F,k}|} \, 
 + 4E^2\eta^2 M^2 \left( \tfrac{\kappa^2}{B (2 - \eta \mu)^2} 
 + \tfrac{1}{|\mathcal{S}_{\nabla_x C,k}|(2\eta \mu - \eta^2 \mu^2)} \right).
+\]
+\end{comment}
+\[
+\begin{aligned}
+\operatorname{Var}(\widehat{\nabla}\mathcal L(\lambda_k))
+\leq\;&
+\frac{M^2}{|S_{\nabla_\lambda C,k}|}
++
+\frac{2L^2M^2}{\mu^2|S_{\nabla_{x\lambda}F,k}|} \\
+&+
+\left(
+2E^2+\frac{2L^2}{|S_{\nabla_{x\lambda}F,k}|}
+\right)
+2\eta^2M^2
+\left(
+\frac{\kappa^2}{B(2-\eta\mu)^2}
++
+\frac{1}{|S_{\nabla_x C,k}|(2\eta\mu-\eta^2\mu^2)}
+\right).
+\end{aligned}
 \]
 
 \end{proposition}
@@ -5006,10 +5037,7 @@ Suppose Assumptions (\ref{conv_ass}), (\ref{smo_ass}) and (\ref{pls_ass}) hold. 
 where the constant $L_{\mathcal{L}}$ is given by
 \[L_{\mathcal{L}} = L + \frac{2L^2 + \tau M^2}{\mu} + \frac{\rho L M + L^3 + \tau M L}{\mu^2} + \frac{\rho L^2 M}{\mu^3}.\]
 \end{lemma}
-Additionally, we introduce two new assumptions.
-\begin{assumption}[Bounded Gradient] \label{nablaFxl_bnd}
-    Assume that the partial gradient $\nabla_{x\lambda}^2 F$ is bounded in norm, i.e. $\|\nabla_{x\lambda}^2 F\| \leq E$.
-\end{assumption}
+Additionally, we introduce a new assumption.
 
 \begin{assumption}[Lower bound on objective] \label{inf_ass}
     The sequence of iterates $\left\{\lambda_k\right\}$ is contained in an open set over which $\mathcal{L}$ is bounded below by a scalar $\mathcal{L}_{\text {inf }}$.
@@ -5034,15 +5062,16 @@ then we have
 \begin{theorem}[Global Convergence] \label{hoag_thm_glcv}
 
 Suppose Assumptions \ref{conv_ass}, \ref{smo_ass}, \ref{pls_ass}, \ref{nablaFxl_bnd} and \ref{inf_ass} hold.
-In Algorithm \ref{alg:stoc_hoag}, assume that the outer stepsize is chosen as $\nu_k = \frac{1}{2L_\mathcal{L}}$. Suppose $\eta$ is chosen such that $\eta \mu < 1$. Let $\zeta > 0$ be some small positive number. Choose $Q_k = \frac{r}{2}\log{k^{1+\zeta}}$, where $r > \frac{1}{-\log(1-\eta\mu)}$. Assume also that $\lambda_k \in \mathcal{D}$ for all $k>0$.
+In Algorithm \ref{alg:stoc_hoag}, assume that the outer stepsize is chosen as $\nu_k = \frac{1}{2L_\mathcal{L}}$. Suppose $\eta$ is chosen such that $\eta \mu < 1$. Let $\zeta > 0$ be some small positive number. Choose $Q_k=\left\lceil r\log(k^{1+\zeta})\right\rceil,
+r>\frac{1}{-\log(1-\eta\mu)}.$. Assume also that $\lambda_k \in \mathcal{D}$ for all $k>0$.
 If we choose
 \begin{equation}\label{params_conv}
-    T_k = \mathcal{O}(k^{1+\zeta}), \quad 
-    B_k = |\mathcal{S}_{\nabla_x C,k}| = |\mathcal{S}_{\nabla_{x\lambda} F,k}| = |\mathcal{S}_{\nabla_\lambda C,k}| = \mathcal{O}(k^{1+\zeta}),
+    T_k = \Theta(k^{1+\zeta}), \quad 
+    B_k = |\mathcal{S}_{\nabla_x C,k}| = |\mathcal{S}_{\nabla_{x\lambda} F,k}| = |\mathcal{S}_{\nabla_\lambda C,k}| = \Theta(k^{1+\zeta}),
 \end{equation}
 then there exists a constant $C > 0$, independent of $K$, such that
 \begin{equation}
-\min_{k \le K} \mathbb{E}\|\nabla \mathcal{L}(\lambda_k)\|^2 \le \frac{C \, \ln K}{K}, \quad \text{ for all } K \ge 1.
+\min_{k \le K} \mathbb{E}\|\nabla \mathcal{L}(\lambda_k)\|^2 \le \frac{C \,(1 + \ln K)}{K}, \quad \text{ for all } K \ge 1.
 \end{equation}
 In particular, this implies
 \[
@@ -5051,104 +5080,6 @@ In particular, this implies
 \end{theorem}
 
 %\begin{proof}
-
-\begin{comment}
-    \begin{proof}
-An equivalent condition to $\mathcal{L}(\lambda)$ having $L_{\mathcal{L}}$-Lipschitz continuous gradient is that for any $\alpha, \beta \in \mathcal{D}$ \cite{Zhou2018}:
-\begin{equation} \label{lipschitz_equiv}
-    \mathcal{L}(\beta) \le \mathcal{L}(\alpha) + \nabla \mathcal{L}(\alpha)^\top (\beta - \alpha) + \frac{L_{\mathcal{L}}}{2} \|\beta - \alpha\|^2.
-\end{equation}
-
-Substitute $\alpha = \lambda_k$, $\beta = \lambda_{k+1} = \lambda_k - \nu_k \widehat{\nabla}\mathcal{L}(\lambda_k)$:
-\[
-\mathcal{L}(\lambda_{k+1}) \le \mathcal{L}(\lambda_k) - \nu_k \nabla \mathcal{L}(\lambda_k)^\top \widehat{\nabla} \mathcal{L}(\lambda_k) + \frac{L_{\mathcal{L}} \nu_k^2}{2} \|\widehat{\nabla} \mathcal{L}(\lambda_k)\|^2.
-\]
-
-Take expectation conditioned on $\lambda_k$:
-%\begin{align*}
-%\mathbb{E}_{\lambda_k}[\mathcal{L}(\lambda_{k+1})] &\le \mathcal{L}(\lambda_k) - \nu_k \|\mathbb{E}_{\lambda_k}[\widehat{\nabla}\mathcal{L}(\lambda_k)]\|^2 + \nu_k \|\nabla \mathcal{L}(\lambda_k) - \mathbb{E}_{\lambda_k}[\widehat{\nabla}\mathcal{L}(\lambda_k)]\| \cdot \|\mathbb{E}_{\lambda_k}[\widehat{\nabla}\mathcal{L}(\lambda_k)]\| \\
-%&\quad + \frac{L_{\mathcal{L}} \nu_k^2}{2} \mathrm{Var}(\widehat{\nabla} \mathcal{L}(\lambda_k)).
-%\end{align*}
-
-\begin{align*}
-\mathbb{E}_{\lambda_k}\left[\mathcal{L}(\lambda_{k+1})\right] &\leq \mathcal{L}(\lambda_k) -\nu_k \nabla \mathcal{L}(\lambda_k)^\top \mathbb{E}_{\lambda_k}\left[\widehat{\nabla}\mathcal{L}(\lambda_k)\right] + \frac{L_{\mathcal{L}}\nu_k^2 }{2}\mathbb{E}_{\lambda_k}\left[\left\|\widehat{\nabla}\mathcal{L}(\lambda_k)\right\|^2\right] \\
-&= \mathcal{L}(\lambda_k) 
-- \nu_k \left( \nabla \mathcal{L}(\lambda_k) 
-    - \mathbb{E}_{\lambda_k}\left[ \widehat{\nabla} \mathcal{L}(\lambda_k) \right] \right)^\top 
-    \mathbb{E}_{\lambda_k}\left[ \widehat{\nabla} \mathcal{L}(\lambda_k) \right] \\
-&\quad 
-- \nu_k \left\| \mathbb{E}_{\lambda_k} \left[ \widehat{\nabla} \mathcal{L}(\lambda_k) \right] \right\|^2 
-+ \frac{L_{\mathcal{L}} \nu_k^2}{2} 
-    \mathbb{E}_{\lambda_k} \left[ \left\| \widehat{\nabla} \mathcal{L}(\lambda_k) \right\|^2 \right] \\
-&\leq \mathcal{L}(\lambda_k) 
-+ \nu_k \left\| \nabla \mathcal{L}(\lambda_k) 
-    - \mathbb{E}_{\lambda_k} \left[ \widehat{\nabla} \mathcal{L}(\lambda_k) \right] \right\| 
-    \left\| \mathbb{E}_{\lambda_k} \left[ \widehat{\nabla} \mathcal{L}(\lambda_k) \right] \right\| \\
-&\quad 
-- \nu_k \left\| \mathbb{E}_{\lambda_k} \left[ \widehat{\nabla} \mathcal{L}(\lambda_k) \right] \right\|^2 
-+ \frac{L_{\mathcal{L}} \nu_k^2}{2} 
-  \mathbb{E}_{\lambda_k} \left[ \left\| \widehat{\nabla} \mathcal{L}(\lambda_k) \right\|^2 \right]\\
-  &= \mathcal{L}(\lambda_k) 
-+ \nu_k \left\| \nabla \mathcal{L}(\lambda_k) 
-  - \mathbb{E}_{\lambda_k} \left[ \widehat{\nabla} \mathcal{L}(\lambda_k) \right] \right\| 
-  \left\| \mathbb{E}_{\lambda_k} \left[ \widehat{\nabla} \mathcal{L}(\lambda_k) \right] \right\| \\
-&\quad 
-+ \frac{L_{\mathcal{L}} \nu_k^2}{2} 
-  \mathrm{Var} \left( \widehat{\nabla} \mathcal{L}(\lambda_k) \right) 
-- \left( \nu_k 
-  - \frac{L_{\mathcal{L}} \nu_k^2}{2} \right) 
-  \left\| \mathbb{E}_{\lambda_k} \widehat{\nabla} \mathcal{L}(\lambda_k) \right\|^2
-\end{align*}
-
-We now define the terms bounding bias and variance of the approximate hypergradient:
-
-\[
-D_{1,k} = \sqrt{2}\left(L + \frac{L^2}{\mu} + \frac{M\tau}{\mu} + \frac{LM\rho}{\mu^2} \right) \|\hat{x}(\lambda_k) - x_k\|,
-\quad 
-D_{2,k} = \sqrt{2} \frac{LM(1-\eta \mu)^{Q_k}}{\mu},
-\]
-
-\[
-D_{3,k} = \frac{M^2}{|\mathcal{S}_{\nabla_\lambda C,k}|} 
-+ 2 \frac{L^2 M^2}{\mu^2|\mathcal{S}_{\nabla_{x\lambda} F,k}|} 
-+ 4E^2\eta^2 M^2 \left( \frac{\kappa^2}{B_k (2 - \eta \mu)^2} + \frac{1}{|\mathcal{S}_{\nabla_x C,k}| (2\eta \mu - \eta^2 \mu^2)} \right).
-\]
-
-Using the bounds from Propositions \ref{nabla_hat_nabla_bnd} and \ref{bound_nabla_hat},
-\[
-\|\mathbb{E}_{\lambda_k}[\widehat{\nabla} \mathcal{L}(\lambda_k)] - \nabla \mathcal{L}(\lambda_k)\|^2 \le D_{1,k}^2 + D_{2,k}^2, \quad \mathrm{Var}(\widehat{\nabla} \mathcal{L}(\lambda_k)) \le D_{3,k},
-\]
-we obtain
-\begin{equation} \label{totele3_clean}
-(\nu_k - L_{\mathcal{L}} \nu_k^2) \|\nabla \mathcal{L}(\lambda_k)\|^2 \le 4 \mathcal{L}(\lambda_k) - 4 \mathbb{E}_{\lambda_k}[\mathcal{L}(\lambda_{k+1})] + 6 \nu_k (D_{1,k}^2 + D_{2,k}^2) + 2 L_{\mathcal{L}} \nu_k^2 D_{3,k}.
-\end{equation}
-
-Since $\nu_k = 1/(2 L_\mathcal{L})$, we have $\nu_k - L_{\mathcal{L}} \nu_k^2 = 1/(4 L_\mathcal{L}) > 0$.  
-
-Summing (\ref{totele3_clean}) from $k=1$ to $K$, taking total expectation, and telescoping the first term, we get
-\begin{equation} \label{tele_ineq_clean}
-\sum_{k=1}^K (\nu_k - L_{\mathcal{L}} \nu_k^2) \mathbb{E}\|\nabla \mathcal{L}(\lambda_k)\|^2 \le 4 \mathcal{L}(\lambda_1) - 4 \mathcal{L}_{\inf} + \sum_{k=1}^K \left( 6 \nu_k \mathbb{E}[D_{1,k}^2] + 6 \nu_k D_{2,k}^2 + 2 L_{\mathcal{L}} \nu_k^2 D_{3,k} \right).
-\end{equation}
-
-By our choice of parameters (\ref{params_conv}) and Lemma \ref{sgdmu}, each term in the sum on the right-hand side is $\mathcal{O}(1/k^{1+\zeta})$, so
-\[
-\sum_{k=1}^K \left( 6 \nu_k \mathbb{E}[D_{1,k}^2] + 6 \nu_k D_{2,k}^2 + 2 L_{\mathcal{L}} \nu_k^2 D_{3,k} \right) = \mathcal{O}(\ln K).
-\]
-
-The denominator grows as
-\[
-\sum_{k=1}^K (\nu_k - L_{\mathcal{L}} \nu_k^2) = K / (4 L_\mathcal{L}) = \mathcal{O}(K).
-\]
-
-Hence, the convergence rate follows:
-\[
-\min_{k \le K} \mathbb{E}\|\nabla \mathcal{L}(\lambda_k)\|^2 \le \frac{\mathcal{O}(\ln K)}{\mathcal{O}(K)} = \mathcal{O}\left(\frac{\ln K}{K}\right),
-\]
-as claimed.
-\end{proof}
-\end{comment}
-
-
 
 
 %\begin{comment}
@@ -5216,18 +5147,35 @@ Furthermore, using $(a+b)^2 \leq 2a^2 + 2b^2$, we obtain the following lower bou
     \|\mathbb{E}_{\lambda_k} \widehat{\nabla} \mathcal{L}(\lambda_k) \|^2 \geq \frac{\|\nabla \mathcal{L}(\lambda_k)\|^2 - 4D_{1,k}^2 -4D_{2,k}^2}{2}.
 \end{equation}
 \\Finally, by proposition \ref{bound_nabla_hat}, we have the variance bound 
-
 \begin{align}
 \mathrm{Var}\left( \widehat{\nabla} \mathcal{L}(\lambda_k) \right) 
-&\frac{M^2}{|\mathcal{S}_{\nabla_\lambda C,k}|} 
+\leq& \frac{M^2}{|S_{\nabla_\lambda C,k}|}
++
+\frac{2L^2M^2}{\mu^2|S_{\nabla_{x\lambda}F,k}|} +
+\left(
+2E^2+\frac{2L^2}{|S_{\nabla_{x\lambda}F,k}|}
+\right) \times \\
+&\times2\eta^2M^2
+\left(
+\frac{\kappa^2}{B_k(2-\eta\mu)^2}
++
+\frac{1}{|S_{\nabla_x C,k}|(2\eta\mu-\eta^2\mu^2)}
+\right)
+\triangleq D_{3,k}.
+\label{varbndthm}
+\end{align}
+
+\begin{comment}
+    \begin{align}
+\mathrm{Var}\left( \widehat{\nabla} \mathcal{L}(\lambda_k) \right) 
+\leq& \frac{M^2}{|\mathcal{S}_{\nabla_\lambda C,k}|} 
 + 2 \frac{L^2 M^2}{\mu^2|\mathcal{S}_{\nabla_{x\lambda} F,k}|} \,  \notag \\
 &\quad + 4E^2\eta^2 M^2 \left( \tfrac{\kappa^2}{B (2 - \eta \mu)^2} 
 + \tfrac{1}{|\mathcal{S}_{\nabla_x C,k}|(2\eta \mu - \eta^2 \mu^2)} \right)
 \triangleq D_{3,k}.
 \label{varbndthm}
 \end{align}
-
-
+\end{comment}
 %Set $M_1 = T_{45}^2 + 2T_{45}$, $M_2 = 2T_{45} + 1$. 
 Substituting (\ref{T45diff}),(\ref{Enabhatsq_rev}) and (\ref{varbndthm}) into (\ref{Lip_to_sub}), noting that $\mathcal{L}(\lambda) = C(\hat{x}(\lambda),\lambda)$ is $L_\mathcal{L}$-lipschitz and rearranging, we get
 \begin{equation} \label{totele3}
@@ -5288,23 +5236,15 @@ Moreover, since \(\nu_k=1/(2L_{\mathcal L})\), we have
 =
 \mathcal O(K).
 \]
-Therefore, for fixed \(\zeta>0\),
+Therefore, for fixed $\zeta>0$, this gives an $\mathcal O(K^{-1})$ convergence rate. Since
 \[
-\min_{k\leq K}\mathbb E\|\nabla \mathcal L(\lambda_k)\|^2
-=
-\mathcal O\left(\frac{1}{K}\right).
+\sum_{k=1}^K\frac1{k^{1+\zeta}}
+=\mathcal O(1+\log K),
 \]
-In the limiting case \(\zeta\to0\), the sum behaves like the harmonic series, since
+the bound may also be written as
 \[
-\lim_{\zeta\to0}\frac{1-K^{-\zeta}}{\zeta}
-=
-\log K.
-\]
-Thus one obtains the bound
-\[
-\min_{k\leq K}\mathbb E\|\nabla \mathcal L(\lambda_k)\|^2
-=
-\mathcal O\left(\frac{\log K}{K}\right).
+\min_{k\le K}\mathbb E\|\nabla\mathcal L(\lambda_k)\|^2
+=\mathcal O\!\left(\frac{1+\log K}{K}\right).
 \]
 \end{proof}
 %\end{comment}
@@ -5374,12 +5314,29 @@ where,
 %\begin{equation} \label{varbndthm2}
 %    D_{3,k} = 2\eta^2M^2\left(\frac{\kappa^2}{B_k (2 - \eta \mu)^2} + \frac{1}{|\mathcal{S}_{\nabla_{x} C,k}|(2\eta \mu - \eta^2 \mu^2)} \right)\left(\frac{L^2}{|\mathcal{S}_{\nabla_{x\lambda} F,k}|} + E^2\right)  +  \frac{\kappa^2M^2}{|\mathcal{S}_{\nabla_{x\lambda} F,k}|}+ \frac{M^2}{|\mathcal{S}_{\nabla_{\lambda} C,k}|}.
 %\end{equation}
+%\begin{equation} \label{varbndthm2}
+%    D_{3,k} = \frac{M^2}{|\mathcal{S}_{\nabla_\lambda C,k}|} 
+%+ 2 \frac{L^2 M^2}{\mu^2|\mathcal{S}_{\nabla_{x\lambda} F,k}|} \, 
+%+ 4E^2\eta^2 M^2 \left( \tfrac{\kappa^2}{B (2 - \eta \mu)^2} 
+%+ \tfrac{1}{|\mathcal{S}_{\nabla_x C,k}|(2\eta \mu - \eta^2 \mu^2)} \right)
+%\end{equation}
 \begin{equation} \label{varbndthm2}
-    D_{3,k} = \frac{M^2}{|\mathcal{S}_{\nabla_\lambda C,k}|} 
-+ 2 \frac{L^2 M^2}{\mu^2|\mathcal{S}_{\nabla_{x\lambda} F,k}|} \, 
-+ 4E^2\eta^2 M^2 \left( \tfrac{\kappa^2}{B (2 - \eta \mu)^2} 
-+ \tfrac{1}{|\mathcal{S}_{\nabla_x C,k}|(2\eta \mu - \eta^2 \mu^2)} \right)
+    D_{3,k} = \frac{M^2}{|S_{\nabla_\lambda C,k}|}
++
+\frac{2L^2M^2}{\mu^2|S_{\nabla_{x\lambda}F,k}|} +
+\left(
+2E^2+\frac{2L^2}{|S_{\nabla_{x\lambda}F,k}|}
+\right)2\eta^2M^2
+\left(
+\frac{\kappa^2}{B_k(2-\eta\mu)^2}
++
+\frac{1}{|S_{\nabla_x C,k}|(2\eta\mu-\eta^2\mu^2)}
+\right)
 \end{equation}
+
+
+
+
 Note, that $\zeta>0$ in Theorem \ref{hoag_thm_glcv} affects the summation on the RHS of (\ref{tele_ineq2}). If $\zeta$ is large enough, then the sum is bounded by $\mathcal{O}(1/\zeta)$ and doesn't grow with $K$. On the other hand, if $\zeta$ is small, then the smallest upper bound for the sum is $\mathcal{O}(\ln{K})$. Assume that $\zeta$ is large enough, so that the dependence of the RHS of (\ref{tele_ineq2}) on $K$ is as $\mathcal{O}\left( \frac{1}{K} \right)$. Then, to achieve an $\epsilon-$accurate stationary point, we must have at least, that
 \[\frac{L_\mathcal{L}}{K} = \epsilon \implies K = \mathcal{O}\left(\frac{1}{\mu^3 \epsilon} \right).\]
 We will now provide the complexities for the individual parameters and will finish this section by providing a $\mu$-convergence bound. We begin with the complexities for the individual samples sizes in $D_{3,k}$. Using our choices in (\ref{params_conv}), we obtain the following gradient complexities. The total number of samples for gradients $\nabla_{x}C, \nabla_{x\lambda} F$ and $\nabla_\lambda C$ are
@@ -5397,7 +5354,7 @@ order of \(\mu^3\) relative to the parametrisation of Ji et al. %Let us now prov
 %\[\sum^{K}_{k=1} D_{3,k} = \mathcal{O}\left( \frac{\kappa^2}{B_k (2 - \eta \mu)^2} \right) \approx \mathcal{O}\left( \frac{1}{\mu^4} \ln{\frac{1}{\mu}} \right).\]
 
 We now turn from the oracle complexity of the individual subroutines to the
-dependence of the convergence bound itself on the conditioning parameter
+dependence of the convergence bound itself on the convexity parameter
 \(\mu\). The following corollary isolates the \(\mu\)-dependence of the
 right-hand side of \eqref{tele_ineq2}. In particular, it clarifies that the
 Neumann-series variance term in \(D_{3,k}\) is not the dominant contribution
@@ -5475,29 +5432,28 @@ $D_{1,k}$, rather than from the Neumann-series variance term in $D_{3,k}$.
 
 \begin{proof}
 We inspect the three error terms $D_{1,k}$, $D_{2,k}$ and $D_{3,k}$ appearing in
-\eqref{tele_ineq2}. First consider the Neumann-series variance contribution in
-$D_{3,k}$. From \eqref{varbndthm2}, this term is of the form
+\eqref{tele_ineq2}. First consider the contribution to $D_{3,k}$ arising from the Neumann-series variance term. From \eqref{varbndthm2}, this term is of the form
 \[
 \sum_{k=1}^{K}
 \frac{\kappa^2}{B_k(2-\eta\mu)^2}.
 \]
-Since $\kappa=L/\mu$, $B_k=O(k^{1+\zeta})$, and $\eta\mu<1$, we obtain
+Since \(\kappa=L/\mu\), \(B_k=\Theta(k^{1+\zeta})\), and \(\eta\mu<1\), we obtain
 \[
-\sum_{k=1}^{K}
-\frac{\kappa^2}{B_k(2-\eta\mu)^2}
+\sum_{k=1}^{K}\frac{\kappa^2}{B_k(2-\eta\mu)^2}
 =
-O\left(
-\frac{1}{\mu^2}
-\sum_{k=1}^{K}\frac{1}{k^{1+\zeta}}
+\mathcal O\left(
+\frac{1}{\mu^2}\sum_{k=1}^{K}\frac{1}{k^{1+\zeta}}
 \right)
 =
-O\left(\frac{1}{\mu^2}\right),
+\mathcal O\left(\frac{1}{\mu^2}\right),
 \]
-as $\zeta>0$. Thus this contribution is not the dominant term in the
-$\mu$-dependence.
+as \(\zeta>0\). The remaining contributions to $D_{3,k}$ have the same $\mu^{-2}$ dependence and therefore do not affect the dominant $\mu$-dependence of the convergence bound.
+
+Thus this contribution is not the dominant term in the
+$\mu$-dependence. 
 
 The dominant contribution instead comes from the inner-solver error term
-$D_{1,k}$. Using Lemma~C.1.1 and $T_k=O(k^{1+\zeta})$, we have, using the
+$D_{1,k}$. Using Lemma \ref{sgdmu} and $T_k=O(k^{1+\zeta})$, we have, using the
 looser bound $k^{-(1+\zeta)}\leq k^{-1}$,
 \[
 \sum_{k=1}^{K}\mathbb{E}[D_{1,k}^2]
@@ -5509,8 +5465,7 @@ O\left(
 =
 O\left(\frac{\log K}{\mu^6}\right).
 \]
-Similarly, the remaining terms in $D_{2,k}$ and $D_{3,k}$ contribute at most
-lower-order terms in $\mu$. Substituting these estimates into \eqref{tele_ineq2}
+The contribution from \(D_{2,k}\) is summable in \(k\) under the choice of \(Q_k\), and its dependence on \(\mu\) is dominated by the \(\mathcal O(\mu^{-6})\) contribution arising from \(D_{1,k}\). Substituting these estimates into \eqref{tele_ineq2}
 gives
 \[
 \frac{1}{K}\sum_{k=1}^{K}\mathbb{E}\|\nabla \mathcal L(\lambda_k)\|^2
@@ -5995,14 +5950,77 @@ Furthermore, from Propositions \ref{evq_bnd} and \ref{varvq_better},
 \quad \mathrm{Var}(v_Q) \leq 2\eta^2 M^2 \left( \tfrac{\kappa^2}{B (2 - \eta \mu)^2} 
 + \tfrac{1}{|\mathcal{S}_{\nabla_x C,k}|(2\eta \mu - \eta^2 \mu^2)} \right).
 \]
-Hence,
+%Hence,
+%\[
+%\mathrm{Var}(\widehat{\nabla}\mathcal{L}(\lambda_k)) 
+%\leq \frac{M^2}{|\mathcal{S}_{\nabla_\lambda C,k}|} 
+%+ 2 \frac{L^2 M^2}{\mu^2|\mathcal{S}_{\nabla_{x\lambda} F,k}|} \, 
+%+ 4E^2\eta^2 M^2 \left( \tfrac{\kappa^2}{B (2 - \eta \mu)^2} 
+%+ \tfrac{1}{|\mathcal{S}_{\nabla_x C,k}|(2\eta \mu - \eta^2 \mu^2)} \right).
+%\]
+%Hence,
+%\[
+%\begin{aligned}
+%\operatorname{Var}(X^\top v_Q)
+%&\leq
+%2\operatorname{Var}(X)\mathbb{E}\|v_Q\|^2
+%+
+%2\|\mathbb{E}[X]\|^2\operatorname{Var}(v_Q).
+%\]
+
+Furthermore,
 \[
-\mathrm{Var}(\widehat{\nabla}\mathcal{L}(\lambda_k)) 
-\leq \frac{M^2}{|\mathcal{S}_{\nabla_\lambda C,k}|} 
-+ 2 \frac{L^2 M^2}{\mu^2|\mathcal{S}_{\nabla_{x\lambda} F,k}|} \, 
-+ 4E^2\eta^2 M^2 \left( \tfrac{\kappa^2}{B (2 - \eta \mu)^2} 
-+ \tfrac{1}{|\mathcal{S}_{\nabla_x C,k}|(2\eta \mu - \eta^2 \mu^2)} \right).
+\mathbb{E}\|v_Q\|^2
+=
+\operatorname{Var}(v_Q)
++
+\|\mathbb{E}[v_Q]\|^2
+\leq
+\operatorname{Var}(v_Q)
++
+\frac{M^2}{\mu^2},
 \]
+where we used Proposition~\ref{evq_bnd}. Therefore,
+\[
+\begin{aligned}
+\operatorname{Var}(X^\top v_Q)
+&\leq
+\frac{2L^2M^2}{\mu^2|S_{\nabla_{x\lambda}F,k}|}
++
+\left(
+2E^2
++
+\frac{2L^2}{|S_{\nabla_{x\lambda}F,k}|}
+\right)
+\operatorname{Var}(v_Q).
+\end{aligned}
+\]
+
+Substituting the bound from Proposition~\ref{varvq_better} yields
+\[
+\begin{aligned}
+\operatorname{Var}(\widehat{\nabla}\mathcal{L}(\lambda_k))
+\leq\;&
+\frac{M^2}{|S_{\nabla_\lambda C,k}|}
++
+\frac{2L^2M^2}{\mu^2|S_{\nabla_{x\lambda}F,k}|}
+\\
+&+
+\left(
+2E^2
++
+\frac{2L^2}{|S_{\nabla_{x\lambda}F,k}|}
+\right)
+2\eta^2M^2
+\left(
+\frac{\kappa^2}{B(2-\eta\mu)^2}
++
+\frac{1}{|S_{\nabla_x C,k}|(2\eta\mu-\eta^2\mu^2)}
+\right).
+\end{aligned}
+\]
+
+
 \end{proof}
 
 

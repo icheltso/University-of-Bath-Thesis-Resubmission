@@ -4752,7 +4752,7 @@ By contrast, in inverse problems such as deconvolution and inpainting, Bayesian 
 
 \part{Hyperparameter Optimization} \label{part:HOAG}
 
-\chapter{Stocbio, \texttt{stocHOAG} and the conditioning issue} \label{chp: stoc_cond}
+\chapter{\texttt{Stocbio}, \texttt{stocHOAG} and the conditioning issue} \label{chp: stoc_cond}
 \section{Motivation}
 Many sparse optimisation problems arising in statistics, machine learning and inverse problems are naturally formulated as $\ell_1$-regularised optimisation problems of the form
 \[
@@ -4870,7 +4870,7 @@ Assume that the mixed partial derivative $\nabla_{x\lambda}^2F$ is uniformly bou
 for all $(x,\lambda)$ under consideration.
 \end{assumption}
 
-\subsection{stocBio and \texttt{stocHOAG}}
+\subsection{\texttt{stocBio} and \texttt{stocHOAG}}
 We begin by reviewing the stochastic bilevel optimisation algorithm proposed by Ji et al., which serves as the starting point for the developments in this chapter. that can be used to tackle problem (\ref{outer_hoag_neu}-\ref{inner_hoag_neu}) \cite{ji2021bilevel}. Firstly, we define some of the relevant parameters:
 \begin{itemize}
     \item $S$: number of samples in every inner SGD step.
@@ -4885,7 +4885,7 @@ Note that the parameters are fixed throughout the optimisation. The Neumann seri
 
 
 \begin{algorithm}[]
-\caption{stocBio \cite{ji2021bilevel}}
+\caption{\texttt{stocBio} \cite{ji2021bilevel}}
 \label{alg:stocbio}
 \DontPrintSemicolon
 \KwIn{Outer stepsize $\nu_k$, Neumann length $Q_k$, parameter $\eta$, inner steps $T_k$}
@@ -5788,7 +5788,7 @@ Thus, $\mathrm{d}u\,\mathrm{d}v = \frac{1}{|\mathrm{det}J|} \mathrm{d}
 \chapter{Chapter IV Proofs}
 \label{bilevel_proofs}
 
-\section{Stocbio/stocHOAG}
+\section{\texttt{stocBio}/\texttt{stocHOAG}}
 \subsection*{Appendix A: Helpful Results}
 \label{AppendixA}
 We begin by providing a few error bounds for SGD. Firstly, we can directly obtain the iterate error for the strongly convex case as follows.
@@ -5834,7 +5834,7 @@ We begin by providing a few error bounds for SGD. Firstly, we can directly obtai
 &= \left\| \eta \sum_{i=0}^Q (I - \eta \nabla_{xx}^2 F)^i \nabla_x C \right\| \leq \eta \left\| \sum_{i=0}^Q (I - \eta \nabla_{xx}^2 F)^i \right\| \cdot \|\nabla_x C\| \notag \\
 &\leq \eta M \sum_{i=0}^Q (1 - \eta\mu)^i = \eta M \frac{1 - (1 - \eta\mu)^{Q+1}}{\eta\mu} \notag = \frac{M}{\mu} \left( 1 - (1 - \eta\mu)^{Q+1} \right),
 \end{align}
-where, in the second line, we used the fact that, due to strong convexity, the eigenvalues of the hessian $\nabla_{xx}^2 F$ are at least $\mu$.
+where, in the last inequality, we used that $\nabla_{xx}^2F \succeq \mu I$ and $\eta < 1/L$, implying $\|I-\eta\nabla_{xx}^2F\|\le 1-\eta\mu$.
 \end{proof}
 
 \begin{proof}[Proof of Proposition \ref{varvq_better}.]

@@ -1,6 +1,6 @@
 # Post-Viva Corrections Checklist
 
-This checklist consolidates **all required corrections** from the external examiner report and the internal examiner corrections form. Each item is written to be *tickable* and actionable.
+This checklist consolidates **all required corrections** from the external examiner report and the internal examiner corrections form.
 
 ---
 🟢 - Finished
@@ -9,8 +9,8 @@ This checklist consolidates **all required corrections** from the external exami
 
 ## General / Global Revisions
 - [🟡] Create a **glossary** of notation used throughout the dissertation.
-- [ ] Rewrite **Chapter 4** (Background on stochastics) for clarity and coherence (see detailed comments below).
-- [ ] Add a **final conclusions chapter** summarising contributions and future research directions.
+- [🟢] Rewrite **Chapter 4** (Background on stochastics) for clarity and coherence (see detailed comments below).
+- [🟢] Add a **final conclusions chapter** summarising contributions and future research directions.
 
 ---
 
@@ -48,8 +48,8 @@ This checklist consolidates **all required corrections** from the external exami
 ## Chapter 3
 - [🟢] Explain the **significance of detailed balance** for ergodic Markov chains.
 - [🟢] Add discussion of **ULA and MALA**.
-- [ ] p.43: Clarify what is meant by “posterior distribution difficult to compute”.
-- [ ] p.44: Explain difference between discrete and continuous-state Markov chains.
+- [🟢] p.43: Clarify what is meant by “posterior distribution difficult to compute”.
+- [🟢] p.44: Explain difference between discrete and continuous-state Markov chains.
 
 ---
 
@@ -87,15 +87,16 @@ This checklist consolidates **all required corrections** from the external exami
 
 ---
 
-## Chapter 6 (Substantial Mathematical Clarifications)
+## Chapter 6 & 7 (Substantial Mathematical Clarifications)
 ## Major mathematical issues
 - [🟢] Thm 6.1.1: Clarify non-explosion argument for mollified SDEs.
 - [🟢] Thm 6.1.1: Address small-probability arguments when $u_t = 0$.
 - [🟢] Thm 6.1.1: Justify comparison principle from [36].
 - [🟢] p.95: Clarify recursive inequality and expectation bounds.
-- [ ] p.129: Fix asymptotic bound involving $\mu$-convergence.
-- [ ] Present $\mu$-convergence bound as standalone theorem.
+- [🟢] p.129: Fix asymptotic bound involving $\mu$-convergence.
+- [🟢] Present $\mu$-convergence bound as standalone theorem.
 
+## Chapter 6
 ## Structural / conceptual fixes
 - [🟢] p.77: Improve chapter title.
 - [🟢] p.77–81: Fully define all SDE components.
@@ -109,58 +110,59 @@ This checklist consolidates **all required corrections** from the external exami
 - [🟢] p.81: Clarify where condition $\rho < \varpi_\omega$ is imposed.
 
 ## Technical notation corrections
-- [ ] p.80: Replace $z_t$ with $\hat z_t$ where required.
-- [ ] p.81: Replace $z_t, v_t$ with $\hat z_t, \hat v_t$ where appropriate.
-- [ ] p.82: Fix $1/u_{1,t}^r \to 1/u_{i,t}^r$.
-- [ ] p.85: Fix wording of conjugate exponent sentence.
-- [ ] p.85: Replace “> Δ” with “≥ Δ”.
-- [ ] p.89: Verify correct indexing ($v_k$ vs $v_{k+1}$).
-- [ ] p.91: Clarify norms and constants; check factors of 2 and squares.
-- [ ] p.92–93: Replace references with “Corollary/Proposition …”.
-- [ ] p.93: Fix singular/plural “assumption(s)”.
-- [ ] p.94: Clarify equality vs inequality.
-- [ ] p.97: Replace “(6.2.4)” with “Assumption 6.2.4”.
-- [ ] p.98: Clarify meaning of “sublinearity”.
-- [ ] p.99: Fix wording “and” → “but”.
+- [🟢] p.80: Replace $z_t$ with $\hat z_t$ where required.
+- [🟢] p.81: Replace $z_t, v_t$ with $\hat z_t, \hat v_t$ where appropriate.
+- [🟢] p.82: Fix $1/u_{1,t}^r \to 1/u_{i,t}^r$.
+- [🟢] p.85: Fix wording of conjugate exponent sentence.
+- [🟢] p.85: Replace “> Δ” with “≥ Δ”.
+- [🟢] p.89: Verify correct indexing ($v_k$ vs $v_{k+1}$).
+- [🟢] p.91: Clarify norms and constants; check factors of 2 and squares.
+- [🟢] p.92: Elaborate uniform bound assumption
+- [🟢] p.92–93: Replace references with “Corollary/Proposition …”.
+- [🟢] p.93: Fix singular/plural “assumption(s)”.
+- [🟢] p.94: Clarify equality vs inequality.
+- [🟢] p.97: Replace “(6.2.4)” with “Assumption 6.2.4”.
+- [🟢] p.98: Clarify meaning of “sublinearity”.
+- [🟢] p.99: Fix wording “and” → “but”.
 
 ## Additional clarifications
 - [🟡] p.85: Remove odd whitespace.
 - [🟢] p.100: Clarify meaning of “unstable”.
-- [ ] p.101: Fix Leimkuhler–Matthews method and add proper citation.
-- [ ] p.101: Replace informal language (“works pretty well”).
+- [🟢] p.101: Fix Leimkuhler–Matthews method and add proper citation.
+- [🟢] p.101: Replace informal language (“works pretty well”).
 
 ---
 
 # Chapter 7
-- [ ] p.102: Restate optimisation problem for clarity.
-- [ ] Ensure correct font usage for library names.
-- [ ] Improve Figure 7.2 (font size, axis consistency, explanation).
-- [ ] Improve Figure 7.3 (notation clarity).
-- [ ] Add discussion on **error metrics vs predictive accuracy**.
+- [🟢] p.102: Restate optimisation problem for clarity.
+- [🟢] Ensure correct font usage for library names.
+- [🟢] Improve Figure 7.2 (font size, axis consistency, explanation).
+- [🟢] Improve Figure 7.3 (notation clarity).
+- [🟢] Add discussion on **error metrics vs predictive accuracy**.
 
 ---
 
 # Chapter 8
-- [ ] p.120: Add ⇐ to glossary.
-- [ ] p.121: State that proofs are in Appendix C.
+- [🟢] p.119: Elaborate on sample choice in practice.
+- [🟢] p.120: Add to glossary.
+- [🟢] p.121: State that proofs are in Appendix C.
 - [ ] p.123–125: Fix whitespace gaps.
-- [ ] p.126: Properly cite Ji et al.
-- [ ] p.126: Clarify $O(1/\zeta - 1/(\zeta K^\zeta))$ bound.
-- [ ] p.126: Clarify whether expectation is needed in gradient norm.
-- [ ] p.126: Clarify modularity claim regarding stoc-HOAG.
-- [ ] p.128: Clarify interpretation of $\mu$.
+- [🟢] p.126: Properly cite Ji et al.
+- [🟢] p.126: Clarify $O(1/\zeta - 1/(\zeta K^\zeta))$ bound.
+- [🟢] p.126: Clarify whether expectation is needed in gradient norm.
+- [🟡] p.126: Clarify modularity claim regarding stoc-HOAG.
+- [🟢] p.128: Clarify interpretation of $\mu$.
 - [ ] p.130: Explain use of Woodbury identity.
-- [ ] p.130: Fix capitalisation (Neumann, Gaussian).
-- [ ] p.131: Minor wording fixes.
-- [ ] Add explanation of stochastic HOAG sampling in practice.
+- [🟢] p.130: Fix capitalisation (Neumann, Gaussian).
+- [🟢] p.131: Minor wording fixes.
 
 ---
 
 ## Global Typos & Style
-- [ ] Capitalisation: Lasso, Cartesian, Gaussian, Neumann.
-- [ ] Hyphenation: bilevel, hyperparameters.
-- [ ] Fix missing brackets around equations (various pages).
-- [ ] Standardise notation and spacing.
+- [🟢] Capitalisation: Lasso, Cartesian, Gaussian, Neumann.
+- [🟢] Hyphenation: bilevel, hyperparameters.
+- [🟢] Fix missing brackets around equations (various pages).
+- [🟢] Standardise notation and spacing.
 
 ---
 

@@ -108,7 +108,7 @@ To address this, we propose a new class of samplers based on Hadamard reparamete
 
 Experiments in regression, classification, and deconvolution demonstrate that Hadamard-Langevin dynamics provide comparable performance in sampling efficiency and accuracy compared with classical methods.
 
-The thesis also examines stochastic bilevel optimization for hyperparameter selection. We analyze methods such as stocBio and propose stoc-HOAG, a stochastic variant of the HOAG algorithm. A central theme of these chapters is the conditioning of the inner optimization problem.
+The thesis also examines stochastic bilevel optimization for hyperparameter selection. We analyze methods such as \texttt{stocBio} and propose \texttt{stocHOAG}, a stochastic variant of the HOAG algorithm. A central theme of these chapters is the conditioning of the inner optimization problem.
 
 Overall, the thesis advances the understanding of nonsmooth optimization and sampling by introducing Hadamard-Langevin dynamics as a new family of samplers, while also contributing to the theory of stochastic bilevel optimization.
 \end{abstract}
@@ -140,7 +140,7 @@ This thesis addresses these challenges in two complementary directions.
     ergodicity, finite-time convergence, and moment bounds---and demonstrate their performance
     on regression, classification, and deconvolution problems.
     \item \textbf{Part III} turns to bilevel optimization for hyperparameter selection,
-    where we analyze stochastic algorithms such as stocBio and introduce our own stochastic modification of the HOAG algorithm, stoc-HOAG. A central theme is the
+    where we analyze stochastic algorithms such as \texttt{stocBio} and introduce our own stochastic modification of the HOAG algorithm, \texttt{stocHOAG}. A central theme is the
     conditioning problem, for which we propose solutions based on Neumann series expansions.
 \end{itemize}
 
@@ -161,14 +161,14 @@ This thesis introduces a new class of sampling algorithms: Hadamard-Langevin dyn
 
 We establish a rigorous theoretical foundation for these dynamics. In continuous time, we prove results on ergodicity, moment bounds, and finite-time convergence. For discrete implementations, we propose a semi-implicit scheme in cylindrical coordinates and prove convergence of its invariant measure to that of the continuous dynamics, assuming a timestep-uniform geometric ergodicity condition. Additionally, we propose various splitting method-based discretizations in Cartesian coordinates, that we evaluate empirically. These results are complemented by numerical experiments, ranging from low-dimensional regression to high-dimensional classification and deconvolution tasks, where Hadamard-Langevin dynamics is competitive with standard approaches.
 
-In addition to sampling, the thesis also addresses the related but distinct problem of stochastic bilevel optimization for hyperparameter selection. Many sparse models depend critically on the choice of regularization parameters, which can be optimized through bilevel formulations. We analyze existing methods such as stocBio and propose stoc-HOAG, a stochastic modification of the HOAG algorithm. A central challenge in this setting is the conditioning of the inner problem, for which we provide remedies based on improved sampling approaches. Although these methods do not rely on Hadamard reparameterizations, we emphasize that such reparameterizations can be naturally combined with stochastic bilevel approaches to handle nonsmooth inner problems, pointing toward a promising direction for future research.
+In addition to sampling, the thesis also addresses the related but distinct problem of stochastic bilevel optimization for hyperparameter selection. Many sparse models depend critically on the choice of regularization parameters, which can be optimized through bilevel formulations. We analyze existing methods such as \texttt{stocBio} and propose \texttt{stocHOAG}, a stochastic modification of the HOAG algorithm. A central challenge in this setting is the conditioning of the inner problem, for which we provide remedies based on improved sampling approaches. Although these methods do not rely on Hadamard reparameterizations, we emphasize that such reparameterizations can be naturally combined with stochastic bilevel approaches to handle nonsmooth inner problems, pointing toward a promising direction for future research.
 
 The structure of the thesis is as follows.
 \begin{itemize}
     \item \textbf{Part I} develops the theoretical background: sparse optimization, hyperparameter selection, Bayesian sampling, and stochastic processes. This provides the mathematical tools and motivation for the subsequent developments.
     \item \textbf{Part II} presents the main contribution: Hadamard-Langevin dynamics. We introduce the dynamics, establish their theoretical properties, and validate them numerically.
     \item \textbf{Part III} turns to bilevel optimization for hyperparameter selection,
-    where we analyze stochastic algorithms such as stocBio and introduce our own stochastic modification of the HOAG algorithm, stoc-HOAG. A central theme is the
+    where we analyze stochastic algorithms such as \texttt{stocBio} and introduce our own stochastic modification of the HOAG algorithm, \texttt{stocHOAG}. A central theme is the
     conditioning problem, for which we propose solutions based on Neumann series expansions.
 \end{itemize}
 \begin{comment}
@@ -181,7 +181,7 @@ Part II: Hadamard-Langevin Dynamics for Sparse Priors.
 The second part introduces a novel class of sampling algorithms, which we call Hadamard-Langevin dynamics. These are designed specifically for posterior distributions involving $\ell_1$-type priors. Chapter 5 introduces the formulation and contrasts it with existing approaches such as unadjusted Langevin algorithms, smoothing-based methods, and Gibbs sampling. Chapter 6 develops the theoretical analysis: we establish moment bounds, ergodicity, and finite-time convergence results for both continuous-time dynamics and their discretization. Chapter 7 presents numerical experiments, demonstrating the effectiveness of the proposed methods on regression, classification, and deconvolution problems. These results highlight the potential of Hadamard-Langevin dynamics as practical alternatives to classical samplers.
 
 Part III: Hyperparameter Optimization via Bilevel Methods.
-The third part turns to the problem of hyperparameter selection. We focus on bilevel optimization frameworks, where regularization parameters are optimized with respect to validation criteria. Chapter 8 revisits existing stochastic bilevel methods such as stocBio, and introduces our contribution, stoc-HOAG, a stochastic modification of the HOAG algorithm. A recurring challenge in bilevel optimization is the conditioning of the inner problem, which can severely affect convergence rates. We propose solutions based on Neumann series expansions and improved sampling approaches, providing theoretical guarantees. Limited numerical experiments are used to demonstrate the comparable performance of the proposed method.
+The third part turns to the problem of hyperparameter selection. We focus on bilevel optimization frameworks, where regularization parameters are optimized with respect to validation criteria. Chapter 8 revisits existing stochastic bilevel methods such as \texttt{stocBio}, and introduces our contribution, \texttt{stocHOAG}, a stochastic modification of the HOAG algorithm. A recurring challenge in bilevel optimization is the conditioning of the inner problem, which can severely affect convergence rates. We propose solutions based on Neumann series expansions and improved sampling approaches, providing theoretical guarantees. Limited numerical experiments are used to demonstrate the comparable performance of the proposed method.
 \end{comment}
 The key contributions of this thesis are:
 \begin{enumerate}
@@ -189,7 +189,7 @@ The key contributions of this thesis are:
     \item A rigorous theoretical analysis of these dynamics, including ergodicity, moment bounds, and finite-time convergence.
     \item A comprehensive study of discretizations in both cylindrical and Cartesian coordinates.
     \item Numerical experiments demonstrating superior performance in regression, classification, and deconvolution.
-    \item Contributions to stochastic bilevel optimization, including the proposal of stoc-HOAG and analysis of conditioning issues.
+    \item Contributions to stochastic bilevel optimization, including the proposal of \texttt{stocHOAG} and analysis of conditioning issues.
 \end{enumerate}
 
 This thesis mainly advances the theory of nonsmooth Bayesian inference via Hadamard reparameterizations. Its main impact lies in providing practical sampling algorithms with theoretical guarantees and practical applications.
@@ -221,7 +221,7 @@ This thesis proposes new approaches to both challenges.
     \item In the context of \textbf{sampling}, we introduce Hadamard-Langevin dynamics,
     which reformulate nonsmooth problems using coordinate-wise smooth reparametrizations.
     \item In the context of \textbf{hyperparameter optimization}, we analyze and extend stochastic
-    bilevel methods such as stocBio and stoc-HOAG. By highlighting the role of conditioning, and
+    bilevel methods such as \texttt{stocBio} and \texttt{stocHOAG}. By highlighting the role of conditioning, and
     introducing remedies based on Neumann series expansions, we provide a clearer theoretical
     foundation.
 \end{itemize}
@@ -1115,7 +1115,7 @@ The crux of this approach is that we can use (\ref{neumann}) to obtain a subrout
 \end{equation}
 it can be shown, that
 \[\mathbb{E}[H_{xx}] = \frac{1}{L_F} \sum_{i=0}^{b-1}\left[I-\frac{1}{L_F} \nabla^2_{xx} F(x,\lambda)\right]^i.\]
-As a result, the Hessian Inverse Subroutine provides a biased estimate of $[\nabla_{xx}^2 F]^{-1}$, wherein the bias can be reduced by increasing the number of Hessian samples. However, Ghadimi did not provide any results on the variance of their approximation. Hence, a drawback of Ghadimi's Neumann Inversion Subroutine, is that the variance of the resulting approximation forces us to use a diminishing stepsize in the outer loop to ensure convergence, and even in this case it is not guaranteed. As a result, a variant of (\ref{HIA}) was used by Ji, Yang \& Liang to develop the StocBio algorithm \cite{ji2021bilevel}. In short, StocBio is a double-loop algorithm. In the inner loop it finds a solution $x_k$ to the inner problem (\ref{inner_hoag_neu_orig}) using stochastic gradient descent. We then construct, setting $\prod_{j=Q+1}^Q(\cdot) = I$,
+As a result, the Hessian Inverse Subroutine provides a biased estimate of $[\nabla_{xx}^2 F]^{-1}$, wherein the bias can be reduced by increasing the number of Hessian samples. However, Ghadimi did not provide any results on the variance of their approximation. Hence, a drawback of Ghadimi's Neumann Inversion Subroutine, is that the variance of the resulting approximation forces us to use a diminishing stepsize in the outer loop to ensure convergence, and even in this case it is not guaranteed. As a result, a variant of (\ref{HIA}) was used by Ji, Yang \& Liang to develop the \texttt{stocBio} algorithm \cite{ji2021bilevel}. In short, \texttt{stocBio} is a double-loop algorithm. In the inner loop it finds a solution $x_k$ to the inner problem (\ref{inner_hoag_neu_orig}) using stochastic gradient descent. We then construct, setting $\prod_{j=Q+1}^Q(\cdot) = I$,
 \begin{equation} \label{HIA_StocBio}
     v_Q= \eta \sum_{q=-1}^{Q-1} \prod_{j=Q-q}^Q\left(I- \eta \nabla_y^2 \tilde{F}\left(x_k, \lambda_k ; \mathcal{B}_j\right)\right) \nabla_x \tilde{C}(x_k,\lambda_k,\mathcal{S}_C),
 \end{equation}
@@ -1125,14 +1125,14 @@ where $\nabla_y^2 \tilde{F}\left(x_k, \lambda_k ; \mathcal{B}_j\right)$ are samp
 
 Hence, we can use (\ref{HIA_StocBio}) to solve the system $\nabla_{xx}^2 F(x_k,\lambda_k)v = \nabla_x \tilde{C}(x_k,\lambda_k)$ (much like the second step in algorithm \ref{alg:hoag}) using only matrix-vector multiplication and low-sample approximations of the Hessian $\nabla_{xx}^2 F(x_k,\lambda_k)$. Finally, the approximate hypergradient is constructed:
 \[\tilde{\nabla} L = \nabla_\lambda C(x_k,\lambda_k) - \nabla_{x \lambda}^2 F(x_k,\lambda_k)^\top v_Q.\]
-Ji, Yang \& Liang have further developed two algorithms - MRBO and VRBO, building upon StocBio\cite{yang2021provably}. The former is a single loop algorithm, that uses momentum-based techniques to keep a running average of gradient estimations at each step, which are used to simultaneously update $x_k$ and $\lambda_k$. This method uses a decreasing stepsize for the updates. The latter is a double-loop algorithm that uses variance reduction techniques, similar to SVRG (Johnson \& Zhang \cite{johnson2013accelerating}). The outer loop is divided into epochs, while the inner loop, much like in the case of StocBio, solves the inner problem (\ref{inner_hoag_neu_orig}), using the relevant gradients that are updated once per epoch with a relatively large batch of samples $\mathcal{S}_1$. Between the epochs the gradients are continuously updated using small batches of samples $\mathcal{S}_2$. To elaborate, the hypergradient $\nabla \tilde{L}$, when evaluated at the start of a new epoch, takes the form
+Ji, Yang \& Liang have further developed two algorithms - MRBO and VRBO, building upon \texttt{stocBio}\cite{yang2021provably}. The former is a single loop algorithm, that uses momentum-based techniques to keep a running average of gradient estimations at each step, which are used to simultaneously update $x_k$ and $\lambda_k$. This method uses a decreasing stepsize for the updates. The latter is a double-loop algorithm that uses variance reduction techniques, similar to SVRG (Johnson \& Zhang \cite{johnson2013accelerating}). The outer loop is divided into epochs, while the inner loop, much like in the case of \texttt{stocBio}, solves the inner problem (\ref{inner_hoag_neu_orig}), using the relevant gradients that are updated once per epoch with a relatively large batch of samples $\mathcal{S}_1$. Between the epochs the gradients are continuously updated using small batches of samples $\mathcal{S}_2$. To elaborate, the hypergradient $\nabla \tilde{L}$, when evaluated at the start of a new epoch, takes the form
 \begin{equation} \label{VRBO_hyper}
     \begin{aligned}
 &\widehat{\nabla} L\left(\lambda_k ; \mathcal{S}_1\right)=\frac{1}{S_1} \sum_{i=1}^{S_1}\left(\nabla_x C\left(x_k, \lambda_k ; \xi_i\right)\right. \\
 &\left.\quad-\nabla_{x \lambda}^2 F\left(x_k, \lambda_k ; \zeta_i\right) \eta \sum_{q=-1}^{Q-1} \prod_{j=Q-q}^Q\left(I-\eta \nabla_x^2 F\left(x_k, \lambda_k ; \zeta_i^j\right)\right) \nabla_x C\left(x_k, \lambda_k ; \xi_i\right)\right),
 \end{aligned}
 \end{equation}
-where all samples in $\mathcal{S}_1 = \left\{\zeta_i^j(j=1, \ldots, Q), \xi_i, \zeta_i, i=1, \ldots, S_1\right\}$ are independent. This method uses a constant stepsize. StocBio has a complexity of $\mathcal{O}(\epsilon^{-2})$ to reach such a point $\bar{\lambda}$, that $\|\nabla L(\bar{\lambda})\| \leq \epsilon.$ MRBO and VRBO, on the other hand, have a complexity of $\mathcal{O}(\epsilon^{-1.5})$ to achieve this. In fact, it was shown that these two algorithms outperform all of the existing stochastic bilevel optimization algorithms by a factor of $\mathcal{O}(\epsilon^{-0.5})$. Furthermore, all three of the stochastic algorithms demonstrated a faster convergence, as opposed to approximate implicit differentiation algorithms, such as HOAG (alg \ref{alg:hoag}).  
+where all samples in $\mathcal{S}_1 = \left\{\zeta_i^j(j=1, \ldots, Q), \xi_i, \zeta_i, i=1, \ldots, S_1\right\}$ are independent. This method uses a constant stepsize. \texttt{stocBio} has a complexity of $\mathcal{O}(\epsilon^{-2})$ to reach such a point $\bar{\lambda}$, that $\|\nabla L(\bar{\lambda})\| \leq \epsilon.$ MRBO and VRBO, on the other hand, have a complexity of $\mathcal{O}(\epsilon^{-1.5})$ to achieve this. In fact, it was shown that these two algorithms outperform all of the existing stochastic bilevel optimization algorithms by a factor of $\mathcal{O}(\epsilon^{-0.5})$. Furthermore, all three of the stochastic algorithms demonstrated a faster convergence, as opposed to approximate implicit differentiation algorithms, such as HOAG (alg \ref{alg:hoag}).  
 %Add sentence on how MRBO/VRBO or their analysis may be improved (discussed in future research section).
 %Hence, the stochastic Hessian inverse subroutine provides a viable avenue for future research.
 \section{Hyperparameter Optimization with Non-Smooth Inner Problem}
@@ -1252,7 +1252,7 @@ where $h$ is as in (\ref{noncvx_varpro}). We see that this does not depend on $\
 
 \begin{comment}
     \begin{mdframed}[hidealllines=true,backgroundcolor=yellow!20]
-    Think of expanding this and add link to Stocbio/StocHOAG section.
+    Think of expanding this and add link to \texttt{stocBio}/StocHOAG section.
 \end{mdframed}
 \end{comment}
 
@@ -2866,7 +2866,7 @@ over $(u,v)\in \mathcal X= \real_+^d\times \mathbb {R}^d$ for normalisation cons
     \[\frac{1}{Z} = \frac{1}{Z_\pi} \left(\sqrt{\frac{\pi}{2\beta \lambda}}\right)^d.\]
 \end{theorem}
 
-\chapter{Analysis of Hadamard-Langevin Dynamics}
+\chapter{Analysis of Hadamard-Langevin Dynamics} \label{chp:analysis_hada_lang}
 We begin by introducing the notation used throughout this section. Let $d\in\mathbb N$ denote the dimension. We consider stochastic processes $(u,v)_t\in \mathbb R_+^d \times \mathbb R^d$, and write $x_t = u_t \odot v_t \in \mathbb R^d$.
 
 We denote by $\pi$ the target probability distribution on $\mathbb R^d$, given (formally) by
@@ -4750,16 +4750,22 @@ achieved comparable or superior predictive performance on these datasets.
 
 By contrast, in inverse problems such as deconvolution and inpainting, Bayesian samplers provided meaningful uncertainty quantification, with variance correctly concentrated near discontinuities, masked regions, and edges, and Hadamard and related schemes yielding stable reconstructions. Taken together, these results suggest that Hadamard Langevin is a promising alternative to sampling methods such as Gibbs in moderate-dimensional problems.
 
-\part{Hyperparameter Optimization}
+\part{Hyperparameter Optimization} \label{part:HOAG}
 
-\chapter{Stocbio, StocHOAG and the conditioning issue} \label{chp: stoc_cond}
+\chapter{Stocbio, \texttt{stocHOAG} and the conditioning issue} \label{chp: stoc_cond}
+\section{Motivation}
+Many sparse optimisation problems arising in statistics, machine learning and inverse problems are naturally formulated as $\ell_1$-regularised optimisation problems of the form
+\[
+    \min_x F(x,\lambda)+\lambda\|x\|_1,
+\]
+where the regularisation parameter $\lambda$ controls the trade-off between data fidelity and sparsity. Determining an appropriate value of $\lambda$ is often crucial for obtaining good solutions and may naturally be formulated as a bilevel optimisation problem, with $\lambda$ acting as the upper-level variable.
+
+The Hadamard reparameterisation developed in the preceding chapters transforms a broad class of $\ell_1$-regularised optimisation problems into equivalent smooth optimisation problems posed in an expanded parameter space. This reformulation makes such problems amenable to gradient-based optimisation techniques, suggesting the possibility of applying stochastic bilevel optimisation methods to automatically determine suitable regularisation parameters. Motivated by this connection, the present chapter investigates stochastic bilevel optimisation algorithms, with particular emphasis on simplifying parameter selection and understanding the influence of the conditioning of the inner optimisation problem.
 \section{Introduction}
-In the field of smooth bilevel optimization, existing deterministic algorithms, based on implicit differentiation of the inner problem, such as HOAG \cite{pedregosa2016hyperparameter} and BA \cite{ghadimi2018approximation}, have been effectively used to solve problems in areas such as hyperparameter optimization. These algorithms, however, exhibit a high per-iteration complexity, in large part due to the inversion of a matrix, that takes place during the implicit differentiation stage. To tackle this issue, stochastic algorithms have been developed. Here, stochasticity is introduced in large part to invert the Hessian in sub-$\mathcal{O}(n^3)$ time. We will be investigating one such algorithm in partiular - stocBio \cite{ji2021bilevel}. This algorithm, albeit having one of the fastest convergence rates among comparable algorithms, requires the tuning of a large number of parameters. Furthermore, stocBio suffers from a sensitivity to the conditioning of the inner problem, much like most other bilevel algorithms. %The aim of this chapter is to investigate a simpler parameter setup for the algorithm that maintains a similar condition-complexity to stocBio.
-%\begin{thebibliography}{99}
-The aim of this chapter is to investigate a simpler parameter setup for the algorithm while retaining comparable convergence guarantees and studying its dependence on the conditioning of the inner problem.
+In the field of smooth bilevel optimization, existing deterministic algorithms, based on implicit differentiation of the inner problem, such as HOAG \cite{pedregosa2016hyperparameter} and BA \cite{ghadimi2018approximation}, have been effectively used to solve problems in areas such as hyperparameter optimization. These algorithms, however, exhibit a high per-iteration complexity, in large part due to the inversion of a matrix, that takes place during the implicit differentiation stage. To tackle this issue, stochastic algorithms have been developed. Here, stochasticity is introduced in large part to invert the Hessian in sub-$\mathcal{O}(n^3)$ time. We will be investigating one such algorithm in partiular - \texttt{stocBio} \cite{ji2021bilevel}. This algorithm, albeit having one of the fastest convergence rates among comparable algorithms, requires the tuning of a large number of parameters. Furthermore, \texttt{stocBio} suffers from a sensitivity to the conditioning of the inner problem, much like most other bilevel algorithms. In this chapter, we first review the \texttt{stocBio} algorithm and its stochastic Neumann series approximation for the inverse Hessian. We then introduce a simplified variant, termed \texttt{stocHOAG}, whose parameter schedule is considerably easier to tune while retaining comparable convergence guarantees.
 
 \subsection{Problem Statement \& Assumptions}
-We set up a bilevel problem. For a bounded domain $\mathcal D \subset \mathbb{R}^r$, we wish to find $\lambda \in \mathcal{D}$ and $\hat{x}(\lambda) \in \mathbb{R}^n$, such that
+We begin by introducing the bilevel optimisation problem considered throughout this chapter together with the assumptions required for the subsequent convergence analysis. For a bounded domain $\mathcal D \subset \mathbb{R}^r$, we wish to find $\lambda \in \mathcal{D}$ and $\hat{x}(\lambda) \in \mathbb{R}^n$, such that
 \begin{align} 
 &\min_{\lambda \in \mathcal{D}} \mathcal{L}\left(\lambda \right) \triangleq C(\hat{x}(\lambda), \lambda) \label{outer_hoag_neu}\\
 &\text { s.t. } \hat{x}(\lambda) =\underset{x \in \mathbb{R}^{n}} \argmin {F(x, \lambda)}. \label{inner_hoag_neu}
@@ -4787,7 +4793,7 @@ We define the stochastic approximations $\tilde{F}(x, \lambda; \zeta)$ and $\til
     \mathbb{E}_{\zeta}[\tilde{F}\left(x, \lambda ; \zeta\right)] &= F\left(x, \lambda\right), \\
     \mathbb{E}_{\xi}[\tilde{C}(x,\lambda,\xi)] &= C(x,\lambda),
 \end{align*}
-where $\zeta$ and $\xi$ are drawn uniformly at random from their respective datasets. Let us first make some convexity assumptions
+where $\zeta$ and $\xi$ are drawn uniformly at random from their respective datasets. Let us first make some convexity assumptions. We first state the standard assumptions inherited from the stochastic bilevel optimisation literature before introducing one additional assumption that will be required later.
 
 
 
@@ -4813,7 +4819,7 @@ $$
 For the stochastic case, the same assumptions hold for $C(x,\lambda ; \xi)$ and $F(x,\lambda, \zeta)$ for any given $\xi$ and $\zeta$.
 \end{assumption}
 
-An immediate consequence of the previous assumption are bounds on the variances of various sampled gradients:
+Under these assumptions, the stochastic estimators admit uniformly bounded variances:
 \begin{proposition}[Bounded variance of $\nabla \tilde{C}, \nabla_{x\lambda}^2 \tilde{F},\nabla_{xx}^2 \tilde{F}$. Lemma 1 in \cite{ji2021bilevel}] \label{boun_var}
     Suppose, Assumption \ref{smo_ass} holds. Then for any $x,\lambda,\zeta$,
     \begin{align*}
@@ -4831,7 +4837,7 @@ Let $z = (x,\lambda) \in \mathbb{R}^{n} \times \mathcal{D}$. Suppose the derivat
 For the stochastic case, the same assumptions hold for $\nabla_{x\lambda} F(z; \zeta)$ and $\nabla_x^2 F(z ; \zeta)$ for any $\zeta$.
 \end{assumption}
 
-\subsection{stocBio and stoc-HOAG}
+\subsection{stocBio and \texttt{stocHOAG}}
 We begin by introducing the algorithm introduced by Ji et al. that can be used to tackle problem (\ref{outer_hoag_neu}-\ref{inner_hoag_neu}) \cite{ji2021bilevel}. Firstly, we define some of the relevant parameters:
 \begin{itemize}
         \item $S$ - the number of samples in every inner SGD step
@@ -4841,7 +4847,7 @@ We begin by introducing the algorithm introduced by Ji et al. that can be used t
         \item $\mathcal{S}_{\nabla_\lambda C}$ - the number of samples of $\nabla_{\lambda} \tilde{C}$ (for every approximate hypergradient).
         \item $B$ - The base number of samples of $\nabla_{xx} \tilde{F}$ for the neumann series (\ref{HIA_stocBio}), where the number of samples at the $Q+1-j$-th step of the subroutine is $BQ(1-\eta\mu)^{j-1}.$
     \end{itemize}
-Note that the parameters for stocBio are set up in a global manner - at any point during the runtime these are fixed. The Neumann series and its sampling will be explained in section \ref{neumann_series}. The algorithm is described in \ref{alg:stocbio}.
+Note that the parameters for \texttt{stocBio} are set up in a global manner - at any point during the runtime these are fixed. The Neumann series and its sampling will be explained in section \ref{neumann_series}. The algorithm is described in \ref{alg:stocbio}.
 \end{comment}
 
 % --- reformat
@@ -4864,8 +4870,8 @@ Assume that the mixed partial derivative $\nabla_{x\lambda}^2F$ is uniformly bou
 for all $(x,\lambda)$ under consideration.
 \end{assumption}
 
-\subsection{stocBio and stoc-HOAG}
-We begin by introducing the algorithm introduced by Ji et al. that can be used to tackle problem (\ref{outer_hoag_neu}-\ref{inner_hoag_neu}) \cite{ji2021bilevel}. Firstly, we define some of the relevant parameters:
+\subsection{stocBio and \texttt{stocHOAG}}
+We begin by reviewing the stochastic bilevel optimisation algorithm proposed by Ji et al., which serves as the starting point for the developments in this chapter. that can be used to tackle problem (\ref{outer_hoag_neu}-\ref{inner_hoag_neu}) \cite{ji2021bilevel}. Firstly, we define some of the relevant parameters:
 \begin{itemize}
     \item $S$: number of samples in every inner SGD step.
     \item $D$: number of SGD iterations required each time the inner problem is solved.
@@ -4874,7 +4880,7 @@ We begin by introducing the algorithm introduced by Ji et al. that can be used t
     \item $\mathcal{S}_{\nabla_\lambda C}$: number of samples of $\nabla_{\lambda} \tilde{C}$ for each approximate hypergradient.
     \item $B$: base number of samples of $\nabla_{xx} \tilde{F}$ for the Neumann series (\ref{HIA_stocBio}), where the number of samples at the $(Q+1-j)$-th step of the subroutine is $BQ(1-\eta\mu)^{j-1}$.
 \end{itemize}
-Note that the parameters for stocBio are set up in a global manner - at any point during the runtime these are fixed. The Neumann series and its sampling will be explained in section \ref{neumann_series}. The algorithm is described in \ref{alg:stocbio}.
+Note that the parameters are fixed throughout the optimisation. The Neumann series and its sampling will be explained in section \ref{neumann_series}. The algorithm is described in \ref{alg:stocbio}.
 
 
 
@@ -4909,7 +4915,7 @@ The authors also provide theoretical convergence guarantees for this algorithm.
     \mu^2 B} \right).\]
     
 \end{theorem}
-Of note here is that, for small $\mu$, the above is bounded as $\mathcal{O}(1/\mu^5)$. As mentioned previously, our aim is to investigate alternative parameter choices that modify the dependence of the algorithm on the strong convexity parameter $\mu$ while maintaining comparable convergence guarantees. For this purpose, we will allow the parameters to change with the outer iteration. As such, we relabel them accordingly
+Of note here is that, for small $\mu$, the above is bounded as $\mathcal{O}(1/\mu^5)$. As mentioned previously, our aim is to investigate alternative parameter choices that modify the dependence of the algorithm on the strong convexity parameter $\mu$ while maintaining comparable convergence guarantees. For this purpose, we will allow the parameters to change with the outer iteration. This leads to the following algorithm, which we refer to as \texttt{stocHOAG}.
 
 
 \begin{itemize}
@@ -4921,7 +4927,7 @@ Of note here is that, for small $\mu$, the above is bounded as $\mathcal{O}(1/\m
         \item $Q_k$ - Number of Neumann series steps at $k$-th outer iteration.
     \end{itemize}
 
-In practice, these quantities act as mini-batch sizes. For the numerical experiments in Section \ref{sec:stoc_hoag_num} they are prescribed deterministically as functions of the outer iteration index $k$, according to the parameter schedule in Theorem \ref{hoag_thm_glcv}.
+In practice, these quantities act as mini-batch sizes. For the numerical experiments in Section \ref{sec:stoc_hoag_num} they are chosen deterministically as functions of the outer iteration index $k$, according to the parameter schedule in Theorem \ref{hoag_thm_glcv}.
 
 \begin{algorithm}[]
 \caption{Stochastic HOAG}
@@ -4949,11 +4955,12 @@ In practice, these quantities act as mini-batch sizes. For the numerical experim
 
 \section{Main Results}
 \subsection{The Neumann Series} \label{neumann_series}
-Before we proceed with the convergence analysis of Algorithm \ref{alg:stoc_hoag}, let us introduce the Neumann series used for inverting the Hessian, alongside some useful results related to it. As per HOAG, we can obtain the exact hypergradient of the outer problem as
+
+The key ingredient of Algorithm \ref{alg:stoc_hoag} is the stochastic Neumann series used to approximate the inverse Hessian. Before analysing convergence, we establish several properties of this approximation. As per HOAG, we can obtain the exact hypergradient of the outer problem as
 \begin{equation} \label{exact_hyper}
     \nabla\mathcal{L}(\lambda_k) = \nabla_\lambda {C}(\hat{x}(\lambda_k),\lambda_k) - \nabla_{x \lambda}^2 {F}(\hat{x}(\lambda_k),\lambda_k)^\top \left[\nabla_{xx} {F}(\hat{x}(\lambda_k),\lambda_k) \right]^{-1} \nabla_x {C}(\hat{x}(\lambda_k),\lambda_k).
 \end{equation}
-However, finding the inverse $\left[\nabla_{xx} {F}(\hat{x}(\lambda_k),\lambda_k) \right]^{-1}$ can be costly, and so we consider an approximation for this term. To be more precise, consider the following:
+However, finding the inverse $\left[\nabla_{xx} {F}(\hat{x}(\lambda_k),\lambda_k) \right]^{-1}$ is computationally expensive, and so we consider an approximation for this term. To be more precise, consider the following:
 
 \begin{lemma}[Neumann Series] \label{neumannlem}
 For non-singular $A \in \mathbb{R}^{n \times n}$,
@@ -4968,11 +4975,11 @@ Define, for i.i.d. samples $\xi_0, \zeta_j$, for $j=1,\hdots,Q$,
 where we assume $\prod_{j=Q+1}^Q (\cdot) = I$. Choose $\eta$, such that $\|I- \eta \nabla_{xx}^2 \tilde{F}\left(x_k, \lambda_k ; \zeta_j\right)\| \leq (1-\eta\mu) < 1$. From this, with (\ref{neumann}) we get
 \[\mathbb{E}[v_Q] = \eta \sum_{i=0}^{Q} \left[I - \eta\nabla_{xx}^2 F \left(x_k, \lambda_k\right)\right]^i\nabla_x C(x_k,\lambda_k) \approx \left[\nabla_x^2 F\left(x_k, \lambda_k\right)\right]^{-1} \nabla_x C\left(x_k, \lambda_k\right).\]
 %As such, denote $\mathbb{E}[v_\infty] = \left[\nabla_x^2 F\left(x_k, \lambda_k\right)\right]^{-1} \nabla_x C\left(x_k, \lambda_k\right) $. 
-With this in mind, and the fact that it is not generally feasible to solve the inner problem to full precision, instead of (\ref{exact_hyper}), we use the `approximate hypergradient' in line 3 of our algorithm:
+Motivated by this observation, and the fact that it is not generally feasible to solve the inner problem to full precision, instead of (\ref{exact_hyper}), we use the `approximate hypergradient' in line 3 of our algorithm:
 \begin{equation} \label{hat_nabla_def}
                 \widehat{\nabla}\mathcal{L}(\lambda_k) = \nabla_\lambda \tilde{C}(x_k,\lambda_k,\mathcal{S}_{\nabla_\lambda C}) - \nabla_{x \lambda}^2 \tilde{F}(x_k,\lambda_k,\mathcal{S}_{\nabla_{x\lambda} F})^\top v_Q.
             \end{equation}
-As you will see later, the convergence analysis of our proposed algorithm is directly related to the analytic results regarding $v_Q$. We will provide these now. To begin, we  provide an expectation bound on a $Q-$length Neumann series.
+As you will see later, the convergence analysis of our proposed algorithm is directly related to the analytic results regarding $v_Q$. We now establish these results. We first derive an expectation bound on a $Q-$length Neumann series.
 \begin{proposition}[Bound on $\|\mathbb{E}v_Q\|$] \label{evq_bnd}
     Suppose Assumptions \ref{conv_ass}, \ref{smo_ass} hold. Then 
     \[\|\mathbb{E}v_Q\| \leq \frac{M}{\mu}(1-(1-\eta\mu)^{Q+1})\]
@@ -4987,7 +4994,7 @@ Suppose Assumptions \ref{conv_ass}, \ref{smo_ass} and \ref{nablaFxl_bnd} hold. D
 %where $\mathcal{S}_{\nabla_x C}$ refers to the samples for $\nabla_x C(x_k,\lambda_k)$.
 \end{proposition}
 
-We now state the bias and variance results for the approximate hypergradient $\widehat{\nabla} \mathcal{L}$. For the bias, we provide the result of Lemma 7 in \cite{ji2021bilevel}:
+Having established the behaviour of the Neumann approximation, we now derive corresponding bounds for the bias and variance of the approximate hypergradient $\widehat{\nabla} \mathcal{L}$. For the bias, we provide the result of Lemma 7 in \cite{ji2021bilevel}:
 \begin{proposition}[Bound on $\|\mathbb{E}_{\lambda_k} \widehat{\nabla} \mathcal{L}(\lambda_k) - \nabla \mathcal{L}(\lambda_k)\|.$ Lemma 7 of \cite{ji2021bilevel}] \label{nabla_hat_nabla_bnd}
 Suppose Assumptions \ref{conv_ass}, \ref{smo_ass}, \ref{pls_ass} hold. Then we have that 
 \[\|\mathbb{E}_{\lambda_k} \widehat{\nabla} \mathcal{L}(\lambda_k) - \nabla \mathcal{L}(\lambda_k)\|^2 \leq 2\left(L + \frac{L^2}{\mu} + \frac{M\tau}{\mu} + \frac{LM\rho}{\mu^2} \right)^2 \|\hat{x}(\lambda_k) - x_k\|^2 + 2 \frac{L^2M^2(1-\eta \mu)^{2Q}}{\mu^2}.\]
@@ -5030,20 +5037,20 @@ Suppose Assumptions \ref{conv_ass}, \ref{smo_ass} and \ref{nablaFxl_bnd} hold. C
 The proofs of Propositions \ref{evq_bnd}, \ref{varvq_better} and \ref{bound_nabla_hat} are deferred to Appendix C.
 
 \subsection{Convergence Proof}
-Before we proceed to the proof of the convergence, we still need to characterize the smoothness properties of the hypergradient $\nabla \mathcal{L}.$ For this we use the result by Ghadimi \& Wang, 2018 \cite{ghadimi2018approximation}:
+The convergence proof requires one further ingredient: a Lipschitz continuity result for the true hypergradient. We therefore recall the following result of Ghadimi and Wang (2018)\cite{ghadimi2018approximation}:
 \begin{lemma}[$\nabla \mathcal{L}$ is Lipschitz in $\lambda$] \label{nab_lip}
 Suppose Assumptions (\ref{conv_ass}), (\ref{smo_ass}) and (\ref{pls_ass}) hold. Then we have, for any $\lambda_1, \lambda_2 \in \mathbb{R}^r$:
 \[\|\nabla \mathcal{L}(\lambda_1) - \nabla \mathcal{L}(\lambda_2)\| \leq L_{\mathcal{L}} \|\lambda_1 - \lambda_2\|,\]
 where the constant $L_{\mathcal{L}}$ is given by
 \[L_{\mathcal{L}} = L + \frac{2L^2 + \tau M^2}{\mu} + \frac{\rho L M + L^3 + \tau M L}{\mu^2} + \frac{\rho L^2 M}{\mu^3}.\]
 \end{lemma}
-Additionally, we introduce a new assumption.
+Finally, we require a mild lower-boundedness assumption on the outer objective.
 
 \begin{assumption}[Lower bound on objective] \label{inf_ass}
     The sequence of iterates $\left\{\lambda_k\right\}$ is contained in an open set over which $\mathcal{L}$ is bounded below by a scalar $\mathcal{L}_{\text {inf }}$.
 \end{assumption}
 
-We now provide a convergence proof for Algorithm \ref{alg:stoc_hoag}.
+We are now in a position to establish the global convergence guarantee for Algorithm \ref{alg:stoc_hoag}.
 \begin{comment}
 \begin{theorem}[Global Convergence] \label{hoag_thm_glcv}
 
@@ -5128,7 +5135,7 @@ where $\widehat{\nabla} \mathcal{L}(\lambda_k)$ is the approximate hypergradient
 \begin{equation} \label{Lip_to_sub}
     \leq \mathcal{L}(\lambda_k) + \frac{\nu_k}{2} \left\|\nabla \mathcal{L}(\lambda_k)- \mathbb{E}_{\lambda_k}\left[\widehat{\nabla}\mathcal{L}(\lambda_k)\right]\right\|^2 + \frac{L_{\mathcal{L}}\nu_k^2}{2}\mathrm{Var}(\widehat{\nabla}\mathcal{L}(\lambda_k)) - \left(\frac{\nu_k}{2} - \frac{L_{\mathcal{L}}\nu_k^2}{2}\right) \|\mathbb{E}_{\lambda_k} \widehat{\nabla}\mathcal{L}(\lambda_k)\|^2,
 \end{equation}
-Denote
+For convenience, define
 \[D_{1,k} = \sqrt{2}\left(L + \frac{L^2}{\mu} + \frac{M\tau}{\mu} + \frac{LM\rho}{\mu^2} \right) \|\hat{x}(\lambda_k) - x_k\|, \quad D_{2,k} = \sqrt{2} \frac{LM(1-\eta \mu)^{Q_k}}{\mu}\]
 Recall, that by Proposition \ref{nabla_hat_nabla_bnd}, we have a bound on the bias of $\widehat{\nabla} \mathcal{L}$ as
 \begin{equation} \label{T45diff}
@@ -5253,27 +5260,31 @@ the bound may also be written as
 
 %\end{proof}
 
-\section{Comparison with stocBio}
-In the following sections we will compare our setup to that of Ji et. al. In light of that, let us recall the motivations for this comparison. The two major points that we address are:
+\section{Comparison with \texttt{stocBio}}
+%In the following sections we will compare our setup to that of Ji et. al. In light of that, let us recall the motivations for this %comparison. The two major points that we address are:
+Theorem~\ref{hoag_thm_glcv} shows that the simplified parameter schedule adopted by \texttt{stocHOAG} retains the convergence guarantees established for \texttt{stocBio}. We now compare the two algorithms in terms of parameter schedules, computational complexity, and their dependence on the conditioning of the inner problem. To be precise we compare the two algorithms from a few perspectives:
 \begin{itemize}
-    \item Relaxed parameter choices - we want to relax the parameter choices in such a way that we still maintain similar rates of convergence, %while maintaining similar sensitivity to the inner problem condition.
-    while preserving convergence guarantees and understanding how the resulting complexity depends on the conditioning of the inner problem.
-    \item Modularity - we want to separate the convergence analysis of the outer optimisation from the particular method used to approximately solve the inner problem. Although the theoretical development and numerical implementation in this chapter use SGD for the inner problem, the resulting bound isolates the contribution of the inner-solver error through the term \(D_{1,k}\). This makes clear where alternative inner solvers could be incorporated in future work.
+    \item parameter simplicity, namely whether the proposed schedule reduces tuning while preserving convergence guarantees;
+    \item conditioning, namely how the computational complexity depends on the strong convexity parameter $\mu$.
+    
+    %\item Relaxed parameter choices - we want to relax the parameter choices in such a way that we still maintain similar rates of convergence, %while maintaining similar sensitivity to the inner problem condition.
+    %while preserving convergence guarantees and understanding how the resulting complexity depends on the conditioning of the inner problem.
+    \item Separation of the outer convergence analysis from the inner solver – We separate the convergence analysis of the outer optimisation problem from the particular method used to approximately solve the inner problem. Although the theoretical development and numerical implementation in this chapter use SGD for the inner problem, the resulting bound isolates the contribution of the inner-solver error through the term $D_{1,k}$. This makes clear where alternative inner solvers could be incorporated in future work.
 \end{itemize}
 \begin{comment}
-    We will begin by comparing the assumptions of the two methods. Stochastic HOAG shares the assumptions of stocBio, with the exception of \ref{nablaFxl_bnd}, the boundedness of $\nabla^2_{x \lambda} F$. %While the two methods both assume bounds on $\|x_k - \hat{x}(\lambda_k)\|$, in our case we only require that this is bounded in expectation.
-stocBio and Stochastic HOAG share mostly the same parameters, but their choices vary between the two methods. Firstly, for our bound on $\mathbb{E}\|x_k - \hat{x}(\lambda_k)\|$ to be a summable sequence, it is sufficient to choose the number of inner loop steps as $\sqrt{k} + \zeta$, for small $\zeta > 0$. In comparison, stocBio has a fixed number of inner-loop steps, dependent on the smoothness and convexity parameters. Regarding the Neumann series subroutine, while $Q_k$ was chosen in both cases as $\mathcal{O}(\log{k})$, the choice for the batch size of the samples of $\nabla^2_{xx} F$ was different. We allowed for a constant batch size, while in the case of stocBio,  this was taken as $BQ(1-\eta \mu)^{j-1}$, for some large constant $B$. That is, the batch size starts large initially, but decays exponentially as we progress through the inversion subroutine. Finally, the sampling for $\nabla_x C$ was also with constant batch sizes in our case, but was done as $\mathcal{O}(\log{k})$ in the case of stocBio. By Theorem 3 of stocBio, we have the following convergence result:
+    We will begin by comparing the assumptions of the two methods. Stochastic HOAG shares the assumptions of \texttt{stocBio}, with the exception of \ref{nablaFxl_bnd}, the boundedness of $\nabla^2_{x \lambda} F$. %While the two methods both assume bounds on $\|x_k - \hat{x}(\lambda_k)\|$, in our case we only require that this is bounded in expectation.
+stocBio and Stochastic HOAG share mostly the same parameters, but their choices vary between the two methods. Firstly, for our bound on $\mathbb{E}\|x_k - \hat{x}(\lambda_k)\|$ to be a summable sequence, it is sufficient to choose the number of inner loop steps as $\sqrt{k} + \zeta$, for small $\zeta > 0$. In comparison, \texttt{stocBio} has a fixed number of inner-loop steps, dependent on the smoothness and convexity parameters. Regarding the Neumann series subroutine, while $Q_k$ was chosen in both cases as $\mathcal{O}(\log{k})$, the choice for the batch size of the samples of $\nabla^2_{xx} F$ was different. We allowed for a constant batch size, while in the case of \texttt{stocBio},  this was taken as $BQ(1-\eta \mu)^{j-1}$, for some large constant $B$. That is, the batch size starts large initially, but decays exponentially as we progress through the inversion subroutine. Finally, the sampling for $\nabla_x C$ was also with constant batch sizes in our case, but was done as $\mathcal{O}(\log{k})$ in the case of \texttt{stocBio}. By Theorem 3 of \texttt{stocBio}, we have the following convergence result:
 \[\frac{1}{K} \sum_{k=0}^{K-1} \mathbb{E}\|\nabla\mathcal{L}(\lambda_k)\|^2 = \mathcal{O}\left( 1/K \right).\]
-In theory, stocBio has a much faster convergence rate, but the choice of such parameters as the batches for stochastic gradient and hessians was less trivial.
+In theory, \texttt{stocBio} has a much faster convergence rate, but the choice of such parameters as the batches for stochastic gradient and hessians was less trivial.
 \end{comment}
 
 \subsection{Gradient Complexities and the Conditioning Problem} \label{mu_comp}
-Before we begin with any comparisons, let us define the following:
+We begin by recalling the notion of an $\epsilon$-accurate stationary point.
 \begin{definition}[$\epsilon$-accurate stationary point]
     For an output of the algorithm $\bar{\lambda}$, we say that $\bar{\lambda}$ is an $\epsilon$-accurate stationary point of $\mathcal{L}(\lambda)$ if $\mathbb{E}\|\nabla\mathcal{L}(\bar{\lambda})\| \leq \epsilon$.
 \end{definition}
 
-In the paper by Ji et al.~\cite{ji2021bilevel} the following assumption is made, akin to our assumption \ref{conv_ass}.
+Ji et al. assume the following strong convexity condition, equivalent to Assumption \ref{conv_ass} ~\cite{ji2021bilevel}.
 
 \begin{assumption}[Convexity]
     The inner function $F(x, \lambda)$ is $\mu$ strongly-convex w.r.t. $x$. For the stochastic setting, the same assumption holds for $\tilde{F}(x, \lambda ; \zeta)$.
@@ -5285,7 +5296,7 @@ then the lower bound on the convexity of $F$ is given by the minimum eigenvalue 
 \[A^T A + e^\lambda \mathrm{Id}\]
 and, assuming $A^T A$ is not full-rank,
 \[\min_{\lambda \in \mathbb{R}} \mu_0 = 0.\]
-In practice, this bound is never achieved, as $\lambda$ is on a bounded domain, but $\mu_0$ still may be very small. In light of that, let us recall the convergence bound, obtained in the same paper:
+In practice this lower bound is never attained, as $\lambda$ is on a bounded domain, but $\mu_0$ still may be very small. Motivated by this observation, let us recall the convergence bound, obtained in the same paper:
 
 \begin{theorem}[Theorem 3 in \cite{ji2021bilevel}] \label{thm3}
     Suppose, that Assumptions \ref{conv_ass}-\ref{pls_ass} hold. Let $L_{\mathcal{L}(\lambda_k)} = L + \frac{2L^2 + \tau M^2}{\mu} + \frac{\rho L M + L^3 + \tau M L}{\mu^2} + \frac{\rho L^2 M}{\mu^3} = \mathcal{O}(1/\mu^3)$, choose the outer stepsize $\beta$ as $\frac{1}{4 L_\Phi} = \mathcal{O}(\mu^3), \eta < 1/L$, number of inner steps $D \geq \mathcal{O}(\frac{1}{\mu} \log{\frac{1}{\mu}})$. Then
@@ -5339,7 +5350,7 @@ where,
 
 Note, that $\zeta>0$ in Theorem \ref{hoag_thm_glcv} affects the summation on the RHS of (\ref{tele_ineq2}). If $\zeta$ is large enough, then the sum is bounded by $\mathcal{O}(1/\zeta)$ and doesn't grow with $K$. On the other hand, if $\zeta$ is small, then the smallest upper bound for the sum is $\mathcal{O}(\ln{K})$. Assume that $\zeta$ is large enough, so that the dependence of the RHS of (\ref{tele_ineq2}) on $K$ is as $\mathcal{O}\left( \frac{1}{K} \right)$. Then, to achieve an $\epsilon-$accurate stationary point, we must have at least, that
 \[\frac{L_\mathcal{L}}{K} = \epsilon \implies K = \mathcal{O}\left(\frac{1}{\mu^3 \epsilon} \right).\]
-We will now provide the complexities for the individual parameters and will finish this section by providing a $\mu$-convergence bound. We begin with the complexities for the individual samples sizes in $D_{3,k}$. Using our choices in (\ref{params_conv}), we obtain the following gradient complexities. The total number of samples for gradients $\nabla_{x}C, \nabla_{x\lambda} F$ and $\nabla_\lambda C$ are
+We now deriv the complexities for the individual parameters and finish this section by providing a $\mu$-convergence bound. We begin with the complexities for the individual samples sizes in $D_{3,k}$. Using our choices in (\ref{params_conv}), we obtain the following gradient complexities. The total number of samples for gradients $\nabla_{x}C, \nabla_{x\lambda} F$ and $\nabla_\lambda C$ are
 \[\sum_{k=1}^K k^{1+\zeta} = \mathcal{O} \left(K^{2+\zeta} \right) \approx \mathcal{O}\left(\frac{1}{\mu^6\epsilon^2}\right).\]
 Coincidentally, this gives us the outer gradient complexity as $GC(F,\epsilon) = \mathcal{O}(\mu^{-6}\epsilon^{-2})$.
 %Inspecting the $D_{1,k}$ term in \ref{tele_ineq2}, using Lemma \ref{sgdmu}, we get that $T_k = \mathcal{O}\left(\frac{1}{\mu^3 }k^{1-s+\zeta}\right)$. Thus, the gradient complexity of the inner problem, assuming we conduct single-sample SGD, is
@@ -5449,7 +5460,7 @@ Since \(\kappa=L/\mu\), \(B_k=\Theta(k^{1+\zeta})\), and \(\eta\mu<1\), we obtai
 \]
 as \(\zeta>0\). The remaining contributions to $D_{3,k}$ have the same $\mu^{-2}$ dependence and therefore do not affect the dominant $\mu$-dependence of the convergence bound.
 
-Thus this contribution is not the dominant term in the
+Hence the Neumann-series variance is not the dominant contribution to
 $\mu$-dependence. 
 
 The dominant contribution instead comes from the inner-solver error term
@@ -5497,7 +5508,7 @@ Suppose assumptions \ref{conv_ass}, \ref{smo_ass}, \ref{pls_ass} hold. Assume fu
 \begin{proof}
     
 \end{proof}
-As such, we manage to drop a factor of $\frac{1}{\mu^2}$ from the above bound. The consequences of this change in our case and for stocBio, we present below.
+As such, we manage to drop a factor of $\frac{1}{\mu^2}$ from the above bound. The consequences of this change in our case and for \texttt{stocBio}, we present below.
 \begin{theorem}[Theorem 3 in \cite{stocBio} (Quadratic Problem)] \label{thm3v2}
     Suppose all of the assumptions in \cite{stocBio} hold. Assume furthermore, that $F(x,\lambda)$ is quadratic in $x$. Let $L_{\mathcal{L}(\lambda_k)} = L + \frac{2L^2 + \tau M^2}{\mu} + \frac{\rho L M + L^3 + \tau M L}{\mu^2} + \frac{\rho L^2 M}{\mu^3} = \mathcal{O}(1/\mu^3)$, choose the outer stepsize $\beta$ as $\frac{1}{4 L_\Phi} = \mathcal{O}(\mu^3), \eta < 1/L$, number of inner steps $D \geq \mathcal{O}(\frac{1}{\mu} \log{\frac{1}{\mu}})$. Then
     \[\frac{1}{K} \sum_{k=0}^{K-1} \mathbb{E} \|\nabla \mathcal{L}\|^2 \leq \mathcal{O}\left( \frac{L_{\mathcal{L}}}{K} + \frac{L^2(1-\eta \mu)^2Q}{\mu^2} + \frac{L^5 \sigma^2}{\mu^3 S} + \frac{L^2}{\mu^2 D_g} + \frac{L^2}{\mu^2 D_f} + \frac{L^2}{
@@ -5511,7 +5522,7 @@ As such, we manage to drop a factor of $\frac{1}{\mu^2}$ from the above bound. T
     \end{itemize}
 \end{theorem}
 
-As a consequence, the convergence bound scales as $\mathcal{O}\left(\frac{1}{\mu^3}\right)$. As such, to obtain an $\epsilon$-accurate stationary point, we must choose the inner number of steps (for stocBio) $S = \mathcal{O}(\frac{1}{\mu^3 \epsilon})$, as opposed to $S = \mathcal{O}(\frac{1}{\mu^5 \epsilon})$ previously. From this, we get that the gradient complexity of the inner problem is now $\mathcal{O}(\frac{1}{\mu^7 \epsilon^2})$. Analogously, in our case, the $D_{1,k}$ term in line \ref{tele_ineq2} is now
+As a consequence, the convergence bound scales as $\mathcal{O}\left(\frac{1}{\mu^3}\right)$. As such, to obtain an $\epsilon$-accurate stationary point, we must choose the inner number of steps (for \texttt{stocBio}) $S = \mathcal{O}(\frac{1}{\mu^3 \epsilon})$, as opposed to $S = \mathcal{O}(\frac{1}{\mu^5 \epsilon})$ previously. From this, we get that the gradient complexity of the inner problem is now $\mathcal{O}(\frac{1}{\mu^7 \epsilon^2})$. Analogously, in our case, the $D_{1,k}$ term in line \ref{tele_ineq2} is now
 \[D_{1,k} = \sqrt{2}\left(L + \frac{L^2}{\mu} + \frac{M\tau}{\mu} \right) \|\hat{x}(\lambda_k) - x_k\|,\]
 and so the $\mu$-complexity of the $\mathbb{E}D_{1,k}^2$ term (for $s=0$) is now $\mathcal{O}\left(\frac{1}{\mu^4} \ln{\left( \frac{1}{\mu} \right)} \right)$. In turn, once again comparing the $\mathbb{E} [D_{1,k}^2], D_{2,k}^2, D_{3,k}$ terms within (\ref{tele_ineq2}), we get that the $\mu$-complexity of the right-hand-side of (\ref{tele_ineq2}) is now $\mathcal{O}\left(\frac{1}{\mu} \ln{\left( \frac{1}{\mu} \right)} \right)$.
 \end{comment}
@@ -5521,7 +5532,7 @@ As the aim of this chapter was to present a robust algorithm for smooth bilevel 
 \begin{equation} \label{neumann_step}
     v_{Q_{t+1}} = v_{Q_{t}} - \eta \nabla_{xx}^2 \tilde{F}(x_k,\lambda_k,\zeta_t) v_{Q_{t}} + \eta v_{Q_0}, \quad \text{ with } v_{Q_0} = \nabla_x C
 \end{equation}
-Let us ignore the $\nabla_x C$ term for now and set $v_{Q_0} = \eta Id$. Additionally, assume $\nabla_{xx}^2 \tilde{F}(x_k,\lambda_k,\zeta_t) = \nabla_{xx}^2 F(x_k,\lambda_k)$. Now, consider the matrix ODE
+To motivate the proposed iteration, we first consider the deterministic setting. Let us ignore the $\nabla_x C$ term for now and set $v_{Q_0} = \eta Id$. Additionally, assume $\nabla_{xx}^2 \tilde{F}(x_k,\lambda_k,\zeta_t) = \nabla_{xx}^2 F(x_k,\lambda_k)$. Now, consider the matrix ODE
 \begin{equation} \label{neumann_ode}
     \dot{v}_{Q_{t}} = Id - \nabla_{xx}^2 F v_{Q_{t}} \triangleq G(v_{Q_{t}}).
 \end{equation}
@@ -5538,31 +5549,106 @@ where, assuming $\nabla_{xx}^2 \tilde{F}_t$ is low-rank, we can leverage the Woo
 
 
 \section{Numerics} \label{sec:stoc_hoag_num}
-We did not conduct an empirical study of the effect of conditioning on convergence, but we did compare the performance of Stocbio and Stoc-HOAG on the same problem. We generate a random Gaussian train matrix $A \in \mathbb{R}^{10 \times 20}$ and a sparse solution vector $x_0 \in \mathbb{R}^{10}$. We construct the data vector $y = Ax_0 + err$, where $err \in \mathbb{R}^{10}$ is some small Gaussian error vector. Then the problem we will be trying to tackle is
+To illustrate the theoretical developments of the previous sections, we compare the practical performance of \texttt{stocBio} and \texttt{stocHOAG} on a synthetic bilevel least-squares problem. The aim of this experiment is not to provide a comprehensive empirical evaluation, but rather to verify that the simplified parameter schedule exhibits convergence behaviour comparable to that predicted by the theory. We generate a random Gaussian train matrix $A \in \mathbb{R}^{10 \times 20}$ and a sparse solution vector $x_0 \in \mathbb{R}^{10}$. We construct the data vector $y = Ax_0 + err$, where $err \in \mathbb{R}^{10}$ is some small Gaussian error vector. Then the problem we will be trying to tackle is
 \begin{align} 
 &\min_{\lambda \in \mathcal{D}} \mathcal{L}\left(\lambda \right) \triangleq \|\hat{x}(\lambda) - x_0\|_2^2 \label{outer_hoag_test}\\
 &\text { s.t. } \hat{x}(\lambda) =\underset{x \in \mathbb{R}^{n}} \argmin \frac{1}{2}\|A x - y\|_2^2 + \frac{e^\lambda +\mu_0}{2}\|x\|_2^2. \label{inner_hoag_test},
 \end{align}
 
-where $\mu_0 > 0$ is a global strong-convexity parameter, that ensures the inner problem is always at least $\mu_0$-strongly convex. Obviously, in a practical setting having this parameter is not realistic, but in our case, when the optimal value $\lambda$ is almost always close to $0$, it allows us to gauge the effect of strong convexity on convergence. We will compare Stocbio to a few variations of Stoc-HOAG. The difference between these comes down to how we tackle the inner problem and the Hessian inverse. We will compare 
+where $\mu_0 > 0$ is a global strong-convexity parameter, that ensures the inner problem is always at least $\mu_0$-strongly convex. Obviously, in a practical setting having this parameter is not realistic, but in our case, when the optimal value $\lambda$ is almost always close to $0$, it allows us to gauge the effect of strong convexity on convergence. We will compare \texttt{stocBio} to a few variations of \texttt{stocHOAG}. The difference between these comes down to how we tackle the inner problem and the Hessian inverse. We compare three variants of \texttt{stocHOAG} against \texttt{stocBio} in order to assess the effect of the proposed modifications to the inner solver and Hessian-inverse approximation: 
 \begin{enumerate}
-    \item Stoc-HOAG with SGD for inner problem and $v_Q$ computed via Neumann series;
-    \item Stoc-HOAG with conjugate gradient descent for inner problem and $v_Q$ computed via Neumann series;
-    \item Stoc-HOAG with SGD for inner problem and $v_Q$ updated via ISGD.
+    \item \texttt{stocHOAG} with SGD for inner problem and $v_Q$ computed via Neumann series;
+    \item \texttt{stocHOAG} with conjugate gradient descent for inner problem and $v_Q$ computed via Neumann series;
+    \item \texttt{stocHOAG} with SGD for inner problem and $v_Q$ updated via ISGD.
 \end{enumerate}
 
-We run for $\mu_0 = 1$, 20000 outer iterations. The results are presented in Figure \ref{fig:stoc_bio_hoag}. The Stoc-HOAG algorithms all feature a comparable $\mathcal{O}\left( 1/K \right)$ convergence to Stocbio in this toy problem, suggesting that we can obtain even tighter guarantees that of Theorem \ref{hoag_thm_glcv}.
+We run for $\mu_0 = 1$, 20000 outer iterations. %The results are presented in Figure \ref{fig:stoc_bio_hoag}. %The \texttt{stocHOAG} algorithms all feature a comparable $\mathcal{O}\left( 1/K \right)$ convergence to \texttt{stocBio} in this toy problem, suggesting that we can obtain even tighter guarantees that of Theorem \ref{hoag_thm_glcv}.
+Figure \ref{fig:stoc_bio_hoag} shows that all \texttt{stocHOAG} variants exhibit a convergence trend comparable to that of \texttt{stocBio} throughout the optimisation. Although the trajectories differ during the initial transient phase, they eventually display similar asymptotic behaviour, consistent with the theoretical analysis. Furthermore, replacing the Neumann series by ISGD or the inner SGD solver by conjugate gradients does not noticeably degrade convergence on this example, supporting the flexibility of the proposed framework.
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{IMG/stochoag/a_run_of_STHOAG_grad.pdf}
-    \caption{Convergence comparison of Stocbio and Stoc-HOAG}
+    \includegraphics[width=1\linewidth]{IMG/stochoag/a_run_of_STHOAG_grad.pdf}
+    \caption{Convergence comparison of \texttt{stocBio} and \texttt{stocHOAG}}
     \label{fig:stoc_bio_hoag}
 \end{figure}
 
 The code for reproducing numerics in this section is available at the \href{https://github.com/icheltso/thesis/tree/main/thesis\_stoc\_hoag}{thesis\_stoc\_hoag} folder of the Github repository.
 
 \section{Conclusion}
-The stocBio algorithm is one of the more recent approaches to stochastic bilevel optimisation. However, as with many other algorithms, designed to tackle bilevel problems, it suffers from a high sensitivity to the strong-convexity parameter $\mu$ of the inner level problem. In this chapter we introduce a reparametrisation for the algorithm that make it more robust in this regard, providing comparable practical convergence and reducing the dependence of the inner-solver complexity on $\mu$, at the cost of slightly larger outer-gradient and Hessian-vector complexities.
+%The \texttt{stocBio} algorithm is one of the more recent approaches to stochastic bilevel optimisation. However, as with many other algorithms, designed to tackle bilevel problems, it suffers from a high sensitivity to the strong-convexity parameter $\mu$ of the inner level problem. In this chapter we introduce a reparametrisation for the algorithm that make it more robust in this regard, providing comparable practical convergence and reducing the dependence of the inner-solver complexity on $\mu$, at the cost of slightly larger outer-gradient and Hessian-vector complexities.
+This chapter investigated the sensitivity of stochastic bilevel optimisation algorithms to the conditioning of the inner optimisation problem. Starting from the \texttt{stocBio} algorithm of Ji et al., we proposed a simplified variant, termed \texttt{stocHOAG}, in which the algorithm parameters are prescribed as deterministic schedules depending only on the outer iteration. We showed that this considerably reduces the tuning burden while retaining convergence guarantees comparable to those of the original algorithm.
+
+The proposed parameterisation also provides a clearer picture of how the computational complexity depends on the strong convexity parameter of the inner problem. In particular, the gradient complexity of the inner optimisation problem improves by an order of $\mu^3$ relative to the original parameterisation, while the outer-gradient and Hessian-vector complexities increase only modestly. Furthermore, the analysis identifies the dominant source of the conditioning dependence as the inner-solver error, rather than the stochastic Neumann-series approximation itself.
+
+Finally, we considered an alternative Hessian-inverse approximation based on implicit stochastic gradient descent and compared several variants of the proposed framework on a synthetic bilevel optimisation problem. Although these experiments are illustrative rather than exhaustive, they demonstrate that the simplified parameter schedules exhibit practical convergence behaviour comparable to that of \texttt{stocBio}, supporting the theoretical developments presented in this chapter.
+
+\chapter{Overall Conclusions and Future Directions}
+
+\section{Overall Conclusions}
+
+This thesis has investigated two closely related challenges arising in sparse optimisation and Bayesian inference. The first concerns the construction of efficient sampling algorithms for probability distributions induced by nonsmooth regularisers. The second concerns the optimisation of hyperparameters in stochastic bilevel problems, where the computational cost is often dominated by repeatedly solving an inner optimisation problem. Although these topics are distinct, they share a common objective: developing computational methods that remain both practically effective and mathematically tractable in the presence of nonsmooth optimisation problems.
+
+The principal contribution of this thesis is the introduction and analysis of Hadamard-Langevin dynamics, a new family of stochastic processes obtained through Hadamard reparameterisations of sparse priors. Rather than approximating or smoothing the underlying nonsmooth objective, the proposed approach reformulates the sampling problem in a transformed coordinate system, permitting the application of Langevin-type dynamics while preserving the target distribution. This viewpoint provides an alternative to existing smoothing and proximal approaches and demonstrates that suitable reparameterisations can substantially simplify both algorithm design and theoretical analysis.
+
+A significant part of the thesis is devoted to establishing rigorous mathematical guarantees for these dynamics. We derive existence and uniqueness results, establish moment bounds and ergodicity, and analyse finite-time convergence towards the invariant distribution. The analysis is then extended to practical numerical discretisations, where corresponding convergence guarantees are obtained. Particular attention is given to both cylindrical and Cartesian formulations, illustrating that the proposed framework admits multiple discretisations while retaining a common theoretical foundation.
+
+Alongside these theoretical developments, numerical experiments demonstrate that the proposed methods achieve competitive empirical performance across a range of sparse inference problems, including regression, classification and image deconvolution. While the primary emphasis of this work is theoretical rather than computational, these experiments indicate that the proposed algorithms remain practical and perform comparably to established approaches despite avoiding explicit smoothing of the underlying objective.
+
+The second part of the thesis concerns stochastic bilevel optimisation for hyperparameter selection. Building upon existing algorithms such as \texttt{stocBio}, this thesis proposes \texttt{StocHOAG}, a simplified stochastic variant of the HOAG algorithm. Rather than introducing an entirely new optimisation framework, this work focuses on understanding how parameter choices influence convergence guarantees and computational complexity. In particular, the proposed parameter schedule substantially simplifies the tuning procedure while preserving convergence guarantees comparable to those available for \texttt{stocBio}.
+
+A recurring theme throughout the bilevel optimisation chapters is the influence of the conditioning of the inner optimisation problem. The analysis demonstrates that the computational complexity of several algorithmic components depends strongly on the strong convexity parameter of the inner problem. By carefully reparameterising the algorithm and separating the analysis of the outer optimisation from the particular inner solver, the proposed framework provides improved robustness with respect to parameter selection while clarifying the individual contributions of the different approximation errors to the overall convergence bound.
+
+Taken together, these results demonstrate that suitable reformulations can provide an effective way of tackling optimisation problems that are otherwise analytically or computationally challenging. Across both parts of the thesis, the emphasis has been on preserving the original mathematical problem while developing algorithms that admit rigorous theoretical analysis and remain practical to implement.
+
+\section{Summary of Contributions}
+
+The principal contributions of this thesis may be summarised as follows.
+
+\begin{itemize}
+    \item The introduction of Hadamard-Langevin dynamics as a new approach for sampling from sparse Bayesian models based on Hadamard reparameterisations.
+
+    \item A rigorous theoretical analysis of the proposed dynamics, including existence, uniqueness, ergodicity and convergence properties, together with convergence guarantees for practical numerical discretisations.
+
+    \item The development of \texttt{StocHOAG}, a simplified stochastic bilevel optimisation algorithm that retains convergence guarantees comparable to those of \texttt{stocBio} while considerably simplifying the parameter schedule.
+
+    \item An analysis of the influence of the conditioning of the inner optimisation problem on stochastic bilevel optimisation, together with a comparison of the conditioning dependence of \texttt{StocHOAG} and \texttt{stocBio}.
+\end{itemize}
+
+\section{Future Directions}
+
+One of the most natural directions arising from this thesis is to combine the Bayesian inference framework developed in Part~\ref{part:Langevin} with the stochastic bilevel optimisation framework developed in Part~\ref{part:HOAG}. As demonstrated in the preceding chapters, the Hadamard reparameterisation transforms a broad class of sparse optimisation problems into equivalent smooth optimisation problems posed in an expanded parameter space. This reformulation naturally opens the door to gradient-based stochastic bilevel optimisation for automatic hyperparameter selection, allowing quantities such as regularisation parameters to be learned rather than prescribed manually.
+
+An interesting challenge immediately arises in this setting. When the optimal regularisation parameter is small, the resulting lower-level optimisation problem becomes increasingly ill-conditioned, precisely the regime investigated in Chapter~\ref{chp: stoc_cond}. Consequently, the conditioning analysis and simplified parameter schedules developed for \texttt{StocHOAG} provide a natural starting point for developing scalable bilevel optimisation methods for Hadamard-reparameterised sparse Bayesian models.
+
+\begin{comment}
+    A particularly interesting direction suggested by this thesis is to combine the two research directions developed here. Many sparse optimisation problems are naturally formulated as $\ell_1$-regularised optimisation problems,
+\[
+\min_x F(x,\lambda)+\lambda\|x\|_1,
+\]
+where the regularisation parameter $\lambda$ must be chosen appropriately. Applying the Hadamard reparameterisation transforms this into the smooth optimisation problem
+\[
+\min_{u,v} F(u\odot v,\lambda)
++\frac{\lambda}{2}\|u\|^2
++\frac{\lambda}{2}\|v\|^2,
+\]
+making it amenable to gradient-based optimisation techniques.
+
+This naturally suggests a smooth bilevel optimisation formulation in which the regularisation parameter $\lambda$ is selected automatically. Such problems arise, for example, in inverse problems and image reconstruction, where the quality of the reconstruction depends sensitively on the choice of the regularisation parameter.
+
+An interesting challenge arises whenever the optimal regularisation parameter is small. In this regime, the lower-level optimisation problem becomes increasingly ill-conditioned, precisely the situation analysed in Chapter~8. Consequently, the conditioning analysis and simplified parameter schedules developed for \texttt{StocHOAG} may provide an effective framework for hyperparameter optimisation in Hadamard-reparameterised sparse optimisation problems.
+
+Beyond this connection, several theoretical questions remain open. These include extending the Hadamard-Langevin framework beyond the classes of sparse priors considered in this thesis, weakening some of the regularity assumptions required by the convergence analysis, and establishing theoretical guarantees for the implicit stochastic gradient descent Hessian inverse proposed in Chapter~\ref{chp: stoc_cond}.
+
+Another interesting direction concerns the Pseudo-Euler Maruyama (PEM) discretisation proposed in Chapter~\ref{chp:analysis_hada_lang}. Although introduced primarily as a heuristic motivated by the Leimkuhler–Matthews method, the numerical experiments suggest that PEM exhibits substantially improved accuracy over the standard Euler--Maruyama discretisation and appears to achieve approximately second-order convergence for stationary averages. Establishing rigorous convergence guarantees, identifying the mechanism underlying this improved behaviour, and determining whether similar ideas extend to broader classes of stochastic dynamics remain interesting open problems.
+\end{comment}
+Beyond this connection, several further theoretical questions remain open. These include extending the Hadamard-Langevin framework beyond the classes of sparse priors considered in this thesis, weakening some of the regularity assumptions required by the convergence analysis, establishing theoretical guarantees for the implicit stochastic gradient descent Hessian inverse proposed in Chapter~\ref{chp: stoc_cond}, and understanding the unexpectedly strong empirical performance of the Pseudo-Euler Maruyama (PEM) discretisation introduced in Chapter~\ref{chp:analysis_hada_lang}.
+
+The latter is particularly intriguing. Although introduced primarily as a heuristic motivated by the Leimkuhler--Matthews method, PEM consistently exhibited the best empirical accuracy among the Hadamard discretisations considered in this thesis and appeared to achieve approximately second-order convergence for stationary averages. At present, however, this behaviour lacks a theoretical explanation. Establishing rigorous convergence guarantees and understanding the mechanism responsible for this improved performance remain interesting directions for future work.
+
+
+\section{Final Remarks}
+
+This thesis has demonstrated that reformulating optimisation problems can simultaneously simplify their numerical solution and facilitate rigorous mathematical analysis. Although the two research directions considered in this thesis were developed independently, they suggest a common research programme centred on the use of reparameterisation and reformulation as tools for tackling challenging optimisation problems. It is hoped that the methods and analyses presented here provide a useful foundation for future developments in sparse Bayesian computation and stochastic bilevel optimisation.
+
 
 %\end{thebibliography}
 \addcontentsline{toc}{chapter}{References}
@@ -5702,7 +5788,7 @@ Thus, $\mathrm{d}u\,\mathrm{d}v = \frac{1}{|\mathrm{det}J|} \mathrm{d}
 \chapter{Chapter IV Proofs}
 \label{bilevel_proofs}
 
-\section{Stocbio/Stoc-HOAG}
+\section{Stocbio/stocHOAG}
 \subsection*{Appendix A: Helpful Results}
 \label{AppendixA}
 We begin by providing a few error bounds for SGD. Firstly, we can directly obtain the iterate error for the strongly convex case as follows.

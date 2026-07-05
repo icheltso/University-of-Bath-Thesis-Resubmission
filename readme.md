@@ -1,6 +1,6 @@
 # Post-Viva Corrections Checklist
 
-This checklist consolidates **all required corrections** from the external examiner report and the internal examiner corrections form.
+This checklist consolidates **all required corrections** from the external examiner report and the internal examiner report.
 
 Note, for a correction, 'p.xx,...' refers to page xx in the old pre-viva thesis. 
 
@@ -197,6 +197,3 @@ Note, for a correction, 'p.xx,...' refers to page xx in the old pre-viva thesis.
 
 
 ---
-
-*Use this checklist as your master document while revising. Tick items only once fully addressed in the thesis source.*
-

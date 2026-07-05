@@ -35,10 +35,10 @@ Note, for a correction, 'p.xx,...' refers to page xx in the old pre-viva thesis.
 - [🟢] p.26, l.-3: Fix phrasing: "constraints given by the optimality…".
 - [🟢] p.27, l.-9: Fix * notation.
 - [🟢] p.27, l.-7: Expand explanation of Figure 2.2; fix truncated plot.
-- [🟢] p.27, l.-12: Clarify definition of function $\ell$.
+- [🟢] p.27, l.-12: Clarify definition of function $l$.
 - [🟢] p.29, l.-10: Remove duplicated word "both".
 - [🟢] p.32, l.1–7: Reorder assumptions; define $C$ and $F$; clarify Lipschitz properties.
-- [🟢] p.32, l.13: Fix wording re differentiation w.r.t. $\omega$.
+- [🟢] p.32, l.13: Fix wording re differentiation w.r.t. $\lambda$.
 - [🟢] p.33, l.11–12: Quantify "high enough accuracy" and "close enough".
 - [🟢] p.33, l.16 & p.42, l.10: Fix Algorithm numbering.
 - [🟢] p.34, l.7: Define parameter $m$.
@@ -66,14 +66,14 @@ Note, for a correction, 'p.xx,...' refers to page xx in the old pre-viva thesis.
 - [🟢] p.51, l.1: Note Eq. (4.16) follows from Eq. (4.6).
 - [🟢] p.51, l.-1: Fix typo in $W_t$ and state time domain.
 - [🟢] p.52, l.1: Fix typo in "The forward equation".
-- [🟢] p.53, l.7: Introduce $\varepsilon$.
+- [🟢] p.53, l.7: Introduce $\pi$.
 - [🟢] p.55, §4.4.2: Add sources.
 - [🟢] p.61, l.-9: Correct definition of $(x_t)_{t\ge0}$.
 - [🟢] p.61, l.-1: Clarify strong vs weak approximation.
-- [🟢] p.62, l.3: Define $\vartheta$.
+- [🟢] p.62, l.3: Define $\varphi$.
 - [🟢] p.63, l.-1: Explain $F$ notation (avoid clash with filtrations).
 - [🟢] p.64, l.11: State where result was shown.
-- [🟢] p.64, l.-1: Clarify SDE solved by $x$ and role of $\vartheta$.
+- [🟢] p.64, l.-1: Clarify SDE solved by $x$ and role of $\varphi$.
 - [🟢] p.66, l.12: (4.4.12) is an Assumption, not an equation.
 - [🟢] p.70: Add chapter wrap-up.
 

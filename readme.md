@@ -2,13 +2,15 @@
 
 This checklist consolidates **all required corrections** from the external examiner report and the internal examiner corrections form.
 
+Note, for a correction, 'p.xx,...' refers to page xx in the old pre-viva thesis. 
+
 ---
 🟢 - Addressed
 🟡 - Partially addressed
 
 
 ## General / Global Revisions
-- [🟡] Create a **glossary** of notation used throughout the dissertation.
+- [🟢] Create a **glossary** of notation used throughout the dissertation.
 - [🟢] Rewrite **Chapter 4** (Background on stochastics) for clarity and coherence (see detailed comments below).
 - [🟢] Add a **final conclusions chapter** summarising contributions and future research directions.
 
@@ -187,6 +189,10 @@ This checklist consolidates **all required corrections** from the external exami
 
 ## Optional / Enhancement Suggestions
 - [🟡] Analyse Cartesian Hadamard–Langevin SDE. -> Future work.
+- [🟢] p.35 Change `\hat{x}(\lambda_k)` to `x_k`
+- [🟢] p.36: Change `Id y_k` to `y_k`
+- [🟢] p.122: Align `=` with `\leq`
+- [🟢] p.130: Mention other implicit schemes for neumann ode.
 - [🟢] p.130: Explain use of Woodbury identity.
 
 

@@ -36,11 +36,17 @@
 %\usepackage{mystyle}
 \usepackage{mathtools,booktabs,tabu,graphicx,hyperref,epstopdf,url,rotating}
 %\usepackage{fullpage}
-\usepackage{algorithm}
+\usepackage{algorithm2e}
 \usepackage{cite}
 \usepackage{algorithmic}
 \usepackage{fancyref}
 \usepackage[framemethod=tikz]{mdframed}
+
+
+\usepackage{chngcntr}
+\counterwithin{algocf}{chapter}
+
+\renewcommand{\thealgocf}{\thechapter.\arabic{algocf}}
 
 
 \newtheorem{theorem}{Theorem}[section]
@@ -48,7 +54,9 @@
 \newtheorem{condition}{Condition}[theorem]	
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{definition}[theorem]{Definition}
+\newtheorem*{definition*}{Definition}
 \newtheorem{example}[theorem]{Example}
+\newtheorem*{example*}{Example}
 \newtheorem{assumption}[theorem]{Assumption}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{remark}{Remark}[theorem]
@@ -194,7 +202,7 @@ The key contributions of this thesis are:
 
 This thesis mainly advances the theory of nonsmooth Bayesian inference via Hadamard reparameterizations. Its main impact lies in providing practical sampling algorithms with theoretical guarantees and practical applications.
 
-All code available at my Github repository \href{https://github.com/icheltso/thesis}{github.com/icheltso/thesis}.
+All code is available at my Github repository \href{https://github.com/icheltso/thesis}{github.com/icheltso/thesis}.
 
 
 
@@ -268,19 +276,31 @@ With $\lambda = 0$ we obtain the solution of the original problem as $x^* = (A^T
 
 \chapter*{Glossary}
 \addcontentsline{toc}{chapter}{Glossary}
-\begin{definition}[Dual norm]
+\begin{definition*}[Dual norm]
 Let $(\mathbb{R}^d, \|\cdot\|)$ be a normed vector space. 
 The dual norm $\|\cdot\|_*$ is defined by
 \[
 \|y\|_* := \sup_{\|x\| \le 1} \langle x, y \rangle.
 \]
-\end{definition}
-\begin{example}
+\end{definition*}
+\begin{example*}
 The dual of the $\ell^1$ norm is the $\ell^\infty$ norm, 
 and the $\ell^2$ norm is self-dual.
-\end{example}
+\end{example*}
 
-\begin{definition}[Hadamard product]
+\begin{definition*}[Proximal operator]
+Let $\phi:\mathbb{R}^d\rightarrow\mathbb{R}\cup\{+\infty\}$ be a proper, lower semicontinuous function. The proximal operator of $\phi$ is defined by
+\[
+\operatorname{prox}_{\phi}(x)
+:=
+\arg\min_{z\in\mathbb{R}^d}
+\left\{
+\phi(z)+\frac12\|z-x\|_2^2
+\right\}.
+\]
+\end{definition*}
+
+\begin{definition*}[Hadamard product]
 Let $x, y \in \mathbb{R}^d$. 
 The Hadamard product (or elementwise product) of $x$ and $y$ is defined by
 \[
@@ -292,13 +312,44 @@ the Hadamard product is defined elementwise by
 (A \odot B)_{ij} = A_{ij} B_{ij}.
 \]
 
-\end{definition}
+\end{definition*}
 
-\begin{definition}[Positive definite]
-    \item[$A \succ 0$] Matrix positive definiteness. For a symmetric matrix
+\begin{definition*}[Positive definite]
+For a symmetric matrix
 $A$, the notation $A \succ 0$ means that $A$ is positive definite,
 i.e. $x^\top A x > 0$ for all nonzero vectors $x$.
-\end{definition}
+\end{definition*}
+
+\begin{definition*}[Posterior distribution]
+Let $\theta$ denote an unknown parameter and let $y$ denote the observed data. The posterior distribution is the conditional distribution of $\theta$ given $y$, and is defined by Bayes' theorem as
+\[
+\pi(\theta\mid y)
+=
+\frac{\pi(y\mid\theta)\pi(\theta)}
+{\pi(y)},
+\]
+where $\pi(\theta)$ is the prior distribution and $\pi(y\mid\theta)$ is the likelihood.
+\end{definition*}
+
+\begin{definition*}[Maximum a posteriori (MAP) estimator]
+Given observed data $y$, the maximum a posteriori (MAP) estimator is defined by
+\[
+\hat{\theta}_{\mathrm{MAP}}
+=
+\arg\max_{\theta}\pi(\theta\mid y),
+\]
+that is, the parameter value maximizing the posterior distribution.
+\end{definition*}
+
+\begin{definition*}[Stationary distribution]
+A probability distribution $\pi$ is called a stationary distribution of a stochastic process (or Markov chain) if the distribution is invariant under the dynamics. That is, if $X_0\sim\pi$, then
+\[
+X_t\sim\pi
+\]
+for every $t\ge0$.
+\end{definition*}
+
+
 
 
 
@@ -309,7 +360,7 @@ i.e. $x^\top A x > 0$ for all nonzero vectors $x$.
 \chapter{Background on (Sparse) Optimization} \label{chp:sparse_background}
 \section{Introduction}
 %We are often faced with
-\subsection{Motivation - Regularization}
+\subsection{Motivation -- Regularization}
 \begin{comment}
     Regularization is a technique used in various fields, such as economics, tomography, statistics and machine learning, to `simplify' or structure a solution to some problem. For example, in econometrics, we are often faced with the problem of explaining some phenomena using a model with a large number of parameters. This could create multi-collinearity or overfitting, wherein the excessive number of parameters creates inter-dependence and thus over-complicates the model. Regularization can be used to reduce the number of active parameters, which solves this issue and further tells us which parameters are important \cite{riskml}. From a machine-learning perspective, if we are minimizing some loss function $L$ to predict a function $x(u)$ for labels $y_i$ and samples $u_i$, then regularization takes the form of
 \begin{equation} \label{reg_ml}
@@ -350,7 +401,7 @@ x^* = (A^T A + \lambda I)^{-1} A^T b.
 As $\lambda \to 0$, this recovers the original least-squares solution (when $A^T A$ is invertible). Increasing $\lambda$ increases the eigenvalues of $A^T A + \lambda I$, thereby improving the condition number and numerical stability of the solution.
 
 
-\subsection{Motivation - Sparse Regularization}
+\subsection{Motivation -- Sparse Regularization}
 In recent years, practical demand in areas such as image processing and deep learning, has led to increased interest in regularization as a sparsity-enforcing tool. This is also the main motivation behind our report. Firstly we explain what `sparsity' is. Recall the regularized problem \eqref{reg_ml}. Suppose we are trying to fit a polynomial $u(x)$, with parameters $u_0,u_1,\hdots, u_k$, that is
 \[u(x) = u_0 + u_1 x + u_2 x^2 + \hdots + u_kx^k\]
 A sparse solution of this problem would be one with as few non-zero $u_j$ as possible, while making sure that the loss $\sum^n_{i=1} L(u(x_i),y_i)$ is minimal. With respect to this problem, the regularizer $R(u)$ will be responsible for enforcing sparsity. We now discuss the reasons for considering sparse-regularized problems.
@@ -427,9 +478,11 @@ In other words, one must necessarily sample at at least twice the highest freque
 \begin{figure}[h!]
     \centering
     \includegraphics[scale = 2]{aliased_sig.png}
-    \caption{Aliasing due to Undersampling. Available from: https://www.ni.com/docs/en-US/bundle/labview/page/lvanlsconcepts/aliasing.html}
+    \caption{Aliasing caused by undersampling.\protect\footnotemark}
     \label{fig:aliased}
 \end{figure}
+\footnotetext{Image adapted from National Instruments:
+\url{https://www.ni.com/docs/en-US/bundle/labview/page/lvailnsconcepts/aliasing.html}}
 Hence, a natural question is whether we can use the sparsity assumption to reduce the number of measurements. To relate this to the preceding section, assume a linear measurement model, i.e. in Fourier space:
 \begin{equation} \label{cs_lin}
     Ax = b,
@@ -456,11 +509,11 @@ We define the \textit{proximal operator}. Let $\phi : \mathbb{R}^n \xrightarrow[
 \begin{equation} \label{proximal}
     \mathrm{prox}_{\phi}(x) =\underset{z} \argmin \phi(z) + \frac{1}{2}\|z-x\|_2^2.
 \end{equation}
-A way to interpret this is that one wishes to find the minimum of $\phi$, without straying too far from $x$ \cite{proxalgs}. This mapping is well-defined \cite{fawzi2022lectures}. Furthermore, if we set $\mathcal{D}$ as some closed, convex set and choose $\phi$ as the indicator
+A way to interpret this is that one wishes to find the minimum of $\phi$, without straying too far from $x$ \cite{proxalgs}. This mapping is well-defined \cite{fawzi2022lectures}. Furthermore, if we set $\mathcal{D}$ as some closed, convex set and choose $\phi$ as the indicator:
 \[\phi(x) = \begin{cases}
-  0 \quad x \in \mathcal{D} \\
-  +\infty \quad x \notin \mathcal{D}
-\end{cases},\]
+  0 \quad x \in \mathcal{D}, \\
+  +\infty \quad x \notin \mathcal{D},
+\end{cases}\]
 then $\mathrm{prox}_\phi$ reduces to the projection of $x$ onto $\mathcal{D}$. As such, the proximal mapping is a generalization of the projection operator. Suppose now that we have an optimization problem of the form
 \begin{equation}
     \argmin_{x \in \mathbb{R}^n} {F(x, \lambda) \triangleq f(x) + g(x,\lambda)},
@@ -481,7 +534,7 @@ which is the gradient descent step. Hence it is natural to consider
     &= \argmin_{x \in \mathbb{R}^n} \frac{1}{2 \gamma} \|x - (x_k - \gamma \nabla f(x_k))\|_2^2 + g(x,\lambda) \\
     &= \mathrm{prox}_{\gamma g}(x_k - \gamma \nabla f(x_k)),
 \end{align*}
-which is exactly the update for proximal gradient descent. For various regularizers $g$, prox can be computed explicitly. For example, for $g = \|x\|_1$, we have $$\mathrm{prox}_{\gamma g}(x) = \mathrm{sign}(x) \max(|x|-\gamma,0).$$ This is illustrated in Figure \ref{fig:prox_lasso}.
+which is exactly the update for proximal gradient descent. For various regularizers $g$, $\mathrm{prox}_{\gamma g}$ can be computed explicitly. For example, for $g = \|x\|_1$, we have $$\mathrm{prox}_{\gamma g}(x) = \mathrm{sign}(x) \max(|x|-\gamma,0).$$ This is illustrated in Figure \ref{fig:prox_lasso}.
 
 \begin{figure}[h!]
     \centering
@@ -781,7 +834,7 @@ This brings us to the other approach - solving (\ref{bilev1}) directly with iter
         %\caption{Contact angle with various pseudo dosages}
         \label{fig:tiger_l1_haar_opt}
     \end{subfigure}
-    \caption{Example of an inverse problem: Benign image (left), noisy observation (center), sparse reconstruction in wavelet (Haar) basis (right). Refer to Figure \ref{fig:deblurry_tiger} for more examples of recovery.}\label{fig:blurry_tiger}
+    \caption{Example of an inverse problem: Reference image (left), noisy observation (center), sparse reconstruction in wavelet (Haar) basis (right). Refer to Figure \ref{fig:deblurry_tiger} for more examples of recovery.}\label{fig:blurry_tiger}
 \end{figure}
 
 Recall the imaging problem (\ref{lasso_gen}):
@@ -877,7 +930,7 @@ where $\theta$ denote network parameters, $\mathcal{L}_T$ and $\mathcal{L}_V$ ar
     %    \label{fig:tiger_tv_path}
     %\end{subfigure}
 
-    \caption{Image deconvolution by regularization; Reference original and blurred images found in Figure \ref{fig:blurry_tiger}. Left: Optimal $\lambda$ w.r.t. SNR;  Right: Regularization path: SNR vs $\lambda$.}\label{fig:deblurry_tiger}
+    \caption{Image deconvolution by regularization; Reference original and blurred images found in Figure \ref{fig:blurry_tiger}. Left: Reconstructions corresponding to the SNR-optimal value of $\lambda$;  Right: Regularization paths showing SNR as a function of $\lambda$.}\label{fig:deblurry_tiger}
 \end{figure}
 
 \section{Hyperparameter Optimization with Smooth Inner Problem}
@@ -891,7 +944,7 @@ We consider the case where both $C$ and $F$ are smooth.
 \subsection{Existing Approaches}
 Several notable approaches have been proposed to tackle bilevel optimization problems, particularly in settings where the lower-level problem must be solved numerically and exact hypergradients are unavailable. One classical approach is the HOAG algorithm proposed in~\cite{pedregosa2016hyperparameter}. HOAG computes hypergradients using the implicit function theorem, where the required inverse Hessian-vector product is approximated using conjugate gradients. It assumes that the error in this approximation is summable and uses a fixed step size for updating the upper-level parameters. While this approach can provide theoretical convergence guarantees, it may require unnecessarily tight tolerances on the inner solver, resulting in high computational cost. Stochastic bilevel optimization methods, such as those analyzed in~\cite{ghadimi2018approximation, hong2020twotimescale, ji2021bilevel}, have also gained popularity, especially in machine learning applications. These methods typically perform a fixed number of updates to the lower-level problem and update the upper-level variable using noisy or mini-batch hypergradients. While they scale well to large datasets, they often rely on specific assumptions such as stochastic smoothness or convexity, do not dynamically control accuracy or step size, and the larger number of hyperparameters in the form of batch sizes for the various stochastic subroutines can be difficult to tune. Another line of work explores fully first-order reformulations of bilevel problems as single-level constrained optimization problems via the introduction of a value-function constraint~\cite{ye2022bome}. These approaches avoid second-order information altogether but introduce penalty terms that require careful tuning. Moreover, the accuracy of lower-level approximations remains fixed, which can lead to inefficiencies in practice. Derivative-free methods such as DFO-LS~\cite{ehrhardt2021inexact} have also been adapted to bilevel learning. For example, DFO-LS applies trust-region derivative-free methods to optimize hyperparameters by solving the lower-level problem to a fixed tolerance and using the residual to guide the upper-level update. While promising in settings such as TV denoising, this method becomes less practical in high-dimensional settings due to poor scalability. Unlike prior methods (such as HOAG) that rely on static settings for gradient accuracy or step size, the MAID algorithm~\cite{salehi2024adaptively} dynamically adjusts both quantities based on computable error bounds and descent conditions. This adaptivity enables convergence with reduced computational effort and improves robustness to hyperparameter initialization, while demonstrating improved performance in tasks, such as logistic regression and TV denoising to that of HOAG or DFO-LS. A common flaw of algorithms for bilevel optimization is that they struggle in settings where the inner problem is ill-conditioned. We investigate this issue in Chapter \ref{chp: stoc_cond}. Another distinct line of work approaches hyperparameter learning from a statistical perspective, rather than as a bilevel optimization problem. For instance, Tan et al.~\cite{tan2024unsupervised} propose an unsupervised method for training convex neural regularizers by maximum marginal likelihood estimation. This approach estimates the parameters of the prior directly from noisy measurements, bypassing the need for ground-truth data or cross-validation. The framework scales to high-dimensional convex neural architectures, supported by convergence guarantees. This positions maximum likelihood--based approaches as a complementary alternative to classical bilevel hyperparameter optimization.
 
-In the next section we will investigate the HOAG algorithm by Pedregosa, wherein we conduct gradient descent using an approximate hypergradient. Recall that $F : \mathbb{R}^n \times \mathcal{D} \to \mathbb{R}$ is defined in \eqref{inprob} as the inner objective, and $C : \mathbb{R}^n \times \mathcal{D} \to \mathbb{R}$ is the outer objective defined in \eqref{bilev1}.
+In the next section, we investigate the HOAG algorithm by Pedregosa, wherein we conduct gradient descent using an approximate hypergradient. Recall that $F : \mathbb{R}^n \times \mathcal{D} \to \mathbb{R}$ is defined in \eqref{inprob} as the inner objective, and $C : \mathbb{R}^n \times \mathcal{D} \to \mathbb{R}$ is the outer objective defined in \eqref{bilev1}.
 
 
 \begin{comment}
@@ -1120,9 +1173,7 @@ As a result, the Hessian Inverse Subroutine provides a biased estimate of $[\nab
     v_Q= \eta \sum_{q=-1}^{Q-1} \prod_{j=Q-q}^Q\left(I- \eta \nabla_y^2 \tilde{F}\left(x_k, \lambda_k ; \mathcal{B}_j\right)\right) \nabla_x \tilde{C}(x_k,\lambda_k,\mathcal{S}_C),
 \end{equation}
 where $\nabla_y^2 \tilde{F}\left(x_k, \lambda_k ; \mathcal{B}_j\right)$ are samples of the Hessian $\nabla_y^2 F \left(x_k, \lambda_k\right)$, taken from mutually independent sample sets $\{\mathcal{B}_j, j = 1, \hdots, Q\}$ and $\nabla_x \tilde{C}(x_k,\lambda_k,\mathcal{S}_C)$ is the randomly sampled gradient $\nabla_x C(x_k,\lambda_k)$. Here, as opposed to (\ref{HIA}), we approximate the inverse using independent sample sets. Note, that it is easy to see, that
-
 \[\mathbb{E}[v_Q] = \eta \sum_{i=0}^{Q} \left[I - \eta\nabla_y^2 F \left(x_k, \lambda_k\right)\right]^i\nabla_x C(x_k,\lambda_k) \approx [\nabla_y^2 F \left(x_k, \lambda_k\right)]^{-1}\nabla_x C(x_k,\lambda_k).\]
-
 Hence, we can use (\ref{HIA_StocBio}) to solve the system $\nabla_{xx}^2 F(x_k,\lambda_k)v = \nabla_x \tilde{C}(x_k,\lambda_k)$ (much like the second step in algorithm \ref{alg:hoag}) using only matrix-vector multiplication and low-sample approximations of the Hessian $\nabla_{xx}^2 F(x_k,\lambda_k)$. Finally, the approximate hypergradient is constructed:
 \[\tilde{\nabla} L = \nabla_\lambda C(x_k,\lambda_k) - \nabla_{x \lambda}^2 F(x_k,\lambda_k)^\top v_Q.\]
 Ji, Yang \& Liang have further developed two algorithms - MRBO and VRBO, building upon \texttt{stocBio}\cite{yang2021provably}. The former is a single loop algorithm, that uses momentum-based techniques to keep a running average of gradient estimations at each step, which are used to simultaneously update $x_k$ and $\lambda_k$. This method uses a decreasing stepsize for the updates. The latter is a double-loop algorithm that uses variance reduction techniques, similar to SVRG (Johnson \& Zhang \cite{johnson2013accelerating}). The outer loop is divided into epochs, while the inner loop, much like in the case of \texttt{stocBio}, solves the inner problem (\ref{inner_hoag_neu_orig}), using the relevant gradients that are updated once per epoch with a relatively large batch of samples $\mathcal{S}_1$. Between the epochs the gradients are continuously updated using small batches of samples $\mathcal{S}_2$. To elaborate, the hypergradient $\nabla \tilde{L}$, when evaluated at the start of a new epoch, takes the form
@@ -1217,7 +1268,7 @@ and as such, is better conditioned. Going by the result of Theorem 3\cite{poon},
 &\min _{\lambda \in \mathcal{D} \subset \mathbb{R}^r} L\left(\lambda \right) \triangleq \|A_{test} \left(\hat{u}(\lambda) \odot \hat{v}(\lambda) \right) - b_{test}\|_2^2 \label{outprob_vp_poon}\\
 &\text { s.t. } \hat{v}(\lambda) = \argmin_{v \in \mathbb{R}^n} f_{vp} \triangleq \min_{u \in \mathbb{R}^n}{\frac{1}{2}\|A(u \odot v)-b\|_2^2 + \frac{\lambda}{2} \|u\|^2_2 + \frac{\lambda}{2} \|v\|_2^2}, \label{inprob_vp_poon}
 \end{align}
-which we can tackle as in Algorithm \ref{alg:hoag}. 
+which we can tackle as in the HOAG framework (Algorithm \ref{alg:hoag}). 
 \begin{comment}
     \begin{remark}
     It has been shown empirically, that, for tackling the problem
@@ -1236,7 +1287,7 @@ where $h$ is as in (\ref{noncvx_varpro}). We see that this does not depend on $\
     \begin{equation} \label{reg_prob_poon_remark}
         \min_{x \in \mathbb{R}^n} \frac{1}{\lambda} L(Ax,b) + R(x),
     \end{equation}
-    where the regularizer $R$ has a quadratic variational form as in (\ref{qvf_thm}), using the smooth reparametrization (\ref{noncvx_varpro}) with LBFGS-B often performs better — or at least comparably — to state-of-the-art methods that tackle (\ref{reg_prob_poon_remark}) directly. In particular, this approach is less sensitive to the choice of $\lambda$.
+    where the regularizer $R$ has a quadratic variational form as in (\ref{qvf_thm}), using the smooth reparametrization (\ref{noncvx_varpro}) with LBFGS-B often performs better than, or at least comparably to, state-of-the-art method that tackle (\ref{reg_prob_poon_remark}) directly. In particular, this approach is less sensitive to the choice of $\lambda$.
 
     Moreover, by Theorem 2\cite{poon}, the gradient $\nabla f$ can be expressed via the convex dual:
     \begin{equation*}
@@ -1786,7 +1837,7 @@ It is straightforward to verify that the measure $\nu$ with density:
 \begin{equation}
 \nu(dx) \propto e^{-\beta V(x)} dx
 \end{equation}
-is invariant under the dynamics, meaning that if $x_t \sim \nu$, then $x_{t+s} \sim \nu$ for all $s \geq 0$. This raises the fundamental question:
+is invariant under the dynamics, meaning that if $x_t \sim \nu$, then $x_{t+s} \sim \nu$ for all $s \geq 0$. This naturally raises the question:
 
 \begin{center}
 \textbf{Does $\psi_t$ converge to $\nu$? If so, how fast?}
@@ -1808,7 +1859,7 @@ $e^{-\beta V(x)}$, i.e.
 \[
 \pi(dx) \propto e^{-\beta V(x)}\,dx .
 \]
-To analyze the rate of convergence, it is useful to introduce the weighted $L^2$ space:
+To study the convergence rate, it is useful to introduce the weighted $L^2$ space:
 \begin{equation} \label{weightedL2}
     L^2(\pi) = \left\{\phi \text{ measurable } \bigg| \int_\mathcal{D} |\phi|^2 d\pi < \infty  \right\},
 \end{equation}
@@ -2930,18 +2981,8 @@ Suppose Assumption~\ref{reg1} holds. Let
 \[
 x_t=(y_t,z_t,v_t)
 \]
-be a solution of the Cartesian system~(\ref{cyl}), and define
-\[
-u_t=(y_t\odot y_t+z_t\odot z_t)^{1/2}.
-\]
-Then the process
-\[
-(u_t,v_t)
-\]
-satisfies the Hadamard--Langevin system~(\ref{uvproc}).
-
-Moreover, if the initial distribution of \(x_0\) is cylindrical, then the law of
-\((u_t,v_t)\) is the cylindrical marginal of the law of \(x_t\).
+be a solution of the Cartesian system~(\ref{cyl}), and define $u_t=(y_t\odot y_t+z_t\odot z_t)^{1/2}.$ Then the process $(u,v)_t$ satisfies the Hadamard--Langevin system~(\ref{uvproc}). Moreover, if the initial distribution of \(x_0\) is cylindrical, then the law of
+\((u,v)_t\) is the cylindrical marginal of the law of \(x_t\).
 \end{theorem}
 
 \begin{proof}
@@ -3028,7 +3069,7 @@ u_t^{-1}\odot (y_t,z_t)\cdot (W_t^{3,y},W_t^{3,z})
 \]
 is again a Brownian motion by~\cite[Theorem~3.3.16]{Karatzas1991-xr}.
 This is precisely the \(u\)-equation in~(\ref{uvproc}). The \(v\)-equation
-follows directly from~(\ref{cyl}). Hence \((u_t,v_t)\) satisfies
+follows directly from~(\ref{cyl}). Hence \((u,v)_t\) satisfies
 \((\ref{uvproc})\).
 
 Finally, by the definition of a cylindrical distribution, if the initial
@@ -3241,10 +3282,10 @@ the process
 \[
 u_t=(y_t\odot y_t+z_t\odot z_t)^{1/2}
 \]
-induces a solution \((u_t,v_t)\) of~(\ref{uvproc}).
+induces a solution \((u,v)_t\) of~(\ref{uvproc}).
 
 Since \(x_t\) is well posed, strong Feller, irreducible, and satisfies
-the moment bounds established above, it follows that \((u_t,v_t)\) is
+the moment bounds established above, it follows that \((u,v)_t\) is
 well posed on \(\mathcal X=\mathbb R_+^d\times\mathbb R^d\), is strong
 Feller, irreducible, and satisfies the corresponding moment bounds.
 The cylindrical marginal statement follows from
@@ -3344,7 +3385,7 @@ By Jensen's inequality,
     \EE\left[\exp\pa{ \int_t^{t+\epsilon} \gamma\, \cinfty^2\, \norm{\hat{z}_s}^2 \,ds} \right] \leq  \frac{1}{\epsilon}  \int_t^{t+\epsilon} \EE\Bigl[ \exp\pa{\gamma\, \cinfty^2\, \epsilon\,  \norm{\hat{z}_s}^2 } \Bigr] \,ds.
 \end{equation}
 We now apply It\^o's lemma to bound $\EE \bigl[ \exp(\epsilon\, \gamma\, \cinfty^2 \norm{\hat{z}_s}^2 ) \bigr]$. 
-Given  $\alpha>0$ and  $\hat{y} \eqdef\exp\left(\frac{\alpha}{2}\norm{(\hat{u},\hat{v})}^2 \right)$,
+Given  $\alpha>0$ and  $\hat{y}_t \eqdef\exp\left(\frac{\alpha}{2}\norm{(\hat{u}_t,\hat{v}_t)}^2 \right)$,
 \begin{align*}
     d\hat y_t &= \pa{-\lambda \alpha  + \frac{\alpha^2}{\beta}} \,\norm{\hat z_t}^2\hat y_t\, dt + \pa{\frac{3\alpha d}{\beta}}\, \hat y_t\, dt + \sqrt{\frac{2}{\beta}} \alpha \hat y_t  \pa{\hat u_t^\top d W^1_t + \hat v_t^\top d W^2_t}.
 \end{align*}
@@ -3923,7 +3964,7 @@ c_2 A
 \sup_{0\leq k\leq N-1}
 \sum_{j=0}^{k}c_1^jR_{k-j}.
 \]
-If \(A=0\), there is nothing to prove. Otherwise, dividing by \(A\) yields
+If \(A=0\), the desired estimate is trivial. Otherwise, dividing by \(A\) yields
 \[
 A
 \leq
@@ -3937,11 +3978,30 @@ Writing \(\ell=k-j\), we have
 =
 \sum_{\ell=0}^{k}c_1^{k-\ell}R_\ell .
 \]
-Since \(c_1=1+O(\Delta t)\) and \(M\Delta t\leq T\), there exists a constant
-\(C_T>0\), independent of \(\Delta t\), such that
+%Since \(c_1=1+O(\Delta t)\) and \(M\Delta t\leq T\), there exists a constant
+%\(C_T>0\), independent of \(\Delta t\), such that
+%\[
+%\sup_{0\leq m\leq M}c_1^m\leq C_T .
+%\]
+Since
 \[
-\sup_{0\leq m\leq M}c_1^m\leq C_T .
+c_1=\frac{1+2C_R\Delta t}{1+2\lambda\Delta t-C_R\Delta t}
+=1+\mathcal O(\Delta t),
 \]
+there exists a constant \(C>0\), independent of \(\Delta t\), such that
+\(c_1\le 1+C\Delta t\) for sufficiently small \(\Delta t\). Hence, using
+\(1+x\le e^x\),
+\[
+c_1^m
+\le (1+C\Delta t)^m
+\le e^{Cm\Delta t}
+\le e^{CT},
+\]
+since \(m\le M\) and \(M\Delta t\le T\). Therefore,
+\[
+\sup_{0\le m\le M} c_1^m\le C_T,
+\]
+where \(C_T=e^{CT}\) is independent of \(\Delta t\).
 Therefore, since $k \leq N \leq M$, we have $k-\ell \leq M$, and therefore $c_1^{k-\ell} \leq  C_T,$ and so
 \[
 \sum_{\ell=0}^{k}c_1^{k-\ell}R_\ell
@@ -4317,10 +4377,13 @@ exhibits approximately second-order convergence of these averages with respect t
 timestep $h$. Similar second-order accuracy for stationary averages was established for the Leimkuhler--Matthews method in \cite{LeimkuhlerMatthewsTretyakov2014}.
 
 \chapter{Experimental Results}
+\subsection{Preface}
 The code for reproducing numerics in the following sections is available at the \href{https://github.com/icheltso/thesis/tree/main/thesis\_bayes\_lasso}{thesis\_bayes\_lasso} folder of the Github repository. Note that the \href{https://docs.jax.dev/en/latest/installation.html#installation}{JAX} python package is required to run the experiments.
 
+Throughout this chapter, several notions of error are relevant. For optimization algorithms, quantities such as the objective value, gradient norm, or distance to the optimum are the primary measures of performance. In contrast, algorithms designed for Bayesian inference aim to approximate the posterior distribution rather than simply produce accurate predictions. Consequently, predictive accuracy alone is not sufficient to assess sampling quality. Moreover, for SDE-based sampling methods, one distinguishes between strong error, which measures pathwise approximation accuracy, and weak error, which measures the accuracy of expectations of test functions. Since many Bayesian inference tasks ultimately require accurate posterior statistics rather than individual sample trajectories, weak error is often the more relevant notion. Accordingly, the experiments in this chapter employ error metrics appropriate to each task. Depending on the problem, these include optimization-related quantities, errors in posterior expectations, effective sample sizes, posterior summary statistics, and predictive performance metrics where appropriate. When predictive metrics are reported for Bayesian methods, they should be interpreted as measures of predictive performance rather than, on their own, measures of posterior approximation quality. These distinctions should be kept in mind when interpreting the numerical results presented in this chapter.
+
 \subsection{1D Regression Problem} \label{subsec: 1d_experiment}
-In this section, we compare the sampling methods introduced in Chapters 5 and 6 on Bayesian Lasso regression problems. We consider both one-dimensional and higher-dimensional settings and assess the accuracy of the resulting stationary distributions and sampling efficiency. Unless otherwise stated, the model parameters are chosen as described below. We consider the case where $d=1$, and choose $A=1$, $y=3$, and $\lambda = 2.7$. To estimate the impact of $\Delta t$ for the stationary distribution, for different stepsizes, we run Hadamard Langevin for $T_{burn}=3000$ and then record samples over $T_{rec} = 2500$ total time. In order to counter the Monte-Carlo error (as in (\ref{eq:statistic_bias})), we scale burn-in and sampling iterations as $\mathcal{O}(\Delta t^{-1})$. Furthermore, we scale subsampling frequency as $\mathcal{O}(\Delta t^{-1})$, so that the total number of samples in each chain is constant at 100. Finally, and most importantly, in order to achieve quadratic growth of independent samples, we increase the number of paths at each timestep as $\mathcal{O}(\Delta t^{-2})$. Even so, the best performing method still experienced dominating Monte-Carlo error, as seen in (\ref{fig:error_1d}).
+In this section, we compare the sampling methods introduced in Chapters 5 and 6 on Bayesian Lasso regression problems. We consider both one-dimensional and higher-dimensional settings and assess the accuracy of the resulting stationary distributions and sampling efficiency. Unless otherwise stated, the model parameters are chosen as described below. We consider the case where $d=1$, and choose $A=1$, $y=3$, and $\lambda = 2.7$. To estimate the impact of $\Delta t$ for the stationary distribution, for different stepsizes, we run Hadamard Langevin for $T_{burn}=3000$ and then record samples over $T_{rec} = 2500$ total time. In order to counter the Monte-Carlo error (as in (\ref{eq:statistic_bias})), we scale burn-in and sampling iterations as $\mathcal{O}(\Delta t^{-1})$. Furthermore, we scale subsampling frequency as $\mathcal{O}(\Delta t^{-1})$, so that the total number of samples in each chain is constant at 100. Finally, and most importantly, in order to achieve quadratic growth of independent samples, we increase the number of paths at each timestep as $\mathcal{O}(\Delta t^{-2})$. Even so, the best performing method was still dominated by Monte-Carlo error, as seen in (\ref{fig:error_1d}).
 \begin{figure}[htb]
     \centering
     \includegraphics[width=1\linewidth]{IMG/loglog_plot_quad.pdf}
@@ -4547,7 +4610,6 @@ direct comparison of sampling quality.
 We set up another binary classification problem, this time using the Wisconsin breast cancer dataset\footnote{https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data}, with 569 total samples, each containing 30 features. This dataset is divided into 357 benign and 212 malignant samples. We split this into training and test sets of size 455 and 114, respectively. We use the same logistic loss $G$ as in (\ref{eq:binary_logistic}). For Hadamard, proximal Langevin, as well as the BOB and PEM schemes, we simulate for $\beta = 5, 100$, using $10^5$ burn-in iterations and $3\times10^5$ sampling iterations, with a subsampling frequency of 1000, for a total of 3000 final uncorrelated samples. In Figures \ref{fig:cancer5} and \ref{fig:cancer100} you can see the mean weights and quantiles for the cases $\beta = 5$ and $\beta = 100$, respectively. In both cases, we observe the highest variance in mean non-zero weights. Interestingly, the mean test accuracy for the Bayesian methods was higher than for deterministic lasso (used to compute the MAP), when $\beta = 5$. Here, the test accuracy for the deterministic solution was 96.49\%, while the mean test accuracy (over 3000 samples) for all Bayesian methods was 97.37\%. On the other hand, for higher values of $\beta$, both the mean test accuracy for the Bayesian methods and the test accuracy for LASSO were very similar, which is expected as the samples in this case are all concentrated around the MAP. Additionally, at lower $\beta$, the samples had a lower mean sklearn logistic score. Both this and the higher mean test accuracy scores suggests that samples produced at lower $\beta$ could possess useful generalizing properties. Since these observations are based on predictive accuracy and logistic loss, they should be interpreted as evidence of predictive performance rather than direct evidence of superior posterior approximation.
 
 With regards to gauging the methods' sampling qualities, while predictive accuracy alone cannot determine whether a sampler correctly approximates the posterior distribution, Figures \ref{fig:cancer5} and \ref{fig:cancer100} show that all four methods recover highly similar posterior means and credibility intervals. In particular, the same features are consistently assigned the largest posterior weights across all methods. This suggests that the methods produce broadly comparable approximations of the posterior distribution despite employing different sampling mechanisms. Furthermore, increasing $\beta$ reduces posterior uncertainty and causes the posterior to concentrate around the MAP estimator, as expected from the form of the Gibbs distribution. The similarity of posterior means and credibility intervals across all four methods provides evidence that the observed differences in predictive accuracy are not due to substantial differences in posterior approximation quality.
-
 \begin{figure}[htbp]
     \centering
     % Row 1
@@ -4594,7 +4656,6 @@ With regards to gauging the methods' sampling qualities, while predictive accura
     \caption{Wisconsin cancer test data: mean weights and quantiles for $\beta = 100$}
     \label{fig:cancer100}
 \end{figure}
-
 \subsection{1D Deconvolution with Haar wavelets}
 We consider Gaussian deconvolution of a piecewise-constant signal (length $d = 1024$). The operator $A$ here represents a convolution with an orthogonal haar transform. We set $\lambda = 1$. We run Proximal and Hadamard Langevin, as well as the BOB and PEM samplers, each with stepsize $\tau = 0.01$, for 5000 burn-in iterations, recording 10,000 out of $10^5$ samples (subsampling every 10th). In Figure \ref{fig:haar_1d} we present the sample means, credibility intervals and autocorrelation values at maximum lag of 50. Note that the correlation for the proximal Langevin samples decays slower in comparison to other methods. Additionally, for all methods exhibit larger credibility intervals around the jumps, which is expected as the reconstruction of the precise jump locations is more unstable.
 \begin{figure}[htbp]
@@ -4645,61 +4706,68 @@ We consider Gaussian deconvolution of a piecewise-constant signal (length $d = 1
     \caption{(a)-(d) Heatmap representation of ACF values at various lags for 1024 dimensions; (e) Sample means (f) 90\% Credibility intervals (log-scale)}
     \label{fig:haar_1d}
 \end{figure}
-
 \subsection{2D Deconvolution with Haar wavelets}
 We perform inpainting: $A = UW^T$, where $U$ is a masking operator and $W$ represents a two-dimensional Haar wavelet transform. We run proximal and Hadamard Langevin, as well as the Cartesian schemes, for $\beta = 5,100,500$. All methods are run for 10,000 burn-in iterations and 6000 sampling iterations, with a subsampling frequency of 20 (300 samples total). For the 300 samples we observe the means, as well as the quantile differences. The original, perturbed and MAP recovered images can be seen in Figure \ref{fig:camera_mask}. Furthermore, the means and quantile differences for various $\beta$ can be found in Figures \ref{fig:inpainting2} and \ref{fig:inpainting3}. In general, for small values of $\beta$, the greatest variations occur at the masked pixels. For larger values of $\beta$, we observe the most variance at the image edges.
+\subsection{Summary}
+Across regression, classification, and inverse problems, our experiments demonstrate that Hadamard Langevin offers competitive sampling performance, with efficiency close to Gibbs in moderate dimensions and improvements over Cartesian schemes in deconvolution tasks. In the one-dimensional regression problem, PEM showed the best numerical accuracy, though its behaviour was obscured by Monte Carlo error at small stepsizes. For high-dimensional regression and classification, deterministic Lasso consistently matched or outperformed Bayesian samplers in predictive accuracy, while the latter offered comparable ROC/AUC scores without clear gains.
 
-\begin{figure}[htp]
+It should be noted that predictive accuracy and ROC/AUC quantify predictive
+performance rather than posterior approximation quality. Consequently, these
+results do not imply that the deterministic Lasso provides a better
+approximation of the posterior distribution; rather, they indicate that it
+achieved comparable or superior predictive performance on these datasets.
+
+By contrast, in inverse problems such as deconvolution and inpainting, Bayesian samplers provided meaningful uncertainty quantification, with variance correctly concentrated near discontinuities, masked regions, and edges, and Hadamard and related schemes yielding stable reconstructions. Taken together, these results suggest that Hadamard Langevin is a promising alternative to sampling methods such as Gibbs in moderate-dimensional problems.
+
+\begin{figure}[!htp]
     \centering
-    \begin{subfigure}[b]{0.27\textwidth}
+    \begin{subfigure}[b]{0.18\textwidth}
         \includegraphics[width=\linewidth]{IMG/haar2d/cameraman.png}
         %\caption{Contact angle with various pseudo dosages}
         \label{fig:cam_orig}
     \end{subfigure}
 \hfil 
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{0.21\textwidth}
         \includegraphics[width=\linewidth]{IMG/haar2d/observation.pdf}
         %\caption{Contact angle with various pseudo dosages}
         \label{fig:cam_obs}
     \end{subfigure}
 \hfil
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{0.21\textwidth}
         \includegraphics[width=\linewidth]{IMG/haar2d/mode.pdf}
         %\caption{Contact angle with various pseudo dosages}
         \label{fig:cam_mode}
     \end{subfigure}
     \caption{Original, perturbed and MAP recovered image.}\label{fig:camera_mask}
 \end{figure}
-
 \begin{figure}[!htp]
     \centering
-
 \begin{tabular}{c@{}c@{}c@{}c@{}c}
 &Hadamard&Hadamard&Prox-l1&Prox-l1\\    
 &(mean)&(percentile)&(mean)&(percentile)\\
 \rotatebox{90}{\hspace{2em}$\beta=5$}&
-\includegraphics[width=0.21\linewidth]{IMG/haar2d/results-5/uv_mean.pdf}
-&\includegraphics[width=0.25\linewidth]{IMG/haar2d/results-5/uv_percentile.pdf}
+\includegraphics[width=0.19\linewidth]{IMG/haar2d/results-5/uv_mean.pdf}
+&\includegraphics[width=0.21\linewidth]{IMG/haar2d/results-5/uv_percentile.pdf}
 &
-\includegraphics[width=0.21\linewidth]{IMG/haar2d/results-5/prox_mean.pdf}
+\includegraphics[width=0.19\linewidth]{IMG/haar2d/results-5/prox_mean.pdf}
 &
-\includegraphics[width=0.25\linewidth]{IMG/haar2d/results-5/prox_percentile.pdf}
+\includegraphics[width=0.21\linewidth]{IMG/haar2d/results-5/prox_percentile.pdf}
 \\
 \rotatebox{90}{\hspace{2em}$\beta=100$}&
-\includegraphics[width=0.21\linewidth]{IMG/haar2d/results-100/uv_mean.pdf}
-&\includegraphics[width=0.25\linewidth]{IMG/haar2d/results-100/uv_percentile.pdf}
+\includegraphics[width=0.19\linewidth]{IMG/haar2d/results-100/uv_mean.pdf}
+&\includegraphics[width=0.21\linewidth]{IMG/haar2d/results-100/uv_percentile.pdf}
 &
-\includegraphics[width=0.22\linewidth]{IMG/haar2d/results-100/prox_mean.pdf}
+\includegraphics[width=0.19\linewidth]{IMG/haar2d/results-100/prox_mean.pdf}
 &
-\includegraphics[width=0.25\linewidth]{IMG/haar2d/results-100/prox_percentile.pdf}
+\includegraphics[width=0.21\linewidth]{IMG/haar2d/results-100/prox_percentile.pdf}
 \\
 \rotatebox{90}{\hspace{2em}$\beta=500$}&
-\includegraphics[width=0.21\linewidth]{IMG/haar2d/results-500/uv_mean.pdf}
-&\includegraphics[width=0.25\linewidth]{IMG/haar2d/results-500/uv_percentile.pdf}
+\includegraphics[width=0.19\linewidth]{IMG/haar2d/results-500/uv_mean.pdf}
+&\includegraphics[width=0.21\linewidth]{IMG/haar2d/results-500/uv_percentile.pdf}
 &
-\includegraphics[width=0.21\linewidth]{IMG/haar2d/results-500/prox_mean.pdf}
+\includegraphics[width=0.19\linewidth]{IMG/haar2d/results-500/prox_mean.pdf}
 &
-\includegraphics[width=0.25\linewidth]{IMG/haar2d/results-500/prox_percentile.pdf}
+\includegraphics[width=0.21\linewidth]{IMG/haar2d/results-500/prox_percentile.pdf}
 \end{tabular}    
     \caption{UV and Prox Hadamard: Mean images and  log differences between 95 and 5 quantiles for different choices of $\beta$.}
     \label{fig:inpainting2}
@@ -4738,17 +4806,6 @@ We perform inpainting: $A = UW^T$, where $U$ is a masking operator and $W$ repre
     \caption{Cartesian BOB and PEM: Mean images and  log differences between 95 and 5 quantiles for different choices of $\beta$.}
     \label{fig:inpainting3}
 \end{figure}
-\newpage
-\subsection{Summary}
-Across regression, classification, and inverse problems, our experiments demonstrate that Hadamard Langevin offers competitive sampling performance, with efficiency close to Gibbs in moderate dimensions and improvements over Cartesian schemes in deconvolution tasks. In the one-dimensional regression problem, PEM showed the best numerical accuracy, though its behaviour was obscured by Monte Carlo error at small stepsizes. For high-dimensional regression and classification, deterministic Lasso consistently matched or outperformed Bayesian samplers in predictive accuracy, while the latter offered comparable ROC/AUC scores without clear gains.
-
-It should be noted that predictive accuracy and ROC/AUC quantify predictive
-performance rather than posterior approximation quality. Consequently, these
-results do not imply that the deterministic Lasso provides a better
-approximation of the posterior distribution; rather, they indicate that it
-achieved comparable or superior predictive performance on these datasets.
-
-By contrast, in inverse problems such as deconvolution and inpainting, Bayesian samplers provided meaningful uncertainty quantification, with variance correctly concentrated near discontinuities, masked regions, and edges, and Hadamard and related schemes yielding stable reconstructions. Taken together, these results suggest that Hadamard Langevin is a promising alternative to sampling methods such as Gibbs in moderate-dimensional problems.
 
 \part{Hyperparameter Optimization} \label{part:HOAG}
 
@@ -5049,7 +5106,6 @@ Finally, we require a mild lower-boundedness assumption on the outer objective.
 \begin{assumption}[Lower bound on objective] \label{inf_ass}
     The sequence of iterates $\left\{\lambda_k\right\}$ is contained in an open set over which $\mathcal{L}$ is bounded below by a scalar $\mathcal{L}_{\text {inf }}$.
 \end{assumption}
-
 We are now in a position to establish the global convergence guarantee for Algorithm \ref{alg:stoc_hoag}.
 \begin{comment}
 \begin{theorem}[Global Convergence] \label{hoag_thm_glcv}
@@ -5067,7 +5123,6 @@ then we have
 \end{theorem}
 \end{comment}
 \begin{theorem}[Global Convergence] \label{hoag_thm_glcv}
-
 Suppose Assumptions \ref{conv_ass}, \ref{smo_ass}, \ref{pls_ass}, \ref{nablaFxl_bnd} and \ref{inf_ass} hold.
 In Algorithm \ref{alg:stoc_hoag}, assume that the outer stepsize is chosen as $\nu_k = \frac{1}{2L_\mathcal{L}}$. Suppose $\eta$ is chosen such that $\eta \mu < 1$. Let $\zeta > 0$ be some small positive number. Choose $Q_k=\left\lceil r\log(k^{1+\zeta})\right\rceil,
 r>\frac{1}{-\log(1-\eta\mu)}.$. Assume also that $\lambda_k \in \mathcal{D}$ for all $k>0$.
@@ -5085,21 +5140,14 @@ In particular, this implies
 \min_{k \leq K} \mathbb{E}\|\nabla \mathcal{L}(\lambda_k)\|^2 \xrightarrow[K \to \infty]{} 0.
 \]
 \end{theorem}
-
-%\begin{proof}
-
-
-%\begin{comment}
 \begin{proof}
     An equivalent condition to $\mathcal{L}(\lambda)$ having $L_{\mathcal{L}}-$Lipschitz continuous gradient is that for any $\alpha,\beta \in \mathcal{D}$ \cite{Zhou2018}:
 \begin{equation} \label{lipschitz_equiv}
     \mathcal{L}(\beta) \leq \mathcal{L}(\alpha) + \nabla \mathcal{L}(\alpha)^\top (\beta - \alpha) + \frac{L_{\mathcal{L}}}{2}\|\beta - \alpha\|^2.
 \end{equation}
 Substituting for $\alpha = \lambda_k, \beta = \lambda_{k+1} = \lambda_k - \nu_k\widehat{\nabla}\mathcal{L}(\lambda_k)$,
-
 \[\mathcal{L}(\lambda_{k+1}) \leq \mathcal{L}(\lambda_k) + \nabla \mathcal{L}(\lambda_k)^\top \left(-\nu_k\widehat{\nabla}\mathcal{L}(\lambda_k)\right) + \frac{L_{\mathcal{L}}}{2}\left\|-\nu_k\widehat{\nabla}\mathcal{L}(\lambda_k)\right\|^2,\]
 where $\widehat{\nabla} \mathcal{L}(\lambda_k)$ is the approximate hypergradient of $\mathcal{L}$, evaluated at $\lambda_k$, as defined in step 3 of Algorithm \ref{alg:stoc_hoag}. Taking expectation, conditioning on $\lambda_k$,
-
 \begin{align*}
 \mathbb{E}_{\lambda_k}\left[\mathcal{L}(\lambda_{k+1})\right] &\leq \mathcal{L}(\lambda_k) -\nu_k \nabla \mathcal{L}(\lambda_k)^\top \mathbb{E}_{\lambda_k}\left[\widehat{\nabla}\mathcal{L}(\lambda_k)\right] + \frac{L_{\mathcal{L}}\nu_k^2 }{2}\mathbb{E}_{\lambda_k}\left[\left\|\widehat{\nabla}\mathcal{L}(\lambda_k)\right\|^2\right] \\
 &= \mathcal{L}(\lambda_k) 
@@ -5129,9 +5177,6 @@ where $\widehat{\nabla} \mathcal{L}(\lambda_k)$ is the approximate hypergradient
   - \frac{L_{\mathcal{L}} \nu_k^2}{2} \right) 
   \left\| \mathbb{E}_{\lambda_k} \widehat{\nabla} \mathcal{L}(\lambda_k) \right\|^2
 \end{align*}
-
-
-
 \begin{equation} \label{Lip_to_sub}
     \leq \mathcal{L}(\lambda_k) + \frac{\nu_k}{2} \left\|\nabla \mathcal{L}(\lambda_k)- \mathbb{E}_{\lambda_k}\left[\widehat{\nabla}\mathcal{L}(\lambda_k)\right]\right\|^2 + \frac{L_{\mathcal{L}}\nu_k^2}{2}\mathrm{Var}(\widehat{\nabla}\mathcal{L}(\lambda_k)) - \left(\frac{\nu_k}{2} - \frac{L_{\mathcal{L}}\nu_k^2}{2}\right) \|\mathbb{E}_{\lambda_k} \widehat{\nabla}\mathcal{L}(\lambda_k)\|^2,
 \end{equation}
@@ -5148,7 +5193,6 @@ By reverse triangle inequality, we have that
 %\begin{equation} \label{Enabhat}
 %    \|\mathbb{E}_{\lambda_k} \widehat{\nabla} \mathcal{L}(\lambda_k) \| \leq D_{1,k}+D_{2,k} + \|\nabla \mathcal{L}(\lambda_k)\| \quad \mathrm{and} \quad 
 %\end{equation}
-
 Furthermore, using $(a+b)^2 \leq 2a^2 + 2b^2$, we obtain the following lower bound for $\|\mathbb{E}_{\lambda_k} \widehat{\nabla} \mathcal{L}(\lambda_k) \|^2$:
 \begin{equation} \label{Enabhatsq_rev}
     \|\mathbb{E}_{\lambda_k} \widehat{\nabla} \mathcal{L}(\lambda_k) \|^2 \geq \frac{\|\nabla \mathcal{L}(\lambda_k)\|^2 - 4D_{1,k}^2 -4D_{2,k}^2}{2}.
@@ -5171,18 +5215,6 @@ Furthermore, using $(a+b)^2 \leq 2a^2 + 2b^2$, we obtain the following lower bou
 \triangleq D_{3,k}.
 \label{varbndthm}
 \end{align}
-
-\begin{comment}
-    \begin{align}
-\mathrm{Var}\left( \widehat{\nabla} \mathcal{L}(\lambda_k) \right) 
-\leq& \frac{M^2}{|\mathcal{S}_{\nabla_\lambda C,k}|} 
-+ 2 \frac{L^2 M^2}{\mu^2|\mathcal{S}_{\nabla_{x\lambda} F,k}|} \,  \notag \\
-&\quad + 4E^2\eta^2 M^2 \left( \tfrac{\kappa^2}{B (2 - \eta \mu)^2} 
-+ \tfrac{1}{|\mathcal{S}_{\nabla_x C,k}|(2\eta \mu - \eta^2 \mu^2)} \right)
-\triangleq D_{3,k}.
-\label{varbndthm}
-\end{align}
-\end{comment}
 %Set $M_1 = T_{45}^2 + 2T_{45}$, $M_2 = 2T_{45} + 1$. 
 Substituting (\ref{T45diff}),(\ref{Enabhatsq_rev}) and (\ref{varbndthm}) into (\ref{Lip_to_sub}), noting that $\mathcal{L}(\lambda) = C(\hat{x}(\lambda),\lambda)$ is $L_\mathcal{L}$-lipschitz and rearranging, we get
 \begin{equation} \label{totele3}
@@ -5203,13 +5235,6 @@ Thus, the right-hand side of the inequality (\ref{tele_ineq}) is finite, and so
 \begin{equation} \label{weighted_sum}
     \sum_{k=1}^\infty (\nu_k - L_{\mathcal{L}}\nu_k^2)\mathbb{E}\|\nabla\mathcal{L}(\lambda_k)\|^2 < \infty
 \end{equation}
-%Furthermore, from (\ref{weighted_sum}), we get that
-%\[\min_{k \leq K} \mathbb{E}\|\nabla \mathcal{L}(\lambda_k)\|^2 \leq \frac{\sum_{k=1}^K (\nu_k - L_{\mathcal{L}}\nu_k^2)\mathbb{E}\|\nabla\mathcal{L}(\lambda_k)\|^2}{\sum_{k=1}^K (\nu_k - L_{\mathcal{L}}\nu_k^2)} \xrightarrow[]{K \to \infty} 0\]
-%\[\liminf_{k \to \infty} \mathbb{E}\|\nabla\mathcal{L}(\lambda_k)\|^2 = 0.\]
-%Finally, recalling our choice of stepsize $\nu_k = \frac{1}{2L_\mathcal{L}}$, and other parameters in (\ref{params_conv}), we obtain
-%\[\sum_{k=1}^K (\nu_k - L_{\mathcal{L}}\nu_k^2) = \mathcal{O} \left(K \right), \quad \sum_{k=1}^K (\nu_k - L_{\mathcal{L}}\nu_k^2)\|\nabla\mathcal{L}(\lambda_k)\|^2 = \mathcal{O} \left(\frac{1}{\zeta} - \frac{1}{\zeta K^\zeta} \right) \xrightarrow[]{\zeta \to 0} \mathcal{O}\left(\ln{K} \right),\]
-%giving us a convergence rate of
-%\[\mathcal{O} \left(\frac{\ln{K}}{K} \right).\]
 Furthermore, from \eqref{weighted_sum}, we get that
 \[
 \min_{k\leq K}\mathbb E\|\nabla \mathcal L(\lambda_k)\|^2
@@ -5254,12 +5279,6 @@ the bound may also be written as
 =\mathcal O\!\left(\frac{1+\log K}{K}\right).
 \]
 \end{proof}
-%\end{comment}
-
-
-
-%\end{proof}
-
 \section{Comparison with \texttt{stocBio}}
 %In the following sections we will compare our setup to that of Ji et. al. In light of that, let us recall the motivations for this %comparison. The two major points that we address are:
 Theorem~\ref{hoag_thm_glcv} shows that the simplified parameter schedule adopted by \texttt{stocHOAG} retains the convergence guarantees established for \texttt{stocBio}. We now compare the two algorithms in terms of parameter schedules, computational complexity, and their dependence on the conditioning of the inner problem. To be precise we compare the two algorithms from a few perspectives:
@@ -5317,9 +5336,13 @@ As mentioned previously, the left-hand-side above is bounded at the very least a
 Additionally, the Hessian vector complexity (From the Neumann series subroutine) must satisfy
 \[HV(\epsilon) = K \sum_{j=1}^Q B Q(1-\eta \mu)^{j-1} = \mathcal{O}\left(\frac{1}{\mu^6\epsilon^2} \ln \frac{1}{\mu^2\epsilon}\right).\]
 Of note is the strong dependence of the inner-problem complexity on the strong convexity parameter $\mu$. Let us now inspect how our parameter choices affect the $\mu$-dependence of the resulting complexity bounds, and whether they can reduce this sensitivity while maintaining comparable convergence guarantees. Note, that, analogous to Theorem \ref{thm3}, we can derive a similar result for our case, using the consequences of Theorem \ref{hoag_thm_glcv} above. Inspect line \ref{tele_ineq} in our convergence proof. Lower-bounding the left hand side, we obtain
-\begin{equation} \label{tele_ineq2}
-    \frac{1}{K}\sum_{k=1}^K \mathbb{E}\|\nabla\mathcal{L}(\lambda_k)\|^2 \leq  \frac{L_\mathcal{L}\left(4\mathcal{L}(\lambda_1) - 4\mathcal{L}_{inf}\right)}{K} + \frac{1}{K}\sum_{k=1}^K \left(2D_{3,k}\nu_k^2 L^2_{\mathcal{L}} + 6\nu_kL_\mathcal{L}\mathbb{E}[D_{1,k}^2] + 6\nu_k D_{2,k}^2\right),
-\end{equation}
+%\begin{equation} \label{tele_ineq2}
+%    \frac{1}{K}\sum_{k=1}^K \mathbb{E}\|\nabla\mathcal{L}(\lambda_k)\|^2 \leq  \frac{L_\mathcal{L}\left(4\mathcal{L}(\lambda_1) - 4\mathcal{L}_{inf}\right)}{K} + \frac{1}{K}\sum_{k=1}^K \left(2D_{3,k}\nu_k^2 L^2_{\mathcal{L}} + 6\nu_kL_\mathcal{L}\mathbb{E}[D_{1,k}^2] + 6\nu_k D_{2,k}^2\right),
+%\end{equation}
+\begin{align}
+\frac{1}{K}\sum_{k=1}^K \mathbb{E}\|\nabla\mathcal{L}(\lambda_k)\|^2 &\leq  \frac{L_\mathcal{L}\left(4\mathcal{L}(\lambda_1) - 4\mathcal{L}_{inf}\right)}{K} + \notag\\
+&+\frac{1}{K}\sum_{k=1}^K \left(2D_{3,k}\nu_k^2 L^2_{\mathcal{L}} + 6\nu_kL_\mathcal{L}\mathbb{E}[D_{1,k}^2] + 6\nu_k D_{2,k}^2\right), \label{tele_ineq2}
+\end{align}
 where,
 \[D_{1,k} = \sqrt{2}\left(L + \frac{L^2}{\mu} + \frac{M\tau}{\mu} + \frac{LM\rho}{\mu^2} \right) \|\hat{x}(\lambda_k) - x_k\|, \quad D_{2,k} = \sqrt{2} \frac{LM(1-\eta \mu)^{Q_k}}{\mu},\]
 %\begin{equation} \label{varbndthm2}
@@ -5331,23 +5354,32 @@ where,
 %+ 4E^2\eta^2 M^2 \left( \tfrac{\kappa^2}{B (2 - \eta \mu)^2} 
 %+ \tfrac{1}{|\mathcal{S}_{\nabla_x C,k}|(2\eta \mu - \eta^2 \mu^2)} \right)
 %\end{equation}
-\begin{equation} \label{varbndthm2}
-    D_{3,k} = \frac{M^2}{|S_{\nabla_\lambda C,k}|}
+%\begin{equation} \label{varbndthm2}
+%    D_{3,k} = \frac{M^2}{|S_{\nabla_\lambda C,k}|}
+%+
+%\frac{2L^2M^2}{\mu^2|S_{\nabla_{x\lambda}F,k}|} +
+%\left(
+%2E^2+\frac{2L^2}{|S_{\nabla_{x\lambda}F,k}|}
+%\right)2\eta^2M^2
+%\left(
+%\frac{\kappa^2}{B_k(2-\eta\mu)^2}
+%+
+%\frac{1}{|S_{\nabla_x C,k}|(2\eta\mu-\eta^2\mu^2)}
+%\right)
+%\end{equation}
+\begin{align}
+        D_{3,k} = \frac{M^2}{|S_{\nabla_\lambda C,k}|}
 +
 \frac{2L^2M^2}{\mu^2|S_{\nabla_{x\lambda}F,k}|} +
 \left(
 2E^2+\frac{2L^2}{|S_{\nabla_{x\lambda}F,k}|}
-\right)2\eta^2M^2
-\left(
+\right)2\eta^2M^2 \times \notag \\
+\times\left(
 \frac{\kappa^2}{B_k(2-\eta\mu)^2}
 +
 \frac{1}{|S_{\nabla_x C,k}|(2\eta\mu-\eta^2\mu^2)}
-\right)
-\end{equation}
-
-
-
-
+\right) \label{varbndthm2}
+\end{align}
 Note, that $\zeta>0$ in Theorem \ref{hoag_thm_glcv} affects the summation on the RHS of (\ref{tele_ineq2}). If $\zeta$ is large enough, then the sum is bounded by $\mathcal{O}(1/\zeta)$ and doesn't grow with $K$. On the other hand, if $\zeta$ is small, then the smallest upper bound for the sum is $\mathcal{O}(\ln{K})$. Assume that $\zeta$ is large enough, so that the dependence of the RHS of (\ref{tele_ineq2}) on $K$ is as $\mathcal{O}\left( \frac{1}{K} \right)$. Then, to achieve an $\epsilon-$accurate stationary point, we must have at least, that
 \[\frac{L_\mathcal{L}}{K} = \epsilon \implies K = \mathcal{O}\left(\frac{1}{\mu^3 \epsilon} \right).\]
 We now deriv the complexities for the individual parameters and finish this section by providing a $\mu$-convergence bound. We begin with the complexities for the individual samples sizes in $D_{3,k}$. Using our choices in (\ref{params_conv}), we obtain the following gradient complexities. The total number of samples for gradients $\nabla_{x}C, \nabla_{x\lambda} F$ and $\nabla_\lambda C$ are
@@ -5363,7 +5395,6 @@ As we see, while the outer gradient complexity and the Hessian-vector complexity
 slightly worsen, the gradient complexity of the inner problem improves by an
 order of \(\mu^3\) relative to the parametrisation of Ji et al. %Let us now provide a $\mu$-convergence bound. For this purpose, we inspect the three terms $D_{1,k}, D_{2,k}, D_{3,k}$ in (\ref{varbndthm2}). For the sake of simplicity we consider only the case $s=0$. Using Lemma \ref{sgdmu}, we get that $\mathbb{E} [D_{1,k}^2] = \mathcal{O}\left(\frac{1}{\mu^6}\sum_{k=1}^K\frac{1}{T_k}\right) \approx \mathcal{O}\left(\frac{1}{\mu^6}\ln{\frac{1}{\mu}}\right)$. Next, let us inspect $D_{2,k}^2$. Substituting the value of $Q_k$ from Theorem \ref{hoag_thm_glcv}, we get that $D_{2,k}^2 \approx \mathcal{O} \left( \frac{1}{\mu^2} \ln{\frac{1}{\mu}}\right)$. Finally, inspecting the $D_{3,k}$ term, we get that
 %\[\sum^{K}_{k=1} D_{3,k} = \mathcal{O}\left( \frac{\kappa^2}{B_k (2 - \eta \mu)^2} \right) \approx \mathcal{O}\left( \frac{1}{\mu^4} \ln{\frac{1}{\mu}} \right).\]
-
 We now turn from the oracle complexity of the individual subroutines to the
 dependence of the convergence bound itself on the convexity parameter
 \(\mu\). The following corollary isolates the \(\mu\)-dependence of the
@@ -5371,7 +5402,6 @@ right-hand side of \eqref{tele_ineq2}. In particular, it clarifies that the
 Neumann-series variance term in \(D_{3,k}\) is not the dominant contribution
 to the final bound; the dominant contribution comes instead from the
 inner-solver error term \(D_{1,k}\).
-
 \begin{comment}
     \begin{corollary}[\(\mu\)-dependence of the convergence bound]
 Under the parameter choices of Theorem \ref{hoag_thm_glcv}, the averaged convergence bound obtained from (\ref{tele_ineq2}) satisfies
@@ -5422,8 +5452,6 @@ Since \(K=O(\mu^{-3}\epsilon^{-1})\), this gives the leading \(\mu\)-dependence 
 \end{proof}
 
 \end{comment}
-
-
 \begin{corollary}[$\mu$-dependence of the convergence bound]
 Under the parameter choices of Theorem~\ref{hoag_thm_glcv}, the averaged convergence bound obtained from \ref{tele_ineq2} satisfies
 \[
@@ -5440,7 +5468,6 @@ O\left(
 In particular, the dominant dependence on $\mu$ comes from the inner-solver error term
 $D_{1,k}$, rather than from the Neumann-series variance term in $D_{3,k}$.
 \end{corollary}
-
 \begin{proof}
 We inspect the three error terms $D_{1,k}$, $D_{2,k}$ and $D_{3,k}$ appearing in
 \eqref{tele_ineq2}. First consider the contribution to $D_{3,k}$ arising from the Neumann-series variance term. From \eqref{varbndthm2}, this term is of the form
@@ -5544,10 +5571,25 @@ In light of our problem, we consider the update
 \begin{equation} \label{impl_neu}
     v_{Q_{t+1}} = (Id + \eta \nabla_{xx}^2 \tilde{F}_t)^{-1}(v_{Q_{t}} + \eta Id)
 \end{equation}
-where, assuming $\nabla_{xx}^2 \tilde{F}_t$ is low-rank, we can leverage the Woodbury matrix identity to invert the system. The update (\ref{impl_neu}) is a step of implicit stochastic gradient descent. 
-
-
-
+where, assuming $\nabla_{xx}^2 \tilde{F}_t$ is low-rank, we can leverage the Woodbury matrix identity to invert the system. Specifically, suppose the stochastic Hessian admits a low-rank factorization
+\[
+\nabla_{xx}^{2}\tilde{F}_{t}=UV^{\top},
+\]
+where $U,V\in\mathbb{R}^{d\times r}$ with $r\ll d$. Applying the Woodbury matrix identity,
+\[
+\left(I_d+\eta UV^{\top}\right)^{-1}
+=
+I_d-\eta U\left(I_r+\eta V^{\top}U\right)^{-1}V^{\top},
+\]
+reduces the inversion of the $d\times d$ matrix
+\(
+I_d+\eta\nabla_{xx}^{2}\tilde{F}_{t}
+\)
+to the inversion of the much smaller $r\times r$ matrix
+\(
+I_r+\eta V^{\top}U
+\).
+Consequently, the implicit update can be computed efficiently whenever the Hessian is low-rank or admits an accurate low-rank approximation. The update (\ref{impl_neu}) is a step of implicit stochastic gradient descent. 
 \section{Numerics} \label{sec:stoc_hoag_num}
 To illustrate the theoretical developments of the previous sections, we compare the practical performance of \texttt{stocBio} and \texttt{stocHOAG} on a synthetic bilevel least-squares problem. The aim of this experiment is not to provide a comprehensive empirical evaluation, but rather to verify that the simplified parameter schedule exhibits convergence behaviour comparable to that predicted by the theory. We generate a random Gaussian train matrix $A \in \mathbb{R}^{10 \times 20}$ and a sparse solution vector $x_0 \in \mathbb{R}^{10}$. We construct the data vector $y = Ax_0 + err$, where $err \in \mathbb{R}^{10}$ is some small Gaussian error vector. Then the problem we will be trying to tackle is
 \begin{align} 
@@ -5674,7 +5716,7 @@ Substituting for $\alpha = \lambda_k, \beta = \lambda_{k+1} = \lambda_k - \frac{
     &= L(\lambda_k) - (\nabla L(\lambda_k) -p_k)^\top(\lambda_k - \lambda_{k+1}) -\frac{1}{L}\|p_k\|^2+\frac{1}{2L}\|p_k\|^2 \quad  \label{lamline} \\
     &=L(\lambda_k) - (\nabla L(\lambda_k) -p_k)^\top(\lambda_k - \lambda_{k+1}) -\frac{1}{2L}\|p_k\|^2,
 \end{align}
-where in line \ref{lamline}, we use the fact, that $\lambda_{k}-\lambda_{k+1} = \frac{1}{L}p_k$. Finally, by Cauchy-Schwarz, we have
+where in \eqref{lamline}, we use the fact, that $\lambda_{k}-\lambda_{k+1} = \frac{1}{L}p_k$. Finally, by Cauchy-Schwarz, we have
 \begin{equation} \label{lip_cauchy}
     L(\lambda_{k+1}) \leq L(\lambda_k) + \|\nabla L(\lambda_k) -p_k\|\|\lambda_k - \lambda_{k+1}\| -\frac{1}{2L}\|p_k\|^2.
 \end{equation}
@@ -5692,7 +5734,7 @@ By the extreme-value theorem, since $L$ is defined on a compact set and has cont
 \begin{equation} \label{lam_bound_sum}
    \frac{1}{2L}\sum_{k=m}^\infty \|p_k\|^2 \leq L(\lambda_m) - K + M\sum_{k=m}^\infty \epsilon_k.
 \end{equation}
-$\{\epsilon_k\}_{k=1}^\infty$ is summable by assumption, thus $\sum_{k=m}^\infty \epsilon_k < \infty$, $\epsilon_k \xrightarrow[]{} 0$ and the RHS of (\ref{lam_bound_sum}) is finite. Hence the LHS of (\ref{lam_bound_sum}) must also be finite. Hence $\|p_k\|^2 \xrightarrow[]{} 0 \iff \|p_k\| \xrightarrow[]{} 0.$ Recall, that $\|\nabla L(\lambda_k) - p_k\| = \mathcal{O}(\epsilon_k)$, hence 
+$\{\epsilon_k\}_{k=1}^\infty$ is summable by assumption, thus $\sum_{k=m}^\infty \epsilon_k < \infty$, $\epsilon_k \xrightarrow[]{} 0$ and the RHS of (\ref{lam_bound_sum}) is finite. Hence the LHS of (\ref{lam_bound_sum}) must also be finite. Hence $\|p_k\|^2 \xrightarrow[]{} 0 \iff \|p_k\| \xrightarrow[]{} 0.$ Recall that $\|\nabla L(\lambda_k) - p_k\| = \mathcal{O}(\epsilon_k)$, hence 
 \[\|\nabla L(\lambda_k)\| \leq \|p_k\| + \mathcal{O}(\epsilon_k) \xrightarrow[]{k \xrightarrow[]{} \infty} 0.\]
 \begin{comment}
     Hence, taking limits and using the previous theorem, we get

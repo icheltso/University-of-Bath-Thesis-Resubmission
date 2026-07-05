@@ -1108,7 +1108,7 @@ Let us denote $\hat{x}(\lambda_{k}) \triangleq x_k$. The idea behind quasi Newto
 \[\nabla_x F(x_{k-1},\lambda_{k}) = \nabla_x F(x_{k-1},\lambda_{k}) - \nabla_x F(\hat{x}(\lambda_k),\lambda_k)\]
 Linearising, we finally get the \textit{secant condition}:
 \begin{equation}\label{secant_sr1}
-    \nabla_x F(x_{k-1},\lambda_{k}) - \nabla_x F(\hat{x}(\lambda_k),\lambda_k) = \nabla_{xx} F(x_{k},\lambda_{k})(x_{k-1} - x_k) + \mathcal{O}(\|x_{k-1} - x_k\|)
+    \nabla_x F(x_{k-1},\lambda_{k}) - \nabla_x F(x_k,\lambda_k) = \nabla_{xx} F(x_{k},\lambda_{k})(x_{k-1} - x_k) + \mathcal{O}(\|x_{k-1} - x_k\|)
 \end{equation}
 We want to find an approximation $B$ of $\nabla_{xx} F(x_{k},\lambda_{k})^{-1}$, that also solves (\ref{secant_sr1}), or at the very least, such that
 \[B = \min_{B} \|By_k - s_k\|,\]
@@ -1133,7 +1133,7 @@ We propose an even simpler update rule:
 that is, a Rank-1 modification of a diagonal matrix, where, necessarily,
 $$t_k = \frac{\langle s_k, y_k \rangle}{\|y_k\|^2},$$
 which is the solution of 
-\[\argmin_t \|t_k \mathrm{Id} y_k - s_k\|.\]
+\[\argmin_t \|t\,y_k - s_k\|.\]
 This update is only applied if 
 \[(y_k - B_ks_k)^\top s_k \neq 0,\]
 which is not satisfied, if either $y_k = B_k s_k$ (in which case the secant condition is already satisfied by $B_{k+1} = B_k$), or if $(y_k - B_ks_k)$ and $s_k$ are orthogonal, in which case no solution for $\delta, \sigma$, satisfying (\ref{sr1_gen}) exists. Thus, in practice, for $B_0 = \gamma t_k \mathrm{Id}$, with $\gamma \in (0,1),$ we first check that:
@@ -2011,7 +2011,7 @@ This inequality implies that the entropy provides an upper bound for the Total V
 
 We now define the Logarithmic Sobolev Inequality (LSI).
 \begin{definition}[Log-Sobolev Inequality]
-A probability measure $\pi_2$ satisfies the logarithmic Sobolev inequality with constant $R > 0$ (denoted LSI($R$)) if, for all probability measures $\pi_1$ such that $\pi_1 \ll \pi_2$, the following inequality holds:
+A probability measure $\pi_2$ satisfies the logarithmic Sobolev (or log-Sobolev) inequality with constant $R > 0$ (denoted LSI($R$)) if, for all probability measures $\pi_1$ such that $\pi_1 \ll \pi_2$, the following inequality holds:
 
 \[
 \mathcal{H}(\pi_1 | \pi_2) \leq \frac{1}{2R} \mathcal{I}(\pi_1 | \pi_2).
@@ -2065,11 +2065,11 @@ We have that the entropy between $\psi(t)$ and $\nu$ decays exponentially over t
 \[
 \|\psi(t, \cdot) - \nu\|_{TV} \leq \sqrt{2\mathcal{H}(\psi_0 | \nu)} \exp\left(-\frac{\beta^{-1}R}{2} t\right).
 \]
-This provides a bound on the convergence of $\psi(t)$ to the stationary distribution $\nu$. Log Sobolev Inequalities can be used to show exponential convergence for the Unadjusted Langevin Algorithm \cite{Vempala2019}. 
+This provides a bound on the convergence of $\psi(t)$ to the stationary distribution $\nu$. Log-Sobolev Inequalities can be used to show exponential convergence for the Unadjusted Langevin Algorithm \cite{Vempala2019}. 
 
 \subsubsection{Sufficient Conditions for LSI}
 
-Satisfying a Log-Sobolev inequality is equivalent to exponential convergence to the invariant measure in the $ L^1 $ norm. This section aims to provide an overview of conditions under which LSI is satisfied, along with several examples. Several conditions can guarantee that a measure $\nu$ satisfies a Log-Sobolev inequality. Some are outlined below:
+Satisfying a log-Sobolev inequality is equivalent to exponential convergence to the invariant measure in the $ L^1 $ norm. This section aims to provide an overview of conditions under which LSI is satisfied, along with several examples. Several conditions can guarantee that a measure $\nu$ satisfies a log-Sobolev inequality. Some are outlined below:
 
 \begin{enumerate}
     \item \textbf{Convexity assumptions on the potential}: 
@@ -2191,7 +2191,7 @@ By dominated convergence, the right-hand side converges to zero as $ t \to \inft
 
 \subsubsection{Perturbations of Log-Sobolev Inequalities}
 
-The Log-Sobolev inequality (LSI) is also stable under bounded perturbations of the potential. A fundamental result illustrating this is due to Holley and Stroock:
+The log-Sobolev inequality (LSI) is also stable under bounded perturbations of the potential. A fundamental result illustrating this is due to Holley and Stroock:
 
 \begin{theorem}[Holley--Stroock Theorem, \cite{Holley1987}]
 Let $\nu$ be a probability measure on $\mathcal{D}$ that satisfies a logarithmic Sobolev inequality with constant $R > 0$, denoted $\mathrm{LSI}(R)$. Suppose $\tilde{V}:\mathcal{D} \to \mathbb{R}$ is a bounded function. Then the perturbed measure
@@ -2210,13 +2210,13 @@ This result characterizes the robustness of LSI constants under bounded changes 
 
 \subsubsection{From Log-Sobolev to Poincaré Inequalities}
 
-An important consequence of the Log-Sobolev inequality is that it implies a Poincaré inequality with the same constant. This can be seen by linearizing the entropy functional.
+An important consequence of the log-Sobolev inequality is that it implies a Poincaré inequality with the same constant. This can be seen by linearizing the entropy functional.
 
 \begin{lemma}[LSI implies Poincaré inequality]
 Let $\nu$ be a probability measure on $\mathcal{D}$ satisfying $\mathrm{LSI}(R)$. Then $\nu$ also satisfies the Poincaré inequality with the same constant $R$.
 \end{lemma}
 \begin{proof}[Proof sketch]
-The Poincaré inequality can be seen as the linearization of the Log-Sobolev inequality.  
+The Poincaré inequality can be seen as the linearization of the log-Sobolev inequality.  
 Take $\phi = 1 + \epsilon \varphi$ with $\int \varphi\, d\nu = 0$ and expand the LSI in powers of $\epsilon$.  
 The left-hand side entropy term gives $\tfrac{\epsilon^2}{2}\int \varphi^2\, d\nu + o(\epsilon^2)$, while the right-hand side integral yields $\epsilon^2 \int |\nabla \varphi|^2\, d\nu + o(\epsilon^2)$.  
 Dividing through by $\epsilon^2$ and letting $\epsilon \to 0$ recovers the Poincaré inequality with the same constant $R$.
@@ -2854,7 +2854,7 @@ with random variable $\xi^n \sim N(0,\Id_d)$, stepsize $\Delta t >0$. This can b
 \begin{equation} \label{over_lang}
     dXt = -\nabla H(x_n) dt + \sqrt{2/\beta} \, dW_t.
 \end{equation}
-Classic convergence results, such as those by Leli{\`e}vre and Stoltz, as well by Meyn and Tweedie \cite{meyn2012-oq} are discussed earlier in the thesis. Geometric ergodicity of the continuous time SDE (\ref{over_lang}) can also be obtained via Log-Sobolev inequalities under certain convexity and smoothness assumptions.
+Classic convergence results, such as those by Leli{\`e}vre and Stoltz, as well by Meyn and Tweedie \cite{meyn2012-oq} are discussed earlier in the thesis. Geometric ergodicity of the continuous time SDE (\ref{over_lang}) can also be obtained via log-Sobolev inequalities under certain convexity and smoothness assumptions.
 
 \subsection{Smoothing-based Algorithms}
 In the case where $H(x) = G(x) + R(x)$ contains a non-smooth term $R$, a canonical approach is to replace $R$ by a smooth approximation defined by the Moreau--Yosida envelope $R_\gamma$ \cite{pereyra2016proximal}:
@@ -3644,7 +3644,7 @@ If the data term $G$ is uniformly bounded, then one could invoke standard theori
 Consider two measures $\pi_1,\pi_2$ such that $\pi_1$ is absolutely continuous with respect to $\pi_2$ and denote the Radon--Nikodym derivative by $d\pi_1/d\pi_2$. Recall, from section \ref{subsec:entropy_fisher} the definition of the entropy of $\pi_1$ with respect to $\pi_2$ (also called the Kullback--Leibler or KL divergence) as $\mathcal H(\pi_1\mid \pi_2)=\mathbb{E}_{\pi_1}(\log(d\pi_1/d\pi_2))$ and the Fisher information $\mathcal I(\pi_1\mid \pi_2)=\mathbb{E}_{\pi_1}\bp{\norm{\nabla \log(d\pi_1/d\pi_2)}^2}$. We say $\pi_2$ satisfies a log-Sobolev inequality LSI$(R)$ if, for a constant $R>0$,
 \[\mathcal{H}(\pi_1\mid \pi_2)\le\frac{1}{2\,R} \mathcal{I}(\pi_1\mid \pi_2),\qquad \text{ for all } \pi_1\ll \pi_2. 
 \]
-The theory of log Sobolev inequalities (e.g., \cite{Lelievre2016-hx}) gives the following geometric convergence of $\rho(t,\cdot)$ to the invariant measure $\pi$. 
+The theory of log-Sobolev inequalities (e.g., \cite{Lelievre2016-hx}) gives the following geometric convergence of $\rho(t,\cdot)$ to the invariant measure $\pi$. 
 \begin{theorem} \label{thm_bndd_G} Assume that $G$ is bounded.
     The solution $(u,v)_t$ of (\ref{uvproc}) with initial distribution $\rho_0$ converges to the invariant measure $\pi$ geometrically. In particular, 
     \begin{equation}\mathcal H(\rho(t,\cdot) \mid \pi)\le \exp(-2\,R\,t/\beta)\, \mathcal H(\rho_0 \mid \pi),\quad t>0,
@@ -5071,11 +5071,11 @@ Suppose Assumptions \ref{conv_ass}, \ref{smo_ass} and \ref{nablaFxl_bnd} hold. C
 \end{comment}
 \[
 \begin{aligned}
-\operatorname{Var}(\widehat{\nabla}\mathcal L(\lambda_k))
-\leq\;&
+\operatorname{Var}(\widehat{\nabla}\mathcal L(\lambda_k)) &= \mathbb{E}\|\widehat{\nabla} \mathcal{L}(\lambda_k) - \mathbb{E}\widehat{\nabla} \mathcal{L}(\lambda_k)\|^2
+\leq\;
 \frac{M^2}{|S_{\nabla_\lambda C,k}|}
 +
-\frac{2L^2M^2}{\mu^2|S_{\nabla_{x\lambda}F,k}|} \\
+\frac{2L^2M^2}{\mu^2|S_{\nabla_{x\lambda}F,k}|} + \\
 &+
 \left(
 2E^2+\frac{2L^2}{|S_{\nabla_{x\lambda}F,k}|}
@@ -5571,7 +5571,7 @@ In light of our problem, we consider the update
 \begin{equation} \label{impl_neu}
     v_{Q_{t+1}} = (Id + \eta \nabla_{xx}^2 \tilde{F}_t)^{-1}(v_{Q_{t}} + \eta Id)
 \end{equation}
-where, assuming $\nabla_{xx}^2 \tilde{F}_t$ is low-rank, we can leverage the Woodbury matrix identity to invert the system. Specifically, suppose the stochastic Hessian admits a low-rank factorization
+Higher-order implicit discretisations, such as the implicit midpoint or trapezoidal rule, could also be applied to the matrix ODE \eqref{neumann_ode}. We use implicit Euler here because it leads to the simple resolvent update \eqref{impl_neu}, which is straightforward to implement using the Woodbury identity when \(\nabla_{xx}^2 \widetilde F_t\) has low-rank structure. Specifically, suppose the stochastic Hessian admits a low-rank factorization
 \[
 \nabla_{xx}^{2}\tilde{F}_{t}=UV^{\top},
 \]
@@ -5589,7 +5589,7 @@ to the inversion of the much smaller $r\times r$ matrix
 \(
 I_r+\eta V^{\top}U
 \).
-Consequently, the implicit update can be computed efficiently whenever the Hessian is low-rank or admits an accurate low-rank approximation. The update (\ref{impl_neu}) is a step of implicit stochastic gradient descent. 
+Consequently, the implicit update can be computed efficiently whenever the Hessian is low-rank or admits an accurate low-rank approximation. 
 \section{Numerics} \label{sec:stoc_hoag_num}
 To illustrate the theoretical developments of the previous sections, we compare the practical performance of \texttt{stocBio} and \texttt{stocHOAG} on a synthetic bilevel least-squares problem. The aim of this experiment is not to provide a comprehensive empirical evaluation, but rather to verify that the simplified parameter schedule exhibits convergence behaviour comparable to that predicted by the theory. We generate a random Gaussian train matrix $A \in \mathbb{R}^{10 \times 20}$ and a sparse solution vector $x_0 \in \mathbb{R}^{10}$. We construct the data vector $y = Ax_0 + err$, where $err \in \mathbb{R}^{10}$ is some small Gaussian error vector. Then the problem we will be trying to tackle is
 \begin{align} 
